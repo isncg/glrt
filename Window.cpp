@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "Window.h"
 
-// ¡°¹ØÓÚ¡±¿òµÄÏûÏ¢´¦Àí³ÌÐò¡£
+// ï¿½ï¿½ï¿½ï¿½ï¿½Ú¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -25,7 +25,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	Window* pWindow = (Window*)GetWindowLong(hWnd, GWL_USERDATA);
+	Window* pWindow = (Window*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 	if (pWindow == nullptr)
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	return pWindow->WndProc(message, wParam, lParam);
@@ -39,7 +39,7 @@ LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 	{
 		int wmId = LOWORD(wParam);
-		// ·ÖÎö²Ëµ¥Ñ¡Ôñ:
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½Ñ¡ï¿½ï¿½:
 		switch (wmId)
 		{
 		case IDM_ABOUT:
@@ -60,7 +60,7 @@ LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
-		// TODO: ÔÚ´Ë´¦Ìí¼ÓÊ¹ÓÃ hdc µÄÈÎºÎ»æÍ¼´úÂë...
+		// TODO: ï¿½Ú´Ë´ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ hdc ï¿½ï¿½ï¿½ÎºÎ»ï¿½Í¼ï¿½ï¿½ï¿½ï¿½...
 		OnPaint(hdc);
 		EndPaint(hWnd, &ps);
 	}

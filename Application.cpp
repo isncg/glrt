@@ -27,7 +27,7 @@ int Application::Run(Window* pMainWindow)
         return -1;
     }
     pMainWindow->hWnd = hWnd;
-    SetWindowLong(hWnd, GWL_USERDATA, (LONG)pMainWindow);
+    SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pMainWindow);
 	pMainWindow->OnCreate();
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
@@ -37,7 +37,7 @@ int Application::Run(Window* pMainWindow)
 
     MSG msg;
 
-    //// Ö÷ÏûÏ¢Ñ­»·:
+    //// ï¿½ï¿½ï¿½ï¿½Ï¢Ñ­ï¿½ï¿½:
     //while (GetMessage(&msg, nullptr, 0, 0))
     //{
     //    if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))

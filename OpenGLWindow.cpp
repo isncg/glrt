@@ -1,5 +1,7 @@
 #include "OpenGLWindow.h"
 #pragma comment (lib, "opengl32.lib")
+#include<iostream>
+#include<sstream>
 void OpenGLWindow::PopulateClassInfo(WNDCLASSEXW* pwcex)
 {
 	Window::PopulateClassInfo(pwcex);
@@ -49,5 +51,7 @@ void OpenGLWindow::OnCreate()
 	glInst = LoadLibrary(TEXT("opengl32.dll"));
 	gladLoadGLLoader(cWGLGetProcAddr);
 
-	MessageBoxA(0, (char*)glGetString(GL_VERSION), "OPENGL VERSION", 0);
+	std::stringstream ss;
+	ss << "GL_VERSION: " << glGetString(GL_VERSION);
+	SetWindowTextA(hWnd, (LPCSTR)ss.str().c_str());
 }

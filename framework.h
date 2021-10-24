@@ -13,3 +13,7 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <iostream>
+#include <sstream>
+
+#include <glad/glad.h>

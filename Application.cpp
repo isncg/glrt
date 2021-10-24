@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "resource.h"
-
+#pragma comment (lib, "opengl32.lib")
 
 
 void Application::Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)

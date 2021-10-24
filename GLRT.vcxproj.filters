@@ -32,9 +32,6 @@
     <ClInclude Include="Window.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLWindow.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -59,9 +56,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLWindow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="3rdparty\glad\src\glad.c">

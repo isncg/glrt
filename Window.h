@@ -9,6 +9,7 @@ protected:
 	virtual void OnPaint(HDC hdc);
 	virtual void OnDestroy();
 	virtual void OnCreate();
+	virtual void OnIdle();
 public:
 	virtual LPCWSTR GetWindowClassName();
 	virtual void PopulateClassInfo(WNDCLASSEXW* pwcex);

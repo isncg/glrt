@@ -1,14 +1,16 @@
 #pragma once
 #include "framework.h"
-#include "Utils.h"
 #include "Window.h"
+#include "utils/singleton.h"
 class Application: public Singleton<Application>
 {
+    SINGLETON_CTOR(Application)
 public:
-    HINSTANCE hInstance;
-    HINSTANCE hPrevInstance;
-    LPWSTR    lpCmdLine;
-    int       nCmdShow;
+
+    HINSTANCE hInstance =0;
+    HINSTANCE hPrevInstance =0;
+    LPWSTR    lpCmdLine =0 ;
+    int       nCmdShow = 0;
 
     void Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow);
     int Run(Window* pMainWindow);

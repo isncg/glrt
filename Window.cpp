@@ -3,7 +3,6 @@
 #include "Application.h"
 #include "Window.h"
 
-// �����ڡ������Ϣ�������
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -39,7 +38,6 @@ LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 	{
 		int wmId = LOWORD(wParam);
-		// �����˵�ѡ��:
 		switch (wmId)
 		{
 		case IDM_ABOUT:
@@ -60,7 +58,6 @@ LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
-		// TODO: �ڴ˴����ʹ�� hdc ���κλ�ͼ����...
 		OnPaint(hdc);
 		EndPaint(hWnd, &ps);
 	}
@@ -84,6 +81,10 @@ void Window::OnDestroy()
 }
 
 void Window::OnCreate()
+{
+}
+
+void Window::OnIdle()
 {
 }
 

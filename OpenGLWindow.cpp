@@ -2,6 +2,8 @@
 #pragma comment (lib, "opengl32.lib")
 #include<iostream>
 #include<sstream>
+#include"Renderer.h"
+#include "utils/glhelpers.h"
 void OpenGLWindow::PopulateClassInfo(WNDCLASSEXW* pwcex)
 {
 	Window::PopulateClassInfo(pwcex);
@@ -41,7 +43,7 @@ void OpenGLWindow::OnCreate()
 		0, 0, 0
 	};
 
-	HDC hdc = GetDC(hWnd);
+	hdc = GetDC(hWnd);
 	int  pixelFormat;
 	pixelFormat = ChoosePixelFormat(hdc, &pfd);
 	SetPixelFormat(hdc, pixelFormat, &pfd);
@@ -54,4 +56,50 @@ void OpenGLWindow::OnCreate()
 	std::stringstream ss;
 	ss << "GL_VERSION: " << glGetString(GL_VERSION);
 	SetWindowTextA(hWnd, (LPCSTR)ss.str().c_str());
+
+	shader.Load("glsl/mesh.vert", "glsl/mesh.frag");
+	shader.Use();
+
+	mesh.vertices.push_back(Vector3{ -0.5,-0.75,0 });
+	mesh.vertices.push_back(Vector3{  0.5,-0.75,0 });
+	mesh.vertices.push_back(Vector3{  0,   0.75,0 });
+
+	mesh.uv.push_back(Vector2{ 0,  0 });
+	mesh.uv.push_back(Vector2{ 1,  0 });
+	mesh.uv.push_back(Vector2{ 0.5,1 });
+
+	mesh.triangles.push_back(0);
+	mesh.triangles.push_back(1);
+	mesh.triangles.push_back(2);
+
+	renderer.Set(&mesh);
+	ready = true;
+
+	glAssert("oncreate finish");
+}
+
+void OpenGLWindow::OnDestroy()
+{
+	ReleaseDC(hWnd, hdc);
+	FreeLibrary(glInst);
+	wglDeleteContext(hGLRC);
+}
+
+void OpenGLWindow::OnIdle()
+{
+	glAssert("before onidle");
+	HDC hdc = GetDC(hWnd);
+	wglMakeCurrent(GetDC(hWnd), hGLRC);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	Render();
+	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
+}
+
+void OpenGLWindow::Render()
+{
+	if (!ready) return;
+	glClearColor(0.2, 0.2, 0.2, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	shader.Use();
+	GLASSERT(renderer.Draw());
 }

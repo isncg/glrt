@@ -62,7 +62,7 @@ int Application::Run(Window* pMainWindow)
         }
         else
         {
-            // Rendering
+            pMainWindow->OnIdle();
         }
     }
 

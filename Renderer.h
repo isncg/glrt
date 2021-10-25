@@ -120,6 +120,18 @@ struct Mesh
     int GetBufferSize();
 };
 
+struct ModelTreeNode
+{
+    Matrix4x4 transform;
+    std::vector<int> meshIndices;
+    std::vector<ModelTreeNode*> children;
+};
+struct Model
+{
+    std::vector<Mesh> meshCollection;
+    ModelTreeNode root;
+};
+
 
 class Shader
 {

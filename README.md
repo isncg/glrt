@@ -1,5 +1,5 @@
 # GLRT
-A OpenGL Rendering Toolkit
+An OpenGL Rendering Toolkit
 
 
 ## Sample: drawing a triangle

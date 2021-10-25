@@ -23,9 +23,6 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GLRT.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -48,6 +45,9 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="utils\log.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\asset_loader.h">
       <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,6 +80,9 @@
       <Filter>utils</Filter>
     </ClCompile>
     <ClCompile Include="utils\log.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\asset_loader.cpp">
       <Filter>utils</Filter>
     </ClCompile>
   </ItemGroup>

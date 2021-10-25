@@ -80,7 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)3rdparty\glad\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)3rdparty\assimp;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -144,10 +145,10 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="GLRT.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="utils\asset_loader.h" />
     <ClInclude Include="utils\buffer_builder.h" />
     <ClInclude Include="utils\log.h" />
     <ClInclude Include="utils\stdhelpers.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="GLRT.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="utils\asset_loader.cpp" />
     <ClCompile Include="utils\buffer_builder.cpp" />
     <ClCompile Include="utils\glhelpers.cpp" />
     <ClCompile Include="utils\log.cpp" />

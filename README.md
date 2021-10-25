@@ -4,7 +4,6 @@ A OpenGL Rendering Toolkit
 
 ## Sample: drawing a triangle
 ```c++
-#pragma once
 #include "framework.h"
 #include "Application.h"
 #include "Window.h"
@@ -53,3 +52,4 @@ class MyWindow :public Window
 RUN_WINDOW(MyWindow)
 
 ```
+![](https://github.com/isncg/.img/blob/master/glrt/glrt.png)

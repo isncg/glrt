@@ -13,6 +13,7 @@ protected:
 	virtual void OnPaint(HDC hdc);
 	virtual void OnDestroy();
 	virtual void OnCreate();
+	virtual void OnResize(int width, int height);
 	virtual void OnIdle();
 	virtual void Render();
 public:

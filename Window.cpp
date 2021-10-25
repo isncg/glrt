@@ -66,14 +66,10 @@ LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		OnCreate();
 		break;
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hWnd, &ps);
-		OnPaint(hdc);
-		EndPaint(hWnd, &ps);
-	}
-	break;
+	case WM_SIZE:
+		OnResize(LOWORD(lParam), HIWORD(lParam));
+		OnIdle();
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		OnDestroy();
@@ -132,11 +128,17 @@ void Window::OnCreate()
 	SetWindowTextA(hWnd, (LPCSTR)ss.str().c_str());
 }
 
+void Window::OnResize(int width, int height)
+{
+	if (ready)
+		glViewport(0, 0, width, height);
+}
+
 void Window::OnIdle()
 {
 	if (!ready) return;
 	glAssert("before onidle");
-	HDC hdc = GetDC(hWnd);
+	//HDC hdc = GetDC(hWnd);
 	wglMakeCurrent(GetDC(hWnd), hGLRC);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	Render();
@@ -163,7 +165,7 @@ void Window::PopulateClassInfo(WNDCLASSEXW* pwcex)
 	pwcex->hInstance = hInstance;
 	pwcex->hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_GLRT));
 	pwcex->hCursor = LoadCursor(nullptr, IDC_ARROW);
-	pwcex->hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	pwcex->hbrBackground = 0;
 	pwcex->lpszMenuName = MAKEINTRESOURCEW(IDC_GLRT);
 	pwcex->lpszClassName = GetWindowClassName();
 	pwcex->hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SMALL));

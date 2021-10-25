@@ -124,6 +124,7 @@ GLuint loadShader(const char* filename, GLenum shaderType)
 	GLint length = glsl.length();
 	glAssert("before_loadShader");
 	GLASSERT(glShaderSource(shader, 1, &string, &length));
+	log(string_format("Compile shader %s %d", filename, shaderType).c_str());
 	GLASSERT(glCompileShader(shader));
 //https://www.khronos.org/opengl/wiki/Example/GLSL_Shader_Compile_Error_Testing
 	GLint isCompiled = 0;

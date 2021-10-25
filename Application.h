@@ -13,7 +13,7 @@ public:
     int       nCmdShow = 0;
 
     void Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow);
-    int Run(Window* pMainWindow);
+    int Run(Window* pMainWindow, bool allocConsole = true);
     template<class T>
     int Run();
 };

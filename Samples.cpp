@@ -18,8 +18,6 @@ class Sample_ModelLoadingAndRendering :public Window
 		shader.Use();
 
 		renderer.Set(&model.meshCollection.front());
-		ready = true;
-
 		glAssert("oncreate finish");
 	}
 
@@ -32,4 +30,4 @@ class Sample_ModelLoadingAndRendering :public Window
 	}
 };
 
-RUN_WINDOW(Sample_ModelLoadingAndRendering)
+//RUN_WINDOW(Sample_ModelLoadingAndRendering)

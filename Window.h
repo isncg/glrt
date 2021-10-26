@@ -4,11 +4,11 @@ class Window
 {
 	friend class Application;
 	friend LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	bool ready = false;
 protected:
 	HDC hdc;
 	HGLRC hGLRC;
 	
-	bool ready = false;
 	virtual LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual void OnPaint(HDC hdc);
 	virtual void OnDestroy();

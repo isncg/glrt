@@ -4,7 +4,6 @@ An OpenGL Rendering Toolkit
 
 ## Sample: drawing a triangle
 ```c++
-#include "framework.h"
 #include "Application.h"
 #include "Window.h"
 #include "Renderer.h"
@@ -20,7 +19,6 @@ class MyWindow :public Window
 		Window::OnCreate();
 
 		shader.Load("glsl/mesh.vert", "glsl/mesh.frag");
-		shader.Use();
 
 		mesh.vertices.push_back(Vector3{ -0.5,-0.75,0 });
 		mesh.vertices.push_back(Vector3{ 0.5,-0.75,0 });
@@ -35,7 +33,6 @@ class MyWindow :public Window
 		mesh.triangles.push_back(2);
 
 		renderer.Set(&mesh);
-		ready = true;
 
 		glAssert("oncreate finish");
 	}

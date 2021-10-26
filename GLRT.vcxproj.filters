@@ -85,6 +85,9 @@
     <ClCompile Include="utils\asset_loader.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="Samples.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GLRT.rc" />

@@ -126,6 +126,7 @@ void Window::OnCreate()
 	std::stringstream ss;
 	ss << "GL_VERSION: " << glGetString(GL_VERSION);
 	SetWindowTextA(hWnd, (LPCSTR)ss.str().c_str());
+	ready = true;
 }
 
 void Window::OnResize(int width, int height)

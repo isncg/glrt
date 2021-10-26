@@ -1,5 +1,6 @@
 #include "log.h"
 #include "asset_loader.h"
+#include <iostream>
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
@@ -52,6 +53,90 @@ bool LoadMesh(Mesh* output, aiMesh* input)
     return true;
 }
 
+void DumpMesh(Mesh* m)
+{
+    std::cout << m->vertices.size() << std::endl;
+    if (m->vertices.size() > 0)
+    {
+        std::cout << "vertices" << std::endl;
+        for (auto& v : m->vertices)
+            std::cout << "\t" << v.x << "\t" << v.y << "\t" << v.z << std::endl;
+    }
+    if (m->normals.size() > 0)
+    {
+        std::cout << "normals" << std::endl;
+        for (auto& v : m->normals)
+            std::cout << "\t" << v.x << "\t" << v.y << "\t" << v.z << std::endl;
+    }
+    if (m->tangents.size() > 0)
+    {
+        std::cout << "tangents" << std::endl;
+        for (auto& v : m->tangents)
+            std::cout << "\t" << v.x << "\t" << v.y << "\t" << v.z << "\t" << v.w << std::endl;
+    }
+    if (m->uv.size() > 0)
+    {
+        std::cout << "uv" << std::endl;
+        for (auto& v : m->uv)
+            std::cout << "\t" << v.x << "\t" << v.y << std::endl;
+    }
+    if (m->uv2.size() > 0)
+    {
+        std::cout << "uv2" << std::endl;
+        for (auto& v : m->uv2)
+            std::cout << "\t" << v.x << "\t" << v.y << std::endl;
+    }
+    if (m->uv3.size() > 0)
+    {
+        std::cout << "uv3" << std::endl;
+        for (auto& v : m->uv3)
+            std::cout << "\t" << v.x << "\t" << v.y << std::endl;
+    }
+    if (m->uv4.size() > 0)
+    {
+        std::cout << "uv4" << std::endl;
+        for (auto& v : m->uv4)
+            std::cout << "\t" << v.x << "\t" << v.y << std::endl;
+    }
+    if (m->uv5.size() > 0)
+    {
+        std::cout << "uv5" << std::endl;
+        for (auto& v : m->uv5)
+            std::cout << "\t" << v.x << "\t" << v.y << std::endl;
+    }
+    if (m->uv6.size() > 0)
+    {
+        std::cout << "uv6" << std::endl;
+        for (auto& v : m->uv6)
+            std::cout << "\t" << v.x << "\t" << v.y << std::endl;
+    }
+    if (m->uv7.size() > 0)
+    {
+        std::cout << "uv7" << std::endl;
+        for (auto& v : m->uv7)
+            std::cout << "\t" << v.x << "\t" << v.y << std::endl;
+    }
+    if (m->uv8.size() > 0)
+    {
+        std::cout << "uv8" << std::endl;
+        for (auto& v : m->uv8)
+            std::cout << "\t" << v.x << "\t" << v.y << std::endl;
+    }
+    if (m->colors.size() > 0)
+    {
+        std::cout << "colors" << std::endl;
+        for (auto& v : m->colors)
+            std::cout << "\t" << v.r << "\t" << v.g << "\t" << v.b << "\t" << v.a << std::endl;
+    }
+    if (m->colors32.size() > 0)
+    {
+        std::cout << "colors32" << std::endl;
+        for (auto& v : m->colors32)
+            std::cout << "\t" << v.r << "\t" << v.g << "\t" << v.b << "\t" << v.a << std::endl;
+    }
+}
+
+
 bool LoadModel(Model* output, const char* file)
 {
     // Create an instance of the Importer class
@@ -77,6 +162,8 @@ bool LoadModel(Model* output, const char* file)
     {
         Mesh mesh;
         LoadMesh(&mesh, scene->mMeshes[i]);
+        std::cout << "Loaded mesh " << i << std::endl;
+        DumpMesh(&mesh);
         output->meshCollection.push_back(mesh);
     }
 

@@ -38,16 +38,27 @@ bool LoadMesh(Mesh* output, aiMesh* input)
             }
         }
 
-        std::vector<Color>* colorset[1]{
+        std::vector<std::vector<Color>*> colorset
+        {
             &output->colors
         };
-        for (int j = 0; j < AI_MAX_NUMBER_OF_COLOR_SETS && j < std::end(colorset) - std::begin(colorset); j++)
+        for (int j = 0; j < AI_MAX_NUMBER_OF_COLOR_SETS && j < colorset.size(); j++)
         {
             if (input->mColors[j] != NULL)
             {
                 auto& color = input->mColors[j][i];
                 colorset[j]->push_back(Color{ color.r, color.g, color.b, color.a });
             }
+        }
+    }
+    for (int f = 0; f < input->mNumFaces; f++)
+    {
+        aiFace& face = input->mFaces[f];
+        for (int i = 0; i < face.mNumIndices - 2; i++)
+        {
+			output->triangles.push_back(face.mIndices[i]);
+			output->triangles.push_back(face.mIndices[i + 1]);
+			output->triangles.push_back(face.mIndices[i + 2]);
         }
     }
     return true;
@@ -158,14 +169,21 @@ bool LoadModel(Model* output, const char* file)
     }
     // Now we can access the file's contents. 
 
-    for (int i = 0; i < scene->mNumMeshes; i++)
-    {
-        Mesh mesh;
-        LoadMesh(&mesh, scene->mMeshes[i]);
-        std::cout << "Loaded mesh " << i << std::endl;
-        DumpMesh(&mesh);
-        output->meshCollection.push_back(mesh);
-    }
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	{
+		Mesh mesh;
+		LoadMesh(&mesh, scene->mMeshes[i]);
+		std::cout << "Loaded mesh " << file << "[" << i << "] vertices:" << mesh.vertices.size() << " indices:" << mesh.triangles.size() << std::endl;
+		if (mesh.vertices.size() > 0 && mesh.triangles.size() > 0)
+		{
+			//DumpMesh(&mesh);
+			output->meshCollection.push_back(mesh);
+		}
+		else
+		{
+			std::cout << "Mesh invalid" << std::endl;
+		}
+	}
 
     //DoTheSceneProcessing(scene);
     // We're done. Everything will be cleaned up by the importer destructor

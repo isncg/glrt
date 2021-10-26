@@ -1,34 +1,23 @@
-﻿#include "framework.h"
+#include "framework.h"
 #include "Application.h"
 #include "Window.h"
 #include "Renderer.h"
 #include "utils/glhelpers.h"
-class MyWindow :public Window
+#include "utils/asset_loader.h"
+
+class Sample_ModelLoadingAndRendering :public Window
 {
 	Shader shader;
-	Mesh mesh;
 	MeshRenderer renderer;
-	
+	Model model;
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
-
+		LoadModel(&model, "assets/teapot.obj");
 		shader.Load("glsl/mesh.vert", "glsl/mesh.frag");
 		shader.Use();
 
-		mesh.vertices.push_back(Vector3{ -0.5,-0.75,0 });
-		mesh.vertices.push_back(Vector3{ 0.5,-0.75,0 });
-		mesh.vertices.push_back(Vector3{ 0,   0.75,0 });
-
-		mesh.uv.push_back(Vector2{ 0,  0 });
-		mesh.uv.push_back(Vector2{ 1,  0 });
-		mesh.uv.push_back(Vector2{ 0.5,1 });
-
-		mesh.triangles.push_back(0);
-		mesh.triangles.push_back(1);
-		mesh.triangles.push_back(2);
-
-		renderer.Set(&mesh);
+		renderer.Set(&model.meshCollection.front());
 		ready = true;
 
 		glAssert("oncreate finish");
@@ -43,4 +32,4 @@ class MyWindow :public Window
 	}
 };
 
-//RUN_WINDOW(MyWindow)
+RUN_WINDOW(Sample_ModelLoadingAndRendering)

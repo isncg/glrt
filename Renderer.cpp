@@ -165,14 +165,9 @@ void Shader::Use()
 	GLASSERT(glUseProgram(program));
 }
 
-GLint GetComponentCount(Vector3 tag) { return 3; }
-GLint GetComponentCount(Vector4 tag) { return 4; }
-GLint GetComponentCount(Vector2 tag) { return 2; }
-GLint GetComponentCount(Color   tag) { return 4; }
-GLint GetComponentCount(Color32 tag) { return 4; }
+GLint GetComponentCount(const Color32& tag) { return 4; }
 
-GLenum GetComponentType(Vector3 tag) { return GL_FLOAT; }
-GLenum GetComponentType(Vector4 tag) { return GL_FLOAT; }
-GLenum GetComponentType(Vector2 tag) { return GL_FLOAT; }
-GLenum GetComponentType(Color   tag) { return GL_FLOAT; }
-GLenum GetComponentType(Color32 tag) { return GL_UNSIGNED_BYTE; }
+GLenum GetComponentType(const Vector3& tag) { return GL_FLOAT; }
+GLenum GetComponentType(const Vector4& tag) { return GL_FLOAT; }
+GLenum GetComponentType(const Vector2& tag) { return GL_FLOAT; }
+GLenum GetComponentType(const Color32& tag) { return GL_UNSIGNED_BYTE; }

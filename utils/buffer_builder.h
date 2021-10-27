@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "stdhelpers.h"
 class buffer_builder
 {
 public:

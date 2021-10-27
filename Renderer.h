@@ -1,78 +1,23 @@
 #pragma once
 #include <vector>
 #include <glad/glad.h>
-typedef struct stVector3
-{
-    float x;
-    float y;
-    float z;
-}Vector3;
+#include <glm/glm.hpp>
 
-typedef struct stVector4
-{
-    float x;
-    float y;
-    float z;
-    float w;
-}Vector4;
+typedef glm::vec3 Vector3;
+typedef glm::vec2 Vector2;
+typedef glm::vec4 Vector4;
+typedef glm::mat4 Matrix4x4;
+typedef glm::vec4 Color;
+typedef glm::lowp_i8vec4 Color32;
 
-typedef struct stVector2
-{
-    float x;
-    float y;
-}Vector2;
+template<typename T>
+GLint GetComponentCount(const T& tag);
+GLint GetComponentCount(const Color32& tag);
 
-typedef struct stColor
-{
-    float r;
-    float g;
-    float b;
-    float a;
-}Color;
-
-typedef struct stColor32
-{
-    int8_t r;
-    int8_t g;
-    int8_t b;
-    int8_t a;
-}Color32;
-
-GLint GetComponentCount(Vector3 tag);
-GLint GetComponentCount(Vector2 tag);
-GLint GetComponentCount(Vector4 tag);
-GLint GetComponentCount(Color   tag);
-GLint GetComponentCount(Color32 tag);
-
-GLenum GetComponentType(Vector3 tag);
-GLenum GetComponentType(Vector2 tag);
-GLenum GetComponentType(Vector4 tag);
-GLenum GetComponentType(Color   tag);
-GLenum GetComponentType(Color32 tag);
-
-typedef union stMatrix4x4
-{
-    float m[16];
-    struct
-    {
-        float m00;
-        float m33;
-        float m23;
-        float m13;
-        float m03;
-        float m32;
-        float m22;
-        float m02;
-        float m12;
-        float m21;
-        float m11;
-        float m01;
-        float m30;
-        float m20;
-        float m10;
-        float m31;
-    };
-}Matrix4x4;
+GLenum GetComponentType(const Vector3& tag);
+GLenum GetComponentType(const Vector2& tag);
+GLenum GetComponentType(const Vector4& tag);
+GLenum GetComponentType(const Color32& tag);
 
 enum IndexFormat
 {
@@ -159,3 +104,9 @@ public:
     void Set(Mesh* pMesh);
     void Draw();
 };
+
+template<typename T>
+inline GLint GetComponentCount(const T& tag)
+{
+    return T::length();
+}

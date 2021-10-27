@@ -145,6 +145,12 @@ void DumpMesh(Mesh* m)
         for (auto& v : m->colors32)
             std::cout << "\t" << v.r << "\t" << v.g << "\t" << v.b << "\t" << v.a << std::endl;
     }
+    if (m->triangles.size() > 0)
+    {
+        std::cout << "triangles" << std::endl;
+        for (auto& v : m->triangles)
+            std::cout << "\t" <<v<< std::endl;
+    }
 }
 
 
@@ -176,7 +182,7 @@ bool LoadModel(Model* output, const char* file)
 		std::cout << "Loaded mesh " << file << "[" << i << "] vertices:" << mesh.vertices.size() << " indices:" << mesh.triangles.size() << std::endl;
 		if (mesh.vertices.size() > 0 && mesh.triangles.size() > 0)
 		{
-			//DumpMesh(&mesh);
+		    //DumpMesh(&mesh);
 			output->meshCollection.push_back(mesh);
 		}
 		else

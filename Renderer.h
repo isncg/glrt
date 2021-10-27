@@ -84,6 +84,7 @@ class Shader
 public:
     void Load(const char* vert, const char* frag);
     void Use();
+    void Set(const char* name, Matrix4x4& value);
 };
 
 
@@ -110,3 +111,4 @@ inline GLint GetComponentCount(const T& tag)
 {
     return T::length();
 }
+

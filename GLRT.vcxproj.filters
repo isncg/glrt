@@ -12,6 +12,9 @@
     <Filter Include="utils">
       <UniqueIdentifier>{178bee7f-2bd0-4492-b09d-81288ca472c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="glsl">
+      <UniqueIdentifier>{2920b2d8-84f5-4bc9-97e9-e68caaebf7bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -91,5 +94,13 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GLRT.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="glsl\mesh.frag">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\mesh.vert">
+      <Filter>glsl</Filter>
+    </None>
   </ItemGroup>
 </Project>

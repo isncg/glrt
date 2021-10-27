@@ -40,4 +40,4 @@ class MyWindow :public Window
 	}
 };
 
-RUN_WINDOW(MyWindow)
+//RUN_WINDOW(MyWindow)

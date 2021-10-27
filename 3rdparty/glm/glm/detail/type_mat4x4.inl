@@ -1,5 +1,5 @@
 #include "../matrix.hpp"
-
+#include "../ext.hpp"
 namespace glm
 {
 	// -- Constructors --
@@ -699,6 +699,19 @@ namespace glm
 	{
 		return (m1[0] != m2[0]) || (m1[1] != m2[1]) || (m1[2] != m2[2]) || (m1[3] != m2[3]);
 	}
+
+	template<typename T, qualifier Q>
+	GLM_FUNC_QUALIFIER mat<4, 4, T, Q> mat<4, 4, T, Q>::Perspective(T fovy, T aspect, T zNear, T zFar)
+	{
+		return glm::perspective(fovy, aspect, zNear, zFar);
+	}
+
+	template<typename T, qualifier Q>
+	GLM_FUNC_QUALIFIER mat<4, 4, T, Q> mat<4, 4, T, Q>::LookAt(vec<3, T, Q> const& eye, vec<3, T, Q> const& center, vec<3, T, Q> const& up)
+	{
+		return glm::lookAt(eye, center, up);
+	}
+
 }//namespace glm
 
 #if GLM_CONFIG_SIMD == GLM_ENABLE

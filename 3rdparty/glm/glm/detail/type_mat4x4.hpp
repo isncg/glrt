@@ -18,7 +18,7 @@ namespace glm
 		typedef mat<4, 4, T, Q> transpose_type;
 		typedef T value_type;
 
-	private:
+	protected:
 		col_type value[4];
 
 	public:
@@ -109,6 +109,9 @@ namespace glm
 		GLM_FUNC_DECL mat<4, 4, T, Q> & operator--();
 		GLM_FUNC_DECL mat<4, 4, T, Q> operator++(int);
 		GLM_FUNC_DECL mat<4, 4, T, Q> operator--(int);
+
+		static mat<4, 4, T, Q> Perspective(T fovy, T aspect, T zNear, T zFar);
+		static mat<4, 4, T, Q> LookAt(vec<3, T, Q> const& eye, vec<3, T, Q> const& center, vec<3, T, Q> const& up);
 	};
 
 	// -- Unary operators --

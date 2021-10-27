@@ -93,8 +93,8 @@ Specifies the starting index in the enabled arrays.
 count
 Specifies the number of indices to be rendered.
 ********************************************************************** glDrawArrays ********************************************************************/
-
-	GLASSERT(glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3));
+	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
+	//GLASSERT(glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3));
 }
 
 int Mesh::GetBufferSize()
@@ -163,6 +163,12 @@ void Shader::Use()
 {
 	glAssert("before shader Use");
 	GLASSERT(glUseProgram(program));
+}
+
+void Shader::Set(const char* name, Matrix4x4& value)
+{
+	auto loc = glGetUniformLocation(program, name);
+	glUniformMatrix4fv(loc, 1, false, (const GLfloat*)&value);
 }
 
 GLint GetComponentCount(const Color32& tag) { return 4; }

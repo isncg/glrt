@@ -175,6 +175,10 @@
   <ItemGroup>
     <ResourceCompile Include="GLRT.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="glsl\mesh.frag" />
+    <None Include="glsl\mesh.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

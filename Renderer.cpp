@@ -177,3 +177,75 @@ GLenum GetComponentType(const Vector3& tag) { return GL_FLOAT; }
 GLenum GetComponentType(const Vector4& tag) { return GL_FLOAT; }
 GLenum GetComponentType(const Vector2& tag) { return GL_FLOAT; }
 GLenum GetComponentType(const Color32& tag) { return GL_UNSIGNED_BYTE; }
+
+void CanvasRenderer::Set(CanvasMesh* pMesh)
+{
+	GLASSERT(glGenVertexArrays(1, &vao));
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ibo);
+
+	GLASSERT(glBindVertexArray(vao));
+	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+	int bufsize = pMesh->GetBufferSize();
+	for (int i = 0; i < pMesh->vertices.size()-3; i+=4)
+	{
+		indices.push_back(i); indices.push_back(i + 1); indices.push_back(i + 2);
+		indices.push_back(i); indices.push_back(i + 2); indices.push_back(i + 3);
+	}
+	//indices.assign(pMesh->triangles.begin(), pMesh->triangles.end());
+	triangleCount = indices.size() / 3;
+	int8_t* buffer = new int8_t[bufsize];
+
+
+	vertex_buffer_builder vbb(buffer, bufsize);
+	vbb.append_attribute_data(pMesh->vertices);
+	vbb.append_attribute_data(pMesh->uv);
+	vbb.append_attribute_data(pMesh->uv2);
+
+	vbb.build();
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vectorsizeof(indices), &indices.front(), GL_STATIC_DRAW);
+
+	delete[] buffer;
+	GLASSERT(glBindVertexArray(0));
+	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void CanvasRenderer::Draw()
+{
+	if (vao <= 0 || indices.size() < 3)
+		return;
+	GLASSERT(glBindVertexArray(vao));
+	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
+}
+
+void CanvasMesh::Set(CanvasRect& rect, float halfWidth, float halfHeight)
+{
+	vertices.clear();
+	vertices.push_back(Vector2{ (rect.pos.x + rect.xMin) / halfWidth, (rect.pos.y + rect.yMin) / halfHeight });
+	vertices.push_back(Vector2{ (rect.pos.x + rect.xMax) / halfWidth, (rect.pos.y + rect.yMin) / halfHeight });
+	vertices.push_back(Vector2{ (rect.pos.x + rect.xMax) / halfWidth, (rect.pos.y + rect.yMax) / halfHeight });
+	vertices.push_back(Vector2{ (rect.pos.x + rect.xMin) / halfWidth, (rect.pos.y + rect.yMax) / halfHeight });
+
+	uv.clear();
+	uv.push_back(Vector2{ 0,0 });
+	uv.push_back(Vector2{ 1,0 });
+	uv.push_back(Vector2{ 1,1 });
+	uv.push_back(Vector2{ 0,1 });
+
+	uv2.clear();
+	uv2.push_back(Vector2{ 0,0 });
+	uv2.push_back(Vector2{ 1,0 });
+	uv2.push_back(Vector2{ 1,1 });
+	uv2.push_back(Vector2{ 0,1 });
+}
+
+int CanvasMesh::GetBufferSize()
+{
+	return
+		vectorsizeof(vertices) +
+		vectorsizeof(uv) +
+		vectorsizeof(uv2);
+}

@@ -102,5 +102,11 @@
     <None Include="glsl\mesh.vert">
       <Filter>glsl</Filter>
     </None>
+    <None Include="glsl\canvas.frag">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\canvas.vert">
+      <Filter>glsl</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -112,3 +112,42 @@ inline GLint GetComponentCount(const T& tag)
     return T::length();
 }
 
+typedef struct tagCanvasRect
+{
+    Vector2 pos;
+    float xMin;
+    float xMax;
+    float yMin;
+    float yMax;
+    float width();
+    float height();
+    float pivotX();
+    float pivotY();
+    Vector2 pivot();
+    void setWidth(float width, float pivot);
+    void setHeight(float width, float pivot);
+    void setSize(Vector2 size, Vector2 pivot);
+}CanvasRect;
+
+typedef struct tagCanvasMesh
+{
+    std::vector<Vector2> vertices;
+    std::vector<Vector2> uv;
+    std::vector<Vector2> uv2;
+
+    void Set(CanvasRect& rect, float halfWidth, float halfHeight);
+    int GetBufferSize();
+    void MergeBatch(tagCanvasMesh& mesh);
+}CanvasMesh;
+
+class CanvasRenderer
+{
+    GLuint vao;
+    GLuint vbo;
+    GLuint ibo;
+    std::vector<unsigned int> indices;
+    int triangleCount;
+public:
+    void Set(CanvasMesh* pMesh);
+    void Draw();
+};

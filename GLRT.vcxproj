@@ -82,8 +82,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(ProjectDir)3rdparty\glm;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)3rdparty\assimp;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(ProjectDir)3rdparty\glm;$(ProjectDir)3rdparty\FreeImage\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)3rdparty\assimp;$(ProjectDir)3rdparty\FreeImage;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(ProjectDir)3rdparty\assimp;$(ProjectDir)3rdparty\FreeImage;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

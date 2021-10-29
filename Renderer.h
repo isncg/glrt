@@ -80,29 +80,28 @@ struct Model
 struct Texture
 {
     GLuint id;
-    void Load(const char* fname);
 };
 
-struct TextureBindingHelper
+class ShaderTextures
 {
-    GLuint program;
-    std::vector<GLuint> textures;
-    std::vector<std::string> names;
-    TextureBindingHelper& Bind(const char* name, Texture& texture);
-    void ReBind();
-    void Reset();
-    void End();
+	friend class Shader;
+	std::vector<Texture*> textures;
+	std::vector<std::string> names;
+public:
+	void Clear();
+	void Add(const char* name, Texture* texture);
 };
+
 
 class Shader
 {
-    GLuint program;
-    TextureBindingHelper textureBindingHelper;
+	GLuint program;
+	ShaderTextures* textures;
 public:
-    void Load(const char* vert, const char* frag);
-    void Use();
-    void Set(const char* name, Matrix4x4& value);
-    TextureBindingHelper& NewTextureBinding();
+	void Load(const char* vert, const char* frag);
+	void Use();
+	void Set(const char* name, Matrix4x4& value);
+	void Set(ShaderTextures* textures);
 };
 
 

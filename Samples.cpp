@@ -45,10 +45,14 @@ class Sample_UICanvas :public Window
 	Shader shader;
 	CanvasMesh canvasMesh;
 	CanvasRect cr;
+	Texture texture;
+	ShaderTextures shaderTextures;
 	CanvasRenderer renderer;
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
+		LoadTexture(&texture, "assets/lena.jpg");
+		shaderTextures.Add("tex", &texture);
 		RECT rect;
 		GetClientRect(hWnd, &rect);
 		float hw = (rect.right - rect.left) / 2.0f;
@@ -58,10 +62,11 @@ class Sample_UICanvas :public Window
 		cr.xMin = 5;
 		cr.yMax = -5;
 		cr.xMax = 405;
-		cr.yMin = -205;
+		cr.yMin = -405;
 		canvasMesh.Set(cr, hw, hh);
 		
 		shader.Load("glsl/canvas.vert", "glsl/canvas.frag");
+		shader.Set(&shaderTextures);
 		shader.Use();
 
 		renderer.Set(&canvasMesh);

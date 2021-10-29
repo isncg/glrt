@@ -4,6 +4,7 @@
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
+
 #pragma comment(lib, "assimp-vc142-mt.lib")
 
 bool LoadMesh(Mesh* output, aiMesh* input)
@@ -193,6 +194,96 @@ bool LoadModel(Model* output, const char* file)
 
     //DoTheSceneProcessing(scene);
     // We're done. Everything will be cleaned up by the importer destructor
+    return true;
+}
+
+
+#include <freeimage/FreeImage.h>
+#pragma comment(lib, "FreeImage.lib")
+template <class T> void INPLACESWAP(T& a, T& b) {
+    a ^= b; b ^= a; a ^= b;
+}
+
+BOOL SwapRedBlue32(FIBITMAP* dib) {
+    if (FreeImage_GetImageType(dib) != FIT_BITMAP) {
+        return FALSE;
+    }
+
+    const unsigned bytesperpixel = FreeImage_GetBPP(dib) / 8;
+    if (bytesperpixel > 4 || bytesperpixel < 3) {
+        return FALSE;
+    }
+
+    const unsigned height = FreeImage_GetHeight(dib);
+    const unsigned pitch = FreeImage_GetPitch(dib);
+    const unsigned lineSize = FreeImage_GetLine(dib);
+
+    BYTE* line = FreeImage_GetBits(dib);
+    for (unsigned y = 0; y < height; ++y, line += pitch) {
+        for (BYTE* pixel = line; pixel < line + lineSize; pixel += bytesperpixel) {
+            INPLACESWAP(pixel[0], pixel[2]);
+        }
+    }
+
+    return TRUE;
+}
+
+bool LoadTexture(Texture* output, const char* filename)
+{
+    //image format
+    FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+    //pointer to the image, once loaded
+    FIBITMAP* dib(0);
+    //pointer to the image data
+    BYTE* bits(0);
+    //image width and height
+    unsigned int width(0), height(0);
+    //OpenGL's image ID to map to
+    GLuint gl_texID;
+
+    //check the file signature and deduce its format
+    fif = FreeImage_GetFileType(filename, 0);
+    //if still unknown, try to guess the file format from the file extension
+    if (fif == FIF_UNKNOWN)
+        fif = FreeImage_GetFIFFromFilename(filename);
+    //if still unkown, return failure
+    if (fif == FIF_UNKNOWN)
+        return false;
+
+    //check that the plugin has reading capabilities and load the file
+    if (FreeImage_FIFSupportsReading(fif))
+        dib = FreeImage_Load(fif, filename);
+    //if the image failed to load, return failure
+    if (!dib)
+        return false;
+    SwapRedBlue32(dib);
+    //retrieve the image data
+    bits = FreeImage_GetBits(dib);
+    //get the image width and height
+    width = FreeImage_GetWidth(dib);
+    height = FreeImage_GetHeight(dib);
+    //if this somehow one of these failed (they shouldn't), return failure
+    if ((bits == 0) || (width == 0) || (height == 0))
+        return false;
+
+    //if this texture ID is in use, unload the current texture
+   /* if (m_texID.find(texID) != m_texID.end())
+        glDeleteTextures(1, &(m_texID[texID]));*/
+
+    //generate an OpenGL texture ID for this texture
+    glGenTextures(1, &gl_texID);
+    //store the texture ID mapping
+    //m_texID[texID] = gl_texID;
+    //bind to the new texture ID
+    glBindTexture(GL_TEXTURE_2D, gl_texID);
+    //store the texture data for OpenGL use
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+        0, GL_RGB, GL_UNSIGNED_BYTE, bits);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //Free FreeImage's copy of the data
+    FreeImage_Unload(dib);
+    output->id = gl_texID;
     return true;
 }
 

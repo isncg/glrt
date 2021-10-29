@@ -163,7 +163,16 @@ void Shader::Use()
 {
 	glAssert("before shader Use");
 	GLASSERT(glUseProgram(program));
-	textureBindingHelper.ReBind();
+	if (nullptr != textures) {
+		for (int i = 0; i < textures->textures.size(); i++)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, nullptr != textures->textures[i] ? textures->textures[i]->id : 0);
+			auto location = glGetUniformLocation(program, textures->names[i].c_str());
+			glUniform1i(location, i);
+		}
+		glActiveTexture(GL_TEXTURE0);
+	}
 }
 
 void Shader::Set(const char* name, Matrix4x4& value)
@@ -172,12 +181,17 @@ void Shader::Set(const char* name, Matrix4x4& value)
 	glUniformMatrix4fv(loc, 1, false, (const GLfloat*)&value);
 }
 
-TextureBindingHelper& Shader::NewTextureBinding()
+void Shader::Set(ShaderTextures* textures)
 {
-	textureBindingHelper.Reset();
-	textureBindingHelper.program = program;
-	return textureBindingHelper;
+	this->textures = textures;
 }
+
+//TextureBindingHelper& Shader::NewTextureBinding()
+//{
+//	textureBindingHelper.Reset();
+//	textureBindingHelper.program = program;
+//	return textureBindingHelper;
+//}
 
 GLint GetComponentCount(const Color32& tag) { return 4; }
 
@@ -258,41 +272,53 @@ int CanvasMesh::GetBufferSize()
 		vectorsizeof(uv2);
 }
 
-TextureBindingHelper& TextureBindingHelper::Bind(const char* name, Texture& texture)
-{
-	glActiveTexture(GL_TEXTURE0 + textures.size());
-	glBindTexture(GL_TEXTURE_2D, texture.id);
-	auto location =glGetUniformLocation(program, name);
-	glUniform1i(location, textures.size());
-	textures.push_back(texture.id);
-	names.push_back(name);
-	return *this;
-}
+//TextureBindingHelper& TextureBindingHelper::Bind(const char* name, Texture& texture)
+//{
+//	glActiveTexture(GL_TEXTURE0 + textures.size());
+//	glBindTexture(GL_TEXTURE_2D, texture.id);
+//	auto location =glGetUniformLocation(program, name);
+//	glUniform1i(location, textures.size());
+//	textures.push_back(texture.id);
+//	names.push_back(name);
+//	return *this;
+//}
+//
+//void TextureBindingHelper::ReBind()
+//{
+//	for (int i = 0; i < textures.size(); i++)
+//	{
+//		glActiveTexture(GL_TEXTURE0 + i);
+//		glBindTexture(GL_TEXTURE_2D, textures[i]);
+//		auto location = glGetUniformLocation(program, names[i].c_str());
+//		glUniform1i(location, textures.size());
+//	}
+//}
+//
+//void TextureBindingHelper::Reset()
+//{
+//	textures.clear();
+//	names.clear();
+//}
+//
+//void TextureBindingHelper::End()
+//{
+//	glActiveTexture(GL_TEXTURE0);
+//}
 
-void TextureBindingHelper::ReBind()
-{
-	for (int i = 0; i < textures.size(); i++)
-	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, textures[i]);
-		auto location = glGetUniformLocation(program, names[i].c_str());
-		glUniform1i(location, textures.size());
-	}
-}
+//void Texture::Load(const char* fname)
+//{
+//	glGenTextures(1, &id);
+//	// TODO: read image file
+//}
 
-void TextureBindingHelper::Reset()
+void ShaderTextures::Clear()
 {
-	textures.clear();
 	names.clear();
+	textures.clear();
 }
 
-void TextureBindingHelper::End()
+void ShaderTextures::Add(const char* name, Texture* texture)
 {
-	glActiveTexture(GL_TEXTURE0);
-}
-
-void Texture::Load(const char* fname)
-{
-	glGenTextures(1, &id);
-	// TODO: read image file
+	names.push_back(name);
+	textures.push_back(texture);
 }

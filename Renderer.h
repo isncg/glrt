@@ -2,7 +2,7 @@
 #include <vector>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-
+#include <string>
 typedef glm::vec3 Vector3;
 typedef glm::vec2 Vector2;
 typedef glm::vec4 Vector4;
@@ -77,14 +77,32 @@ struct Model
     ModelTreeNode root;
 };
 
+struct Texture
+{
+    GLuint id;
+    void Load(const char* fname);
+};
+
+struct TextureBindingHelper
+{
+    GLuint program;
+    std::vector<GLuint> textures;
+    std::vector<std::string> names;
+    TextureBindingHelper& Bind(const char* name, Texture& texture);
+    void ReBind();
+    void Reset();
+    void End();
+};
 
 class Shader
 {
     GLuint program;
+    TextureBindingHelper textureBindingHelper;
 public:
     void Load(const char* vert, const char* frag);
     void Use();
     void Set(const char* name, Matrix4x4& value);
+    TextureBindingHelper& NewTextureBinding();
 };
 
 

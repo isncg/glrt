@@ -163,12 +163,20 @@ void Shader::Use()
 {
 	glAssert("before shader Use");
 	GLASSERT(glUseProgram(program));
+	textureBindingHelper.ReBind();
 }
 
 void Shader::Set(const char* name, Matrix4x4& value)
 {
 	auto loc = glGetUniformLocation(program, name);
 	glUniformMatrix4fv(loc, 1, false, (const GLfloat*)&value);
+}
+
+TextureBindingHelper& Shader::NewTextureBinding()
+{
+	textureBindingHelper.Reset();
+	textureBindingHelper.program = program;
+	return textureBindingHelper;
 }
 
 GLint GetComponentCount(const Color32& tag) { return 4; }
@@ -248,4 +256,43 @@ int CanvasMesh::GetBufferSize()
 		vectorsizeof(vertices) +
 		vectorsizeof(uv) +
 		vectorsizeof(uv2);
+}
+
+TextureBindingHelper& TextureBindingHelper::Bind(const char* name, Texture& texture)
+{
+	glActiveTexture(GL_TEXTURE0 + textures.size());
+	glBindTexture(GL_TEXTURE_2D, texture.id);
+	auto location =glGetUniformLocation(program, name);
+	glUniform1i(location, textures.size());
+	textures.push_back(texture.id);
+	names.push_back(name);
+	return *this;
+}
+
+void TextureBindingHelper::ReBind()
+{
+	for (int i = 0; i < textures.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, textures[i]);
+		auto location = glGetUniformLocation(program, names[i].c_str());
+		glUniform1i(location, textures.size());
+	}
+}
+
+void TextureBindingHelper::Reset()
+{
+	textures.clear();
+	names.clear();
+}
+
+void TextureBindingHelper::End()
+{
+	glActiveTexture(GL_TEXTURE0);
+}
+
+void Texture::Load(const char* fname)
+{
+	glGenTextures(1, &id);
+	// TODO: read image file
 }

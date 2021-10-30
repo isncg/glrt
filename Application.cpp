@@ -43,6 +43,23 @@ int Application::Run(Window* pMainWindow, bool allocConsole)
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 
+    RAWINPUTDEVICE Rid[2];
+
+    Rid[0].usUsagePage = 0x01;          // HID_USAGE_PAGE_GENERIC
+    Rid[0].usUsage = 0x02;              // HID_USAGE_GENERIC_MOUSE
+    Rid[0].dwFlags = 0;    // adds mouse and also ignores legacy mouse messages
+    Rid[0].hwndTarget = hWnd;
+
+    Rid[1].usUsagePage = 0x01;          // HID_USAGE_PAGE_GENERIC
+    Rid[1].usUsage = 0x06;              // HID_USAGE_GENERIC_KEYBOARD
+    Rid[1].dwFlags = 0;    // adds keyboard and also ignores legacy keyboard messages
+    Rid[1].hwndTarget = hWnd;
+
+    if (RegisterRawInputDevices(Rid, 2, sizeof(Rid[0])) == FALSE)
+    {
+        log("reg err");
+        //registration failed. Call GetLastError for the cause of the error
+    }
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GLRT));
     MSG msg;

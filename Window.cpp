@@ -1,11 +1,17 @@
 #include <glad/glad.h>
-#include<iostream>
-#include<sstream>
+#include <iostream>
+#include <sstream>
 #include "framework.h"
+#include <windowsx.h>
 #include "Resource.h"
 #include "Application.h"
 #include "Window.h"
+#include <strsafe.h>
 #include "utils/glhelpers.h"
+#include "utils/log.h"
+
+
+
 static HMODULE glInst;
 static void* cWGLGetProcAddr(const char* name)
 {
@@ -74,6 +80,45 @@ LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		OnDestroy();
 		break;
+	case WM_MOUSEMOVE:
+		mouseX = GET_X_LPARAM(lParam);
+		mouseY = GET_Y_LPARAM(lParam);
+		break;
+	case WM_INPUT:
+	{
+		UINT dwSize;
+		HRESULT hResult;
+		TCHAR szTempOutput[1024];
+		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
+		if (dwSize == 0)
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		LPBYTE lpb = new BYTE[dwSize];
+		if (lpb == NULL)
+		{
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+		if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
+			OutputDebugString(TEXT("GetRawInputData does not return correct size !\n"));
+
+		RAWINPUT* raw = (RAWINPUT*)lpb;
+
+		if (raw->header.dwType == RIM_TYPEKEYBOARD)
+		{
+			OnKeyboard((KEYS)(raw->data.keyboard.VKey), (KEYACTION)(raw->data.keyboard.Flags & 0x3));
+			break;
+		}
+		else if (raw->header.dwType == RIM_TYPEMOUSE)
+		{
+			if (raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE)
+			{
+				OnMouse(raw->data.mouse.lLastX, raw->data.mouse.lLastY, mouseX, mouseY);
+				break;
+			}
+		}
+
+		delete[] lpb;
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -150,6 +195,15 @@ void Window::Render()
 {
 }
 
+void Window::OnMouse(long dx, long dy, long x, long y)
+{
+
+}
+
+void Window::OnKeyboard(KEYS key, KEYACTION action)
+{
+}
+
 LPCWSTR Window::GetWindowClassName()
 {
 	return TEXT("Window");
@@ -171,3 +225,4 @@ void Window::PopulateClassInfo(WNDCLASSEXW* pwcex)
 	pwcex->lpszClassName = GetWindowClassName();
 	pwcex->hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SMALL));
 }
+

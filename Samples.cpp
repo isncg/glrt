@@ -82,4 +82,51 @@ class Sample_UICanvas :public Window
 	}
 };
 
-RUN_WINDOW(Sample_UICanvas)
+//RUN_WINDOW(Sample_UICanvas)
+
+
+class Sample_MouseLook :public Window
+{
+#define M_PI 3.14159265358979323846
+	Shader shader;
+	MeshRenderer renderer;
+	Model model;
+	float yall = 0;
+	float pitch = 0;
+	Matrix4x4 mat;
+	float hp = M_PI / 2.0f - 0.000001f;
+	virtual void OnMouse(long dx, long dy, long x, long y) override
+	{
+		yall += dx*0.005f;
+		pitch += dy * 0.005;
+		if (pitch > hp)
+			pitch = hp;
+		if (pitch < -hp)
+			pitch = -hp;
+	}
+
+	virtual void OnCreate() override
+	{
+		Window::OnCreate();
+		LoadModel(&model, "assets/teapot.obj");
+		shader.Load("glsl/mesh.vert", "glsl/mesh.frag");
+		shader.Use();
+
+		renderer.Set(&model.meshCollection.front());
+		glEnable(GL_DEPTH_TEST);
+		glAssert("oncreate finish");
+	}
+
+	virtual void Render() override
+	{
+		mat =
+			Matrix4x4::Perspective(3.1415926 / 2, 1.333f, 0.1, 100) *
+			Matrix4x4::LookAt(Vector3{ 5 * cos(yall)*cos(pitch),5*sin(pitch), 5 * sin(yall) * cos(pitch) }, Vector3{ 0,0,0 }, Vector3{ 0,1,0 });
+		glClearColor(0.2, 0.2, 0.2, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		shader.Use();
+		shader.Set("_mvp", mat);
+		GLASSERT(renderer.Draw());
+	}
+};
+RUN_WINDOW(Sample_MouseLook)

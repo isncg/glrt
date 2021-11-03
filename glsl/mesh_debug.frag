@@ -18,8 +18,7 @@ float grid(float v, float m)
 float gridv(vec3 v, float m)
 {
     float s = grid_raw(v.x, m)*grid_raw(v.y, m)*grid_raw(v.z, m);
-    return max(0.4, min(0.9, s));
-    return s;
+    return max(0.0, min(1.0, s)) * (0.8+0.2*dot(frag_norm, vec3(1.0,0.0,0.0)));
 }
 
 
@@ -27,6 +26,7 @@ float gridv(vec3 v, float m)
 void main()
 {
     float v = gridv(frag_pos, 200.0);
-    color = vec4(v,v,v,1.0  );
+    //color = vec4(v,v,v,1.0  );
+    color = vec4(frag_norm,1.0  );
     //color = vec4(grid(frag_pos.x, 100.0),grid(frag_pos.y, 100.0),grid(frag_pos.z, 100.0),1.0  );
 }

@@ -222,11 +222,7 @@ bool LoadBSPMap(Model* output, const char* file)
     auto m_bspLoader = &loader;
     
     Mesh mesh;
-    for (int i = 0; i < loader.m_nVertices; i++)
-    {
-        auto& v = loader.m_Vertices[i];
-        mesh.vertices.push_back({ v.x, v.z, -v.y });
-    }
+    
     // Go through all the faces of BSPMODEL
     for (unsigned faceId = model->iFirstFace; faceId < (model->iFirstFace + model->nFaces); faceId++) 
     {
@@ -261,8 +257,7 @@ bool LoadBSPMap(Model* output, const char* file)
       
 
         // For each surfedge
-        bool firstVector = true;
-        unsigned startIndex = 0;
+        bsp30::VECTOR3D v_;
         for (unsigned surfedgeId = face->iFirstEdge; surfedgeId < (face->iFirstEdge + face->nEdges); surfedgeId++) {
 
         // Get corresponding edgeId
@@ -272,24 +267,36 @@ bool LoadBSPMap(Model* output, const char* file)
         // Get vertex IDs of edge
             unsigned v0Id = m_bspLoader->m_Edges[edgeId_abs].iVertex[0];
             unsigned v1Id = m_bspLoader->m_Edges[edgeId_abs].iVertex[1];
-            if (firstVector)
-            {
-                firstVector = false;
-                startIndex = v0Id;
-            }
-            else
-            {
-                mesh.triangles.push_back(startIndex);
-                mesh.triangles.push_back(v0Id);
-                mesh.triangles.push_back(v1Id);
-            }
         // Swap v0Id and v1Id if we have a negative edgeId
             if (edgeId < 0)
                 bsp30::swap(v0Id, v1Id);
-
             // Get vertices
             bsp30::VECTOR3D v0 = m_bspLoader->m_Vertices[v0Id];
             bsp30::VECTOR3D v1 = m_bspLoader->m_Vertices[v1Id];
+            if (surfedgeId == face->iFirstEdge)
+            {
+                v_ = v0;
+            }
+			else if(surfedgeId < (face->iFirstEdge + face->nEdges -1))
+            {
+                Vector3 p_{ v_.x, v_.z, -v_.y };
+                Vector3 p0{ v0.x, v0.z, -v0.y };
+                Vector3 p1{ v1.x, v1.z, -v1.y };
+
+                Vector3 normal = glm::normalize(glm::cross(p0 - p_, p0 - p1));
+
+                mesh.triangles.push_back(mesh.vertices.size());
+                mesh.vertices.push_back(p_);
+                mesh.normals.push_back(normal);
+
+                mesh.triangles.push_back(mesh.vertices.size());
+                mesh.vertices.push_back(p0);
+                mesh.normals.push_back(normal);
+                
+                mesh.triangles.push_back(mesh.vertices.size());
+                mesh.vertices.push_back(p1);
+                mesh.normals.push_back(normal);
+            }
 
         // Every edge naturally defines a tangent as well
             bsp30::VECTOR3D tangent;

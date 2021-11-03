@@ -82,7 +82,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(ProjectDir)3rdparty\glm;$(ProjectDir)3rdparty\FreeImage\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(ProjectDir)3rdparty\glm;$(ProjectDir)3rdparty\FreeImage\include;$(ProjectDir)3rdparty\bsp30\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)3rdparty\assimp;$(ProjectDir)3rdparty\FreeImage;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ProjectDir)3rdparty\assimp;$(ProjectDir)3rdparty\FreeImage;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
@@ -160,6 +160,7 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="3rdparty\bsp30\src\BSPLoader.cpp" />
     <ClCompile Include="3rdparty\glad\src\glad.c" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="GLRT.cpp" />
@@ -181,6 +182,8 @@
     <None Include="glsl\canvas.vert" />
     <None Include="glsl\mesh.frag" />
     <None Include="glsl\mesh.vert" />
+    <None Include="glsl\mesh_debug.frag" />
+    <None Include="glsl\mesh_debug.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

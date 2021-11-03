@@ -91,6 +91,9 @@
     <ClCompile Include="Samples.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="3rdparty\bsp30\src\BSPLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GLRT.rc" />
@@ -106,6 +109,12 @@
       <Filter>glsl</Filter>
     </None>
     <None Include="glsl\canvas.vert">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\mesh_debug.frag">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\mesh_debug.vert">
       <Filter>glsl</Filter>
     </None>
   </ItemGroup>

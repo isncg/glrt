@@ -4,7 +4,7 @@
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
-
+#include <bsp30/BSPLoader.h>
 #pragma comment(lib, "assimp-vc142-mt.lib")
 
 bool LoadMesh(Mesh* output, aiMesh* input)
@@ -194,6 +194,122 @@ bool LoadModel(Model* output, const char* file)
 
     //DoTheSceneProcessing(scene);
     // We're done. Everything will be cleaned up by the importer destructor
+    return true;
+}
+
+//using namespace bsp30;
+
+bsp30::VECTOR3D SwitchHandedness(bsp30::VECTOR3D v) {
+    return bsp30::VECTOR3D(v.x, v.z, v.y);
+}
+
+bool LoadBSPMap(Model* output, const char* file)
+{
+    bsp30::BSPLoader loader(file);
+    loader.ReadVertices();
+    loader.ReadPlanes();
+    loader.ReadEdges();
+    loader.ReadSurfEdges();
+    loader.ReadTexInfo();
+    loader.ReadTextures();
+    loader.ReadFaces();
+    loader.ReadModels();
+    loader.ReadEntities();
+
+   
+    auto model = loader.m_Models;
+    unsigned nPolygons = model->nFaces;
+    auto m_bspLoader = &loader;
+    
+    Mesh mesh;
+    for (int i = 0; i < loader.m_nVertices; i++)
+    {
+        auto& v = loader.m_Vertices[i];
+        mesh.vertices.push_back({ v.x, v.z, -v.y });
+    }
+    // Go through all the faces of BSPMODEL
+    for (unsigned faceId = model->iFirstFace; faceId < (model->iFirstFace + model->nFaces); faceId++) 
+    {
+        // A face is a n-sided-polygon defined by a series of "SurfEdges"
+        // It's basically a closed loop of edges like this:
+        // f : (e0, e1, e2, ..., eN-1) for N edges
+        // f : (v0 -> v1, v1 -> v2, v2 -> v3, ... , vN-1 -> v0) for N vertices
+        // so number of vertices aka Control Points is same as number of surfedges 
+        bsp30::BSPFACE* face = &(m_bspLoader->m_Faces[faceId]);
+
+        // Get face's material
+        bsp30::BSPTEXTUREINFO texInfo = m_bspLoader->m_TextureInfos[face->iTextureInfo];
+        bsp30::BSPMIPTEX tex = m_bspLoader->m_Textures[texInfo.iMiptex];
+
+        //	skyboxes are not to be added to our visible mesh
+        if (!strcmp(tex.szName, "sky")) {
+            // We're a polygon less now
+            nPolygons--;
+            continue;
+        }
+
+
+        // Store each face's normal
+        bsp30::BSPPLANE* plane = &(m_bspLoader->m_Planes[face->iPlane]);
+        bsp30::VECTOR3D normal = plane->vNormal;
+        // Reverse normal if specified
+        if (face->nPlaneSide) {
+            normal.x *= -1.0f;
+            normal.y *= -1.0f;
+            normal.z *= -1.0f;
+        }
+      
+
+        // For each surfedge
+        bool firstVector = true;
+        unsigned startIndex = 0;
+        for (unsigned surfedgeId = face->iFirstEdge; surfedgeId < (face->iFirstEdge + face->nEdges); surfedgeId++) {
+
+        // Get corresponding edgeId
+            int edgeId = m_bspLoader->m_SurfEdges[surfedgeId];
+            unsigned edgeId_abs = abs(edgeId);
+
+        // Get vertex IDs of edge
+            unsigned v0Id = m_bspLoader->m_Edges[edgeId_abs].iVertex[0];
+            unsigned v1Id = m_bspLoader->m_Edges[edgeId_abs].iVertex[1];
+            if (firstVector)
+            {
+                firstVector = false;
+                startIndex = v0Id;
+            }
+            else
+            {
+                mesh.triangles.push_back(startIndex);
+                mesh.triangles.push_back(v0Id);
+                mesh.triangles.push_back(v1Id);
+            }
+        // Swap v0Id and v1Id if we have a negative edgeId
+            if (edgeId < 0)
+                bsp30::swap(v0Id, v1Id);
+
+            // Get vertices
+            bsp30::VECTOR3D v0 = m_bspLoader->m_Vertices[v0Id];
+            bsp30::VECTOR3D v1 = m_bspLoader->m_Vertices[v1Id];
+
+        // Every edge naturally defines a tangent as well
+            bsp30::VECTOR3D tangent;
+            tangent.x = v0.x - v1.x;
+            tangent.y = v0.y - v1.y;
+            tangent.z = v0.z - v1.z;
+
+            float tangent_length = sqrt(tangent.x * tangent.x + tangent.y * tangent.y + tangent.z * tangent.z);
+            tangent.x = tangent.x / tangent_length;
+            tangent.y = tangent.y / tangent_length;
+            tangent.z = tangent.z / tangent_length;
+
+        // Compute texture coordinates for this vertex
+        // http://www.flipcode.com/archives/Quake_2_BSP_File_Format.shtml
+            float u = (texInfo.vS.x * v0.x + texInfo.vS.y * v0.y + texInfo.vS.z * v0.z) + texInfo.fSShift;
+            float v = (texInfo.vT.x * v0.x + texInfo.vT.y * v0.y + texInfo.vT.z * v0.z) + texInfo.fTShift;
+        }
+    }    
+   
+    output->meshCollection.push_back(mesh);
     return true;
 }
 

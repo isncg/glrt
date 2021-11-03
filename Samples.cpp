@@ -95,7 +95,7 @@ class Sample_MouseLook :public Window
 	float pitch = 0;
 	Matrix4x4 mat;
 	float hp = M_PI / 2.0f - 0.000001f;
-	virtual void OnMouse(long dx, long dy, long x, long y) override
+	virtual void OnMouseMove(long dx, long dy, long x, long y) override
 	{
 		yall += dx*0.005f;
 		pitch += dy * 0.005;
@@ -143,7 +143,12 @@ class Sample_BSPViewer :public Window
 	Matrix4x4 mat;
 	float hp = M_PI / 2.0f - 0.000001f;
 	float radius = 5000;
-	virtual void OnMouse(long dx, long dy, long x, long y) override
+	Vector3 focus;
+	int ma = 0;
+	int md = 0;
+	int mw = 0;
+	int ms = 0;
+	virtual void OnMouseMove(long dx, long dy, long x, long y) override
 	{
 		yall += dx*0.005f;
 		pitch += dy * 0.005;
@@ -151,6 +156,36 @@ class Sample_BSPViewer :public Window
 			pitch = hp;
 		if (pitch < -hp)
 			pitch = -hp;
+	}
+
+	virtual void OnMouseWheel(int delta) override
+	{
+		radius += delta;
+		if (radius < 500)
+			radius = 500;
+	}
+
+	virtual void OnKeyboard(KEYS key, KEYACTION action) override
+	{
+		if (key == KEYS::KEY_W)
+		{
+			mw = action == KEYACTION::KEYDOWN ? 1 : 0;
+		}
+
+		if (key == KEYS::KEY_A)
+		{
+			ma = action == KEYACTION::KEYDOWN ? 1 : 0;
+		}
+
+		if (key == KEYS::KEY_S)
+		{
+			ms = action == KEYACTION::KEYDOWN ? 1 : 0;
+		}
+
+		if (key == KEYS::KEY_D)
+		{
+			md = action == KEYACTION::KEYDOWN ? 1 : 0;
+		}
 	}
 
 	virtual void OnCreate() override
@@ -167,9 +202,11 @@ class Sample_BSPViewer :public Window
 
 	virtual void Render() override
 	{
+		focus.x += (md - ma)*20;
+		focus.z += (mw - ms)*20;
 		mat =
-			Matrix4x4::Perspective(3.1415926 / 2, 1.333f, 1, radius*2) *
-			Matrix4x4::LookAt(Vector3{ radius * cos(yall)*cos(pitch),radius*sin(pitch), radius * sin(yall) * cos(pitch) }, Vector3{ 0,0,0 }, Vector3{ 0,1,0 });
+			Matrix4x4::Perspective(3.1415926 / 2, 1.333f, 1, 10000) *
+			Matrix4x4::LookAt(focus+Vector3{ radius * cos(yall)*cos(pitch),radius*sin(pitch), radius * sin(yall) * cos(pitch) }, focus, Vector3{ 0,1,0 });
 		glClearColor(0.2, 0.2, 0.2, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shader.Use();

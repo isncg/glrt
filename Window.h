@@ -104,7 +104,8 @@ protected:
 	virtual void OnResize(int width, int height);
 	virtual void OnIdle();
 	virtual void Render();
-	virtual void OnMouse(long dx, long dy, long x, long y);
+	virtual void OnMouseMove(long dx, long dy, long x, long y);
+	virtual void OnMouseWheel(int delta);
 	virtual void OnKeyboard(KEYS key, KEYACTION action);
 public:
 	virtual LPCWSTR GetWindowClassName();

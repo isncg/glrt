@@ -109,11 +109,22 @@ LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		else if (raw->header.dwType == RIM_TYPEMOUSE)
 		{
+			bool handled = false;
 			if (raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE)
 			{
-				OnMouse(raw->data.mouse.lLastX, raw->data.mouse.lLastY, mouseX, mouseY);
-				break;
+				OnMouseMove(raw->data.mouse.lLastX, raw->data.mouse.lLastY, mouseX, mouseY);
+				handled = true;
 			}
+
+			if (raw->data.mouse.usButtonFlags == RI_MOUSE_WHEEL)
+			{
+				OnMouseWheel((short)raw->data.mouse.usButtonData);
+				handled = true;
+			}
+
+
+			if (handled)
+				break;
 		}
 
 		delete[] lpb;
@@ -195,9 +206,13 @@ void Window::Render()
 {
 }
 
-void Window::OnMouse(long dx, long dy, long x, long y)
+void Window::OnMouseMove(long dx, long dy, long x, long y)
 {
 
+}
+
+void Window::OnMouseWheel(int delta)
+{
 }
 
 void Window::OnKeyboard(KEYS key, KEYACTION action)

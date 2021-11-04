@@ -237,6 +237,8 @@ bool LoadBSPMap(Model* output, const char* file)
         bsp30::BSPTEXTUREINFO texInfo = m_bspLoader->m_TextureInfos[face->iTextureInfo];
         bsp30::BSPMIPTEX tex = m_bspLoader->m_Textures[texInfo.iMiptex];
 
+        Vector3 texVS{ texInfo.vS.x, texInfo.vS.z, -texInfo.vS.y };
+        Vector3 texVT{ texInfo.vT.x, texInfo.vT.z, -texInfo.vT.y };
         //	skyboxes are not to be added to our visible mesh
         if (!strcmp(tex.szName, "sky")) {
             // We're a polygon less now
@@ -284,18 +286,21 @@ bool LoadBSPMap(Model* output, const char* file)
                 Vector3 p1{ v1.x, v1.z, -v1.y };
 
                 Vector3 normal = glm::normalize(glm::cross(p0 - p_, p0 - p1));
-
+                float uvscale = 0.005f;
                 mesh.triangles.push_back(mesh.vertices.size());
                 mesh.vertices.push_back(p_);
                 mesh.normals.push_back(normal);
+				mesh.uv.push_back({ glm::dot(uvscale *p_ , texVS) + texInfo.fSShift, glm::dot(uvscale * p_ , texVT) + texInfo.fTShift });
 
                 mesh.triangles.push_back(mesh.vertices.size());
                 mesh.vertices.push_back(p0);
                 mesh.normals.push_back(normal);
+                mesh.uv.push_back({ glm::dot(uvscale * p0 , texVS) + texInfo.fSShift, glm::dot(uvscale * p0 , texVT) + texInfo.fTShift });
                 
                 mesh.triangles.push_back(mesh.vertices.size());
                 mesh.vertices.push_back(p1);
                 mesh.normals.push_back(normal);
+                mesh.uv.push_back({ glm::dot(uvscale * p1 , texVS) + texInfo.fSShift, glm::dot(uvscale * p1 , texVT) + texInfo.fTShift });
             }
 
         // Every edge naturally defines a tangent as well

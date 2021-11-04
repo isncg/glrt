@@ -141,6 +141,8 @@ class Sample_BSPViewer :public Window
 	float yall = 0;
 	float pitch = 0;
 	Matrix4x4 mat;
+	Texture texture;
+	ShaderTextures shaderTextures;
 	float hp = M_PI / 2.0f - 0.000001f;
 	float radius = 5000;
 	Vector3 focus;
@@ -192,7 +194,10 @@ class Sample_BSPViewer :public Window
 	{
 		Window::OnCreate();
 		LoadBSPMap(&model, "assets/de_dust2.bsp");
-		shader.Load("glsl/mesh_debug.vert", "glsl/mesh_debug.frag");
+		LoadTexture(&texture, "assets/256.bmp");
+		shaderTextures.Add("tex", &texture);
+		shader.Load("glsl/mesh_uv.vert", "glsl/mesh_uv.frag");
+		shader.Set(&shaderTextures);
 		shader.Use();
 
 		renderer.Set(&model.meshCollection.front());
@@ -202,11 +207,16 @@ class Sample_BSPViewer :public Window
 
 	virtual void Render() override
 	{
-		focus.x += (md - ma)*20;
-		focus.z += (mw - ms)*20;
+		Vector3 r{ cos(yall) * cos(pitch), sin(pitch), sin(yall) * cos(pitch) };
+		Vector3 fw = -r;
+		Vector3 rt{ -sin(yall), 0, cos(yall) };
+		focus += -(float)(md - ma) * rt*20.0f;
+		focus += (float)(mw - ms) * fw*20.0f;
+		/*focus.x += (md - ma)*20;
+		focus.z += (mw - ms)*20;*/
 		mat =
 			Matrix4x4::Perspective(3.1415926 / 2, 1.333f, 1, 10000) *
-			Matrix4x4::LookAt(focus+Vector3{ radius * cos(yall)*cos(pitch),radius*sin(pitch), radius * sin(yall) * cos(pitch) }, focus, Vector3{ 0,1,0 });
+			Matrix4x4::LookAt(focus, focus + fw, Vector3{ 0,1,0 });
 		glClearColor(0.2, 0.2, 0.2, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shader.Use();

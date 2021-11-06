@@ -149,6 +149,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="utils\asset_loader.h" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="GLRT.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="Samples.cpp" />
     <ClCompile Include="utils\asset_loader.cpp" />
     <ClCompile Include="utils\buffer_builder.cpp" />

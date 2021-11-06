@@ -50,6 +50,9 @@
     <ClInclude Include="utils\asset_loader.h">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GLRT.cpp">
@@ -89,6 +92,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="3rdparty\bsp30\src\BSPLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

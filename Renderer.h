@@ -101,6 +101,7 @@ public:
 	void Load(const char* vert, const char* frag);
 	void Use();
 	void Set(const char* name, Matrix4x4& value);
+    void Set(const char* name, Matrix4x4&& value);
 	void Set(ShaderTextures* textures);
 };
 
@@ -166,5 +167,6 @@ class CanvasRenderer
     int triangleCount;
 public:
     void Set(CanvasMesh* pMesh);
+    void SetFullScreen();
     void Draw();
 };

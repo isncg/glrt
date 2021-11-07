@@ -10,10 +10,10 @@ bool MeshRenderer::ValidateMesh(Mesh* pMesh)
 	vertexCount = pMesh->vertices.size();
 	if (vertexCount <= 0)
 		return false;
-	if (pMesh->normals.size()  > 0  && pMesh->normals.size() != vertexCount) return false;
-	if (pMesh->tangents.size() > 0  && pMesh->tangents.size()!= vertexCount) return false;
-	if (pMesh->normals.size()  > 0  && pMesh->normals.size() != vertexCount) return false;
-	if (pMesh->normals.size()  > 0  && pMesh->normals.size() != vertexCount) return false;
+	if (pMesh->normals.size() > 0 && pMesh->normals.size() != vertexCount) return false;
+	if (pMesh->tangents.size() > 0 && pMesh->tangents.size() != vertexCount) return false;
+	if (pMesh->normals.size() > 0 && pMesh->normals.size() != vertexCount) return false;
+	if (pMesh->normals.size() > 0 && pMesh->normals.size() != vertexCount) return false;
 	return true;
 }
 
@@ -32,7 +32,7 @@ void MeshRenderer::Set(Mesh* pMesh)
 	indices.assign(pMesh->triangles.begin(), pMesh->triangles.end());
 	triangleCount = indices.size() / 3;
 	int8_t* buffer = new int8_t[bufsize];
-	
+
 
 	vertex_buffer_builder vbb(buffer, bufsize);
 	vbb.append_attribute_data(pMesh->vertices);
@@ -48,7 +48,7 @@ void MeshRenderer::Set(Mesh* pMesh)
 	vbb.append_attribute_data(pMesh->uv8);
 
 	vbb.build();
-	
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vectorsizeof(pMesh->triangles), &pMesh->triangles.front(), GL_STATIC_DRAW);
 
@@ -64,20 +64,20 @@ void MeshRenderer::Draw()
 		return;
 	GLASSERT(glBindVertexArray(vao));
 
-/********************************************************************* glDrawElements *********************************************************************
-https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glDrawElements.xhtml
-mode
-Specifies what kind of primitives to render. Symbolic constants GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_LINE_STRIP_ADJACENCY, GL_LINES_ADJACENCY, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, GL_TRIANGLE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY and GL_PATCHES are accepted.
+	/********************************************************************* glDrawElements *********************************************************************
+	https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glDrawElements.xhtml
+	mode
+	Specifies what kind of primitives to render. Symbolic constants GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_LINE_STRIP_ADJACENCY, GL_LINES_ADJACENCY, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, GL_TRIANGLE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY and GL_PATCHES are accepted.
 
-count
-Specifies the number of elements to be rendered.
+	count
+	Specifies the number of elements to be rendered.
 
-type
-Specifies the type of the values in indices. Must be one of GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT.
+	type
+	Specifies the type of the values in indices. Must be one of GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT.
 
-indices
-Specifies a pointer to the location where the indices are stored.
-********************************************************************** glDrawElements *********************************************************************/
+	indices
+	Specifies a pointer to the location where the indices are stored.
+	********************************************************************** glDrawElements *********************************************************************/
 
 	//GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices.front()));
 
@@ -126,7 +126,7 @@ GLuint loadShader(const char* filename, GLenum shaderType)
 	GLASSERT(glShaderSource(shader, 1, &string, &length));
 	log(string_format("Compile shader %s %d", filename, shaderType).c_str());
 	GLASSERT(glCompileShader(shader));
-//https://www.khronos.org/opengl/wiki/Example/GLSL_Shader_Compile_Error_Testing
+	//https://www.khronos.org/opengl/wiki/Example/GLSL_Shader_Compile_Error_Testing
 	GLint isCompiled = 0;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
 	if (isCompiled == GL_FALSE)
@@ -177,6 +177,11 @@ void Shader::Use()
 
 void Shader::Set(const char* name, Matrix4x4& value)
 {
+	Set(name, std::move(value));
+}
+
+void Shader::Set(const char* name, Matrix4x4&& value)
+{
 	auto loc = glGetUniformLocation(program, name);
 	glUniformMatrix4fv(loc, 1, false, (const GLfloat*)&value);
 }
@@ -209,7 +214,7 @@ void CanvasRenderer::Set(CanvasMesh* pMesh)
 	GLASSERT(glBindVertexArray(vao));
 	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 	int bufsize = pMesh->GetBufferSize();
-	for (int i = 0; i < pMesh->vertices.size()-3; i+=4)
+	for (int i = 0; i < pMesh->vertices.size() - 3; i += 4)
 	{
 		indices.push_back(i); indices.push_back(i + 1); indices.push_back(i + 2);
 		indices.push_back(i); indices.push_back(i + 2); indices.push_back(i + 3);
@@ -233,6 +238,23 @@ void CanvasRenderer::Set(CanvasMesh* pMesh)
 	GLASSERT(glBindVertexArray(0));
 	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void CanvasRenderer::SetFullScreen()
+{
+	CanvasMesh mesh;
+	mesh.vertices.push_back({ -1,-1 });
+	mesh.vertices.push_back({ 1,-1 });
+	mesh.vertices.push_back({ 1,1 });
+	mesh.vertices.push_back({ -1,1 });
+
+	mesh.uv.push_back({ 0,0 });
+	mesh.uv.push_back({ 1,0 });
+	mesh.uv.push_back({ 1,1 });
+	mesh.uv.push_back({ 0,1 });
+
+
+	Set(&mesh);
 }
 
 void CanvasRenderer::Draw()

@@ -2,7 +2,6 @@
 #include "framework.h"
 #include <vector>
 
-
 enum KEYS
 {
 	KEY_0 = 0x30,

@@ -183,6 +183,8 @@ void Shader::Set(const char* name, Matrix4x4& value)
 void Shader::Set(const char* name, Matrix4x4&& value)
 {
 	auto loc = glGetUniformLocation(program, name);
+	if (loc < 0)
+		return;
 	GLASSERT(glUniformMatrix4fv(loc, 1, false, (const GLfloat*)&value));
 }
 
@@ -194,15 +196,16 @@ void Shader::Set(const char* name, Vector2& value)
 void Shader::Set(const char* name, Vector2&& value)
 {
 	auto loc = glGetUniformLocation(program, name);
-	auto loc2 = glGetUniformLocation(program, "tex");
-	//glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
-	glAssert("get location");
+	if (loc < 0)
+		return;
 	GLASSERT(glUniform2fv(loc, 1, (const GLfloat*)&value));
 }
 
 void Shader::Set(const char* name, float value)
 {
 	GLASSERT(auto loc = glGetUniformLocation(program, name));
+	if (loc < 0)
+		return;
 	GLASSERT(glUniform1f(loc, value));
 }
 

@@ -1,7 +1,14 @@
 #include "Camera.h"
 
+Vector2& Camera::ClipRange()
+{
+	return _clipRange;
+}
+
 void Camera::SetProjectionMatrix(float fovY, float aspect, float zNear, float zFar)
 {
+	_clipRange.x = zNear;
+	_clipRange.y = zFar;
 	mat_proj = Matrix4x4::Perspective(fovY, aspect, zNear, zFar);
 }
 

@@ -161,7 +161,7 @@ class Sample_BSPViewer :public Window
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
-		firstPersonCamera.SetProjectionMatrix(3.1415926 / 2, 1.333f, 1, 10000);
+		firstPersonCamera.SetProjectionMatrix(3.1415926 / 2, 1.333f, 1, 5000);
 		firstPersonCamController.camera = &firstPersonCamera;
 		LoadBSPMap(&bspMapModel, "assets/de_dust2.bsp");
 		LoadTexture(&bspMapTexture, "assets/256.bmp");
@@ -175,12 +175,14 @@ class Sample_BSPViewer :public Window
 		glAssert("oncreate finish");
 
 		canvasRenderer.SetFullScreen();
-		canvasShader.Load("glsl/canvas.vert", "glsl/canvas_msaa.frag");
+		canvasShader.Load("glsl/canvas.vert", "glsl/canvas_depth.frag");
 		canvasShaderTextures.Add("tex", &forwardRT.colorTextures[0]);
+		canvasShaderTextures.Add("depth", &forwardRT.depthTexture);
 		canvasShader.Set(&canvasShaderTextures);
 		canvasShader.Use();
 		canvasShader.Set("ssize",16);
 		canvasShader.Set("blur", 4);
+		canvasShader.Set("clipRange", firstPersonCamera.ClipRange());
 
 		glEnable(GL_DEPTH_TEST);
 	}

@@ -23,33 +23,34 @@ void RenderTarget::Init(int width, int height, int nColors, bool depth)
 
 	if (nColors > 0)
 	{
-		GLuint* pColorTextures = new GLuint[nColors];
-		glGenTextures(nColors, pColorTextures);
+		GLuint* tex = new GLuint[nColors];
+		glGenTextures(nColors, tex);
 		//GLASSERT(glCreateTextures(GL_TEXTURE_2D, nColors, pColorTextures));
 		for (int i = 0; i < nColors; i++)
 		{
-			glBindTexture(GL_TEXTURE_2D, pColorTextures[i]);
+			glBindTexture(GL_TEXTURE_2D, tex[i]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, pColorTextures[i], 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, tex[i], 0);
 			//GLASSERT(glTextureStorage2D(pColorTextures[i], 1, GL_RGBA8, width, height));
 			//GLASSERT(glNamedFramebufferTexture2DEXT(fbo, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, pColorTextures[i], 0));
-			colorTextures.push_back({ pColorTextures[i] });
+			colorTextures.push_back({ tex[i] });
 		}
 
-		delete[] pColorTextures;
+		delete[] tex;
 	}
 
 	if (depth)
 	{
-		GLuint depthTexture;
-		glGenTextures(nColors, &depthTexture);
-		glBindTexture(GL_TEXTURE_2D, depthTexture);
+		GLuint tex;
+		glGenTextures(nColors, &tex);
+		glBindTexture(GL_TEXTURE_2D, tex);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
+		depthTexture.id = tex;
 	}
 	auto err = glCheckNamedFramebufferStatus(fbo, GL_FRAMEBUFFER);
 	if (err != GL_FRAMEBUFFER_COMPLETE)

@@ -9,6 +9,7 @@ typedef glm::vec4 Vector4;
 typedef glm::mat4 Matrix4x4;
 typedef glm::vec4 Color;
 typedef glm::lowp_i8vec4 Color32;
+typedef glm::ivec2 Vector2i;
 
 template<typename T>
 GLint GetComponentCount(const T& tag);
@@ -102,6 +103,9 @@ public:
 	void Use();
 	void Set(const char* name, Matrix4x4& value);
     void Set(const char* name, Matrix4x4&& value);
+    void Set(const char* name, Vector2& value);
+    void Set(const char* name, Vector2&& value);
+    void Set(const char* name, float value);
 	void Set(ShaderTextures* textures);
 };
 

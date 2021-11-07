@@ -131,52 +131,76 @@ class Sample_MouseLook :public Window
 };
 //RUN_WINDOW(Sample_MouseLook)
 #include "Camera.h"
-
+#include "RenderTarget.h"
 class Sample_BSPViewer :public Window
 {
-	Shader shader;
-	MeshRenderer renderer;
-	Model model;
-	Camera camera;
-	CameraFirstPersonController camctrl;
-	Texture texture;
-	ShaderTextures shaderTextures;
+	Camera firstPersonCamera;
+	CameraFirstPersonController firstPersonCamController;
+
+	Model bspMapModel;
+	Texture bspMapTexture;
+	Shader meshShader;
+	ShaderTextures meshShaderTextures;
+	MeshRenderer meshRenderer;
 	
+	RenderTarget forwardRT;
+	Shader canvasShader;
+	ShaderTextures canvasShaderTextures;
+	CanvasRenderer canvasRenderer;
+
 	virtual void OnMouseMove(long dx, long dy, long x, long y) override
 	{
-		camctrl.OnMouseMove(dx, dy, x, y);
+		firstPersonCamController.OnMouseMove(dx, dy, x, y);
 	}
 
 	virtual void OnKeyboard(KEYS key, KEYACTION action) override
 	{
-		camctrl.OnKeyboard(key, action);
+		firstPersonCamController.OnKeyboard(key, action);
 	}
 
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
-		camera.SetProjectionMatrix(3.1415926 / 2, 1.333f, 1, 10000);
-		camctrl.camera = &camera;
-		LoadBSPMap(&model, "assets/de_dust2.bsp");
-		LoadTexture(&texture, "assets/256.bmp");
-		shaderTextures.Add("tex", &texture);
-		shader.Load("glsl/mesh_uv.vert", "glsl/mesh_uv.frag");
-		shader.Set(&shaderTextures);
-		shader.Use();
+		firstPersonCamera.SetProjectionMatrix(3.1415926 / 2, 1.333f, 1, 10000);
+		firstPersonCamController.camera = &firstPersonCamera;
+		LoadBSPMap(&bspMapModel, "assets/de_dust2.bsp");
+		LoadTexture(&bspMapTexture, "assets/256.bmp");
+		meshShaderTextures.Add("tex", &bspMapTexture);
+		meshShader.Load("glsl/mesh_uv.vert", "glsl/mesh_uv.frag");
+		meshShader.Set(&meshShaderTextures);
+		//mapShader.Use();
+		forwardRT.Init(4096, 2048, 1, true);
 
-		renderer.Set(&model.meshCollection.front());
-		glEnable(GL_DEPTH_TEST);
+		meshRenderer.Set(&bspMapModel.meshCollection.front());
 		glAssert("oncreate finish");
+
+		canvasRenderer.SetFullScreen();
+		canvasShader.Load("glsl/canvas.vert", "glsl/canvas_msaa.frag");
+		canvasShaderTextures.Add("tex", &forwardRT.colorTextures[0]);
+		canvasShader.Set(&canvasShaderTextures);
+		canvasShader.Use();
+		canvasShader.Set("ssize",16);
+		canvasShader.Set("blur", 4);
+
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	virtual void BeforeRender() override
+	{
+		forwardRT.Bind();
+		firstPersonCamController.Update();
+		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
+		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+		meshShader.Use();
+		firstPersonCamera.SetShaderMat4(meshShader, "_mvp");
+		GLASSERT(meshRenderer.Draw());
 	}
 
 	virtual void Render() override
 	{
-		camctrl.Update();
-		glClearColor(0.2, 0.2, 0.2, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		shader.Use();
-		camera.SetShaderMat4(shader, "_mvp");
-		GLASSERT(renderer.Draw());
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		canvasShader.Use();
+		canvasRenderer.Draw();
 	}
 };
 RUN_WINDOW(Sample_BSPViewer)

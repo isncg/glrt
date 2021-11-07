@@ -166,12 +166,12 @@ void Shader::Use()
 	if (nullptr != textures) {
 		for (int i = 0; i < textures->textures.size(); i++)
 		{
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, nullptr != textures->textures[i] ? textures->textures[i]->id : 0);
+			GLASSERT(glActiveTexture(GL_TEXTURE0 + i));
+			GLASSERT(glBindTexture(GL_TEXTURE_2D, nullptr != textures->textures[i] ? textures->textures[i]->id : 0));
 			auto location = glGetUniformLocation(program, textures->names[i].c_str());
-			glUniform1i(location, i);
+			GLASSERT(glUniform1i(location, i));
 		}
-		glActiveTexture(GL_TEXTURE0);
+		GLASSERT(glActiveTexture(GL_TEXTURE0));
 	}
 }
 
@@ -183,20 +183,33 @@ void Shader::Set(const char* name, Matrix4x4& value)
 void Shader::Set(const char* name, Matrix4x4&& value)
 {
 	auto loc = glGetUniformLocation(program, name);
-	glUniformMatrix4fv(loc, 1, false, (const GLfloat*)&value);
+	GLASSERT(glUniformMatrix4fv(loc, 1, false, (const GLfloat*)&value));
+}
+
+void Shader::Set(const char* name, Vector2& value)
+{
+	Set(name, std::move(value));
+}
+
+void Shader::Set(const char* name, Vector2&& value)
+{
+	auto loc = glGetUniformLocation(program, name);
+	auto loc2 = glGetUniformLocation(program, "tex");
+	//glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
+	glAssert("get location");
+	GLASSERT(glUniform2fv(loc, 1, (const GLfloat*)&value));
+}
+
+void Shader::Set(const char* name, float value)
+{
+	GLASSERT(auto loc = glGetUniformLocation(program, name));
+	GLASSERT(glUniform1f(loc, value));
 }
 
 void Shader::Set(ShaderTextures* textures)
 {
 	this->textures = textures;
 }
-
-//TextureBindingHelper& Shader::NewTextureBinding()
-//{
-//	textureBindingHelper.Reset();
-//	textureBindingHelper.program = program;
-//	return textureBindingHelper;
-//}
 
 GLint GetComponentCount(const Color32& tag) { return 4; }
 
@@ -208,8 +221,8 @@ GLenum GetComponentType(const Color32& tag) { return GL_UNSIGNED_BYTE; }
 void CanvasRenderer::Set(CanvasMesh* pMesh)
 {
 	GLASSERT(glGenVertexArrays(1, &vao));
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ibo);
+	GLASSERT(glGenBuffers(1, &vbo));
+	GLASSERT(glGenBuffers(1, &ibo));
 
 	GLASSERT(glBindVertexArray(vao));
 	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, vbo));
@@ -231,13 +244,13 @@ void CanvasRenderer::Set(CanvasMesh* pMesh)
 
 	vbb.build();
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vectorsizeof(indices), &indices.front(), GL_STATIC_DRAW);
+	GLASSERT(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+	GLASSERT(glBufferData(GL_ELEMENT_ARRAY_BUFFER, vectorsizeof(indices), &indices.front(), GL_STATIC_DRAW));
 
 	delete[] buffer;
 	GLASSERT(glBindVertexArray(0));
 	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, 0));
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	GLASSERT(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
 void CanvasRenderer::SetFullScreen()

@@ -187,8 +187,8 @@ void Window::OnCreate()
 
 void Window::OnResize(int width, int height)
 {
-	if (ready)
-		glViewport(0, 0, width, height);
+	//if (ready)
+	//	glViewport(0, 0, width, height);
 }
 
 void Window::OnIdle()
@@ -196,13 +196,28 @@ void Window::OnIdle()
 	if (!ready) return;
 	glAssert("before onidle");
 	//HDC hdc = GetDC(hWnd);
+	BeforeRender();
 	wglMakeCurrent(GetDC(hWnd), hGLRC);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
+	GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+	RECT rt;
+	GetClientRect(hWnd, &rt);
+	glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top);
 	Render();
 	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
+	AfterRender();
+}
+
+void Window::BeforeRender()
+{
 }
 
 void Window::Render()
+{
+}
+
+void Window::AfterRender()
 {
 }
 

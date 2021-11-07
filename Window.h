@@ -102,7 +102,9 @@ protected:
 	virtual void OnCreate();
 	virtual void OnResize(int width, int height);
 	virtual void OnIdle();
+	virtual void BeforeRender();
 	virtual void Render();
+	virtual void AfterRender();
 	virtual void OnMouseMove(long dx, long dy, long x, long y);
 	virtual void OnMouseWheel(int delta);
 	virtual void OnKeyboard(KEYS key, KEYACTION action);

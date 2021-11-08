@@ -78,26 +78,21 @@ struct Model
     ModelTreeNode root;
 };
 
+struct Sampler
+{
+    GLuint obj;
+    //TBD
+};
+
 struct Texture
 {
     GLuint id;
+    GLuint64 handle;
 };
-
-class ShaderTextures
-{
-	friend class Shader;
-	std::vector<Texture*> textures;
-	std::vector<std::string> names;
-public:
-	void Clear();
-	void Add(const char* name, Texture* texture);
-};
-
 
 class Shader
 {
 	GLuint program;
-	ShaderTextures* textures;
 public:
 	void Load(const char* vert, const char* frag);
 	void Use();
@@ -106,7 +101,7 @@ public:
     void Set(const char* name, Vector2& value);
     void Set(const char* name, Vector2&& value);
     void Set(const char* name, float value);
-	void Set(ShaderTextures* textures);
+    void Set(const char* name, Texture* texture);
 };
 
 

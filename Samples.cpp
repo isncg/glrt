@@ -46,13 +46,11 @@ class Sample_UICanvas :public Window
 	CanvasMesh canvasMesh;
 	CanvasRect cr;
 	Texture texture;
-	ShaderTextures shaderTextures;
 	CanvasRenderer renderer;
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
 		LoadTexture(&texture, "assets/lena.jpg");
-		shaderTextures.Add("tex", &texture);
 		RECT rect;
 		GetClientRect(hWnd, &rect);
 		float hw = (rect.right - rect.left) / 2.0f;
@@ -66,7 +64,7 @@ class Sample_UICanvas :public Window
 		canvasMesh.Set(cr, hw, hh);
 		
 		shader.Load("glsl/canvas.vert", "glsl/canvas.frag");
-		shader.Set(&shaderTextures);
+		shader.Set("tex", &texture);
 		shader.Use();
 
 		renderer.Set(&canvasMesh);
@@ -132,6 +130,7 @@ class Sample_MouseLook :public Window
 //RUN_WINDOW(Sample_MouseLook)
 #include "Camera.h"
 #include "RenderTarget.h"
+#include "Light.h"
 class Sample_BSPViewer :public Window
 {
 	Camera firstPersonCamera;
@@ -140,13 +139,14 @@ class Sample_BSPViewer :public Window
 	Model bspMapModel;
 	Texture bspMapTexture;
 	Shader meshShader;
-	ShaderTextures meshShaderTextures;
 	MeshRenderer meshRenderer;
 	
 	RenderTarget forwardRT;
 	Shader canvasShader;
-	ShaderTextures canvasShaderTextures;
 	CanvasRenderer canvasRenderer;
+
+	DirectionalLight light;
+	Shader lightmapMeshShader;
 
 	virtual void OnMouseMove(long dx, long dy, long x, long y) override
 	{
@@ -161,34 +161,42 @@ class Sample_BSPViewer :public Window
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
+		light.InitLightMap(2048, 2048);
+		light.SetLight(Vector3{ 0,0,0 }, Vector3{ -500, -500, -500 }, 1);
+		lightmapMeshShader.Load("glsl/mesh_depth.vert", "glsl/mesh_depth.frag");
+		lightmapMeshShader.Set("light", light.matrix);
+
+
 		firstPersonCamera.SetProjectionMatrix(3.1415926 / 2, 1.333f, 1, 5000);
 		firstPersonCamController.camera = &firstPersonCamera;
 		LoadBSPMap(&bspMapModel, "assets/de_dust2.bsp");
 		LoadTexture(&bspMapTexture, "assets/256.bmp");
-		meshShaderTextures.Add("tex", &bspMapTexture);
-		meshShader.Load("glsl/mesh_uv.vert", "glsl/mesh_uv.frag");
-		meshShader.Set(&meshShaderTextures);
-		//mapShader.Use();
+		meshShader.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
+		meshShader.Set("tex", &bspMapTexture);
+		meshShader.Set("shadowmap", &light.RT.depthTexture);
+		meshShader.Set("shadowcast", light.matrix);
+		
 		forwardRT.Init(4096, 2048, 1, true);
 
 		meshRenderer.Set(&bspMapModel.meshCollection.front());
-		glAssert("oncreate finish");
 
 		canvasRenderer.SetFullScreen();
-		canvasShader.Load("glsl/canvas.vert", "glsl/canvas_depth.frag");
-		canvasShaderTextures.Add("tex", &forwardRT.colorTextures[0]);
-		canvasShaderTextures.Add("depth", &forwardRT.depthTexture);
-		canvasShader.Set(&canvasShaderTextures);
-		canvasShader.Use();
+		canvasShader.Load("glsl/canvas.vert", "glsl/canvas.frag");
 		canvasShader.Set("ssize",16);
 		canvasShader.Set("blur", 4);
 		canvasShader.Set("clipRange", firstPersonCamera.ClipRange());
+		canvasShader.Set("tex", &forwardRT.colorTextures[0]);
+		canvasShader.Set("depth", &forwardRT.depthTexture);
 
 		glEnable(GL_DEPTH_TEST);
 	}
 
 	virtual void BeforeRender() override
 	{
+		light.RT.Bind();
+		lightmapMeshShader.Use();
+		meshRenderer.Draw();
+
 		forwardRT.Bind();
 		firstPersonCamController.Update();
 		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));

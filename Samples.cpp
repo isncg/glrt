@@ -161,8 +161,8 @@ class Sample_BSPViewer :public Window
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
-		light.InitLightMap(2048, 2048);
-		light.SetLight(Vector3{ 0,0,0 }, Vector3{ -500, -500, -500 }, 1);
+		light.InitLightMap(8192, 8192);
+		light.SetLight(Vector3{ -2000,2000,-2000 }, Vector3{ 2000, -2000, 2000 }, 3000);
 		lightmapMeshShader.Load("glsl/mesh_depth.vert", "glsl/mesh_depth.frag");
 		lightmapMeshShader.Set("light", light.matrix);
 
@@ -174,7 +174,7 @@ class Sample_BSPViewer :public Window
 		meshShader.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
 		meshShader.Set("tex", &bspMapTexture);
 		meshShader.Set("shadowmap", &light.RT.depthTexture);
-		meshShader.Set("shadowcast", light.matrix);
+		meshShader.Set("light", light.matrix);
 		
 		forwardRT.Init(4096, 2048, 1, true);
 
@@ -186,7 +186,7 @@ class Sample_BSPViewer :public Window
 		canvasShader.Set("blur", 4);
 		canvasShader.Set("clipRange", firstPersonCamera.ClipRange());
 		canvasShader.Set("tex", &forwardRT.colorTextures[0]);
-		canvasShader.Set("depth", &forwardRT.depthTexture);
+		canvasShader.Set("depth", &light.RT.depthTexture);
 
 		glEnable(GL_DEPTH_TEST);
 	}
@@ -194,6 +194,8 @@ class Sample_BSPViewer :public Window
 	virtual void BeforeRender() override
 	{
 		light.RT.Bind();
+		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
+		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 		lightmapMeshShader.Use();
 		meshRenderer.Draw();
 

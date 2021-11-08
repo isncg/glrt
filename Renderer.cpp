@@ -206,10 +206,11 @@ void Shader::Set(const char* name, Texture* texture)
 		return;
 	if (texture->handle == 0)
 	{
-		texture->handle = glGetTextureHandleARB(texture->id);
+		GLASSERT(texture->handle = glGetTextureHandleARB(texture->id));
 	}
-	glMakeTextureHandleResidentARB(texture->handle);
-	glProgramUniformHandleui64ARB(program, loc, texture->handle);
+	if (!glIsTextureHandleResidentARB(texture->handle))
+		GLASSERT(glMakeTextureHandleResidentARB(texture->handle));
+	GLASSERT(glProgramUniformHandleui64ARB(program, loc, texture->handle));
 }
 
 GLint GetComponentCount(const Color32& tag) { return 4; }

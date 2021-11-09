@@ -100,6 +100,8 @@ public:
     void Set(const char* name, Matrix4x4&& value);
     void Set(const char* name, Vector2& value);
     void Set(const char* name, Vector2&& value);
+    void Set(const char* name, Vector3& value);
+    void Set(const char* name, Vector3&& value);
     void Set(const char* name, float value);
     void Set(const char* name, Texture* texture);
 };

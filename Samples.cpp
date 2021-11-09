@@ -162,9 +162,12 @@ class Sample_BSPViewer :public Window
 	{
 		Window::OnCreate();
 		light.InitLightMap(8192, 8192);
-		light.SetLight(Vector3{ -2000,2000,-2000 }, Vector3{ 2000, -2000, 2000 }, 3000);
+		Vector3 lightPos{ -2000,2000,-2000 };
+		Vector3 lightDir{ 1,-1,1 };
+		float lightRange = 4096;
+		light.SetLight(lightPos, lightDir, lightRange);
 		lightmapMeshShader.Load("glsl/mesh_depth.vert", "glsl/mesh_depth.frag");
-		lightmapMeshShader.Set("light", light.matrix);
+		lightmapMeshShader.Set("lightmat", light.matrix);
 
 
 		firstPersonCamera.SetProjectionMatrix(3.1415926 / 2, 1.333f, 1, 5000);
@@ -174,7 +177,8 @@ class Sample_BSPViewer :public Window
 		meshShader.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
 		meshShader.Set("tex", &bspMapTexture);
 		meshShader.Set("shadowmap", &light.RT.depthTexture);
-		meshShader.Set("light", light.matrix);
+		meshShader.Set("lightmat", light.matrix);
+		meshShader.Set("lightdir", lightDir);
 		
 		forwardRT.Init(4096, 2048, 1, true);
 

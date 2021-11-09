@@ -178,7 +178,6 @@ class Sample_BSPViewer :public Window
 		meshShader.Set("tex", &bspMapTexture);
 		meshShader.Set("shadowmap", &light.RT.depthTexture);
 		meshShader.Set("lightmat", light.matrix);
-		meshShader.Set("lightdir", lightDir);
 		
 		forwardRT.Init(4096, 2048, 1, true);
 

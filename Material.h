@@ -6,6 +6,9 @@
 #include "Renderer.h"
 class IMaterialParam
 {
+	friend class Material;
+protected:
+	bool isDirty = true;
 public:
 	std::string name;
 	virtual void SetUniform(GLuint program, GLint location) = 0;
@@ -22,20 +25,23 @@ class MaterialParam : public IMaterialParam
 {
 public:
 	T value;
-	MaterialParam(std::string& name, T& value);
+	MaterialParam(std::string& name, T&& value);
 	void SetUniform(GLuint program, GLint location) override;
 };
 
 class Material
 {
-	GLuint program;
+	//GLuint program;
+	Shader* pShader;
 	std::map<GLint, IMaterialParam*> params;
 	std::map<GLint, IMaterialParam*> managedParams;
 public:
 	Material();
-	Material(const Shader& shader);
-	void Set(const Shader& shader);
+	Material(Shader* shader);
+	void Set(Shader* shader);
 	void Set(IMaterialParam* param);
+	template <typename T>
+	void Set(std::string name, T&& value);
 	template <typename T>
 	void Set(std::string name, T& value);
 	void Set(std::string name, float value);
@@ -44,28 +50,37 @@ public:
 };
 
 template<typename T>
-inline MaterialParam<T>::MaterialParam(std::string& name, T& value)
+inline MaterialParam<T>::MaterialParam(std::string& name, T&& value)
 {
 	this->name = name;
 	this->value = value;
+	this->isDirty = true;
 }
 
 template<typename T>
 inline void MaterialParam<T>::SetUniform(GLuint program, GLint location)
 {
 	_SetUniform(value, program, location);
+	isDirty = false;
 }
 
 template<typename T>
-inline void Material::Set(std::string name, T& value)
+inline void Material::Set(std::string name, T&& value)
 {
-	int location = glGetUniformLocation(program, name.c_str());
+	int location = glGetUniformLocation(pShader->program, name.c_str());
 	if (location < 0)
 		return;
 	params.erase(location);
 	auto it = managedParams.find(location);
 	if (it != managedParams.end())
 		delete it->second;
-	MaterialParam<T>* pParam = new MaterialParam<T>(name, value);
+	MaterialParam<T>* pParam = new MaterialParam<T>(name, std::move(value));
 	managedParams[location] = pParam;
+	pParam->isDirty = true;
+}
+
+template<typename T>
+inline void Material::Set(std::string name, T& value)
+{
+	Set(name, std::move(value));
 }

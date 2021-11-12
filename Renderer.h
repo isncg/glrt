@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <string>
+//#include "Material.h"
 typedef glm::vec3 Vector3;
 typedef glm::vec2 Vector2;
 typedef glm::vec4 Vector4;
@@ -93,6 +94,7 @@ struct Texture
 class Shader
 {
     friend class Material;
+    Material* lastMaterial = NULL;
 	GLuint program;
 public:
 	void Load(const char* vert, const char* frag);
@@ -122,6 +124,7 @@ class MeshRenderer
     std::vector<unsigned int> indices;
     int triangleCount;
 public:
+    Material* material;
     void Set(Mesh* pMesh);
     void Draw();
 };
@@ -168,6 +171,7 @@ class CanvasRenderer
     std::vector<unsigned int> indices;
     int triangleCount;
 public:
+    Material* material;
     void Set(CanvasMesh* pMesh);
     void SetFullScreen();
     void Draw();

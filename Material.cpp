@@ -35,19 +35,27 @@ Material::Material()
 {
 }
 
-Material::Material(const Shader& shader)
+Material::Material(Shader* shader)
 {
 	Set(shader);
 }
 
-void Material::Set(const Shader& shader)
+void Material::Set(Shader* shader)
 {
-	program = shader.program;
+	pShader = shader;
+	for (auto& it : params)
+	{
+		it.second->isDirty = true;
+	}
+	for (auto& it : managedParams)
+	{
+		it.second->isDirty = true;
+	}
 }
 
 void Material::Set(IMaterialParam* param)
 {
-	int location = glGetUniformLocation(program, param->name.c_str());
+	int location = glGetUniformLocation(pShader->program, param->name.c_str());
 	if (location < 0)
 		return;
 	auto it = managedParams.find(location);
@@ -55,18 +63,19 @@ void Material::Set(IMaterialParam* param)
 		delete it->second;
 	managedParams.erase(location);
 	params[location] = param;
+	param->isDirty = true;
 }
 
 void Material::Set(std::string name, float value)
 {
-	int location = glGetUniformLocation(program, name.c_str());
+	int location = glGetUniformLocation(pShader->program, name.c_str());
 	if (location < 0)
 		return;
 	params.erase(location);
 	auto it = managedParams.find(location);
 	if (it != managedParams.end())
 		delete it->second;
-	MaterialParam<float>* pParam = new MaterialParam<float>(name, value);
+	MaterialParam<float>* pParam = new MaterialParam<float>(name, std::move(value));
 	managedParams[location] = pParam;
 }
 
@@ -76,13 +85,22 @@ void Material::Set(std::string name, float value)
 
 void Material::Use()
 {
-	glUseProgram(program);
-	for (auto& it : params)
+	glUseProgram(pShader->program);
+	if (pShader->lastMaterial == this)
 	{
-		it.second->SetUniform(program, it.first);
+		for (auto& it : params)
+			if (it.second->isDirty)
+				it.second->SetUniform(pShader->program, it.first);
+		for (auto& it : managedParams)
+			if (it.second->isDirty)
+				it.second->SetUniform(pShader->program, it.first);
 	}
-	for (auto& it : managedParams)
+	else
 	{
-		it.second->SetUniform(program, it.first);
+		for (auto& it : params)
+			it.second->SetUniform(pShader->program, it.first);
+		for (auto& it : managedParams)
+			it.second->SetUniform(pShader->program, it.first);
 	}
+	pShader->lastMaterial = this;
 }

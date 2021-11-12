@@ -17,6 +17,12 @@ void Camera::SetShaderMat4(Shader& shader, const char* name)
 	shader.Set(name, mat_proj * mat_view);
 }
 
+Matrix4x4& Camera::GetMatrix()
+{
+	mat_cache = mat_proj * mat_view;
+	return mat_cache;
+}
+
 
 void CameraController::Update()
 {

@@ -171,7 +171,7 @@ class Sample_BSPViewer :public Window
 		float lightRange = 4096;
 		light.SetLight(lightPos, lightDir, lightRange);
 		lightmapMeshShader.Load("glsl/mesh_depth.vert", "glsl/mesh_depth.frag");
-		lightmapMaterial.Set(lightmapMeshShader);
+		lightmapMaterial.Set(&lightmapMeshShader);
 		lightmapMaterial.Set("lightmat", light.matrix);
 
 
@@ -180,7 +180,7 @@ class Sample_BSPViewer :public Window
 		LoadBSPMap(&bspMapModel, "assets/de_dust2.bsp");
 		LoadTexture(&bspMapTexture, "assets/256.bmp");
 		meshShader.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
-		meshMaterial.Set(meshShader);
+		meshMaterial.Set(&meshShader);
 		meshMaterial.Set("tex", bspMapTexture);
 		meshMaterial.Set("shadowmap", light.RT.depthTexture);
 		meshMaterial.Set("lightmat", light.matrix);
@@ -191,13 +191,13 @@ class Sample_BSPViewer :public Window
 
 		canvasRenderer.SetFullScreen();
 		canvasShader.Load("glsl/canvas.vert", "glsl/canvas.frag");
-		canvasMaterial.Set(canvasShader);
+		canvasMaterial.Set(&canvasShader);
 		canvasMaterial.Set("ssize",16);
 		canvasMaterial.Set("blur", 4);
 		canvasMaterial.Set("clipRange", firstPersonCamera.ClipRange());
 		canvasMaterial.Set("tex", forwardRT.colorTextures[0]);
 		canvasMaterial.Set("depth", light.RT.depthTexture);
-
+		canvasRenderer.material = &canvasMaterial;
 		glEnable(GL_DEPTH_TEST);
 	}
 
@@ -206,22 +206,21 @@ class Sample_BSPViewer :public Window
 		light.RT.Bind();
 		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
 		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-		lightmapMaterial.Use();
+		meshRenderer.material = &lightmapMaterial;
 		meshRenderer.Draw();
 
 		forwardRT.Bind();
 		firstPersonCamController.Update();
 		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
 		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-		meshMaterial.Use();
-		firstPersonCamera.SetShaderMat4(meshShader, "_mvp");
+		meshMaterial.Set("_mvp", firstPersonCamera.GetMatrix());
+		meshRenderer.material = &meshMaterial;
 		GLASSERT(meshRenderer.Draw());
 	}
 
 	virtual void Render() override
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		canvasMaterial.Use();
 		canvasRenderer.Draw();
 	}
 };

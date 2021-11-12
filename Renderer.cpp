@@ -1,3 +1,4 @@
+#include "Material.h"
 #include "Renderer.h"
 #include "utils/vertex_buffer_builder.h"
 #include "utils/stdhelpers.h"
@@ -63,7 +64,6 @@ void MeshRenderer::Draw()
 	if (vao <= 0 || indices.size() < 3)
 		return;
 	GLASSERT(glBindVertexArray(vao));
-
 	/********************************************************************* glDrawElements *********************************************************************
 	https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glDrawElements.xhtml
 	mode
@@ -93,6 +93,8 @@ Specifies the starting index in the enabled arrays.
 count
 Specifies the number of indices to be rendered.
 ********************************************************************** glDrawArrays ********************************************************************/
+	if (nullptr != material)
+		material->Use();
 	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
 	//GLASSERT(glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3));
 }
@@ -289,6 +291,8 @@ void CanvasRenderer::Draw()
 {
 	if (vao <= 0 || indices.size() < 3)
 		return;
+	if (nullptr != this->material)
+		material->Use();
 	GLASSERT(glBindVertexArray(vao));
 	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
 }

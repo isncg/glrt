@@ -13,11 +13,13 @@ class Camera
 	friend class CameraController;
 	Matrix4x4 mat_view;
 	Matrix4x4 mat_proj;
+	Matrix4x4 mat_cache;
 	Vector2 _clipRange;
 public:
 	Vector2& ClipRange();
 	void SetProjectionMatrix(float fovY, float aspect, float zNear, float zFar);
 	void SetShaderMat4(Shader& shader, const char* name = "_cam");
+	Matrix4x4& GetMatrix();
 };
 
 class CameraController

@@ -92,6 +92,7 @@ struct Texture
 
 class Shader
 {
+    friend class Material;
 	GLuint program;
 public:
 	void Load(const char* vert, const char* frag);

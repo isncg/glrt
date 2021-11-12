@@ -131,6 +131,7 @@ class Sample_MouseLook :public Window
 #include "Camera.h"
 #include "RenderTarget.h"
 #include "Light.h"
+#include "Material.h"
 class Sample_BSPViewer :public Window
 {
 	Camera firstPersonCamera;
@@ -139,14 +140,17 @@ class Sample_BSPViewer :public Window
 	Model bspMapModel;
 	Texture bspMapTexture;
 	Shader meshShader;
+	Material meshMaterial;
 	MeshRenderer meshRenderer;
 	
 	RenderTarget forwardRT;
 	Shader canvasShader;
+	Material canvasMaterial;
 	CanvasRenderer canvasRenderer;
 
 	DirectionalLight light;
 	Shader lightmapMeshShader;
+	Material lightmapMaterial;
 
 	virtual void OnMouseMove(long dx, long dy, long x, long y) override
 	{
@@ -167,7 +171,8 @@ class Sample_BSPViewer :public Window
 		float lightRange = 4096;
 		light.SetLight(lightPos, lightDir, lightRange);
 		lightmapMeshShader.Load("glsl/mesh_depth.vert", "glsl/mesh_depth.frag");
-		lightmapMeshShader.Set("lightmat", light.matrix);
+		lightmapMaterial.Set(lightmapMeshShader);
+		lightmapMaterial.Set("lightmat", light.matrix);
 
 
 		firstPersonCamera.SetProjectionMatrix(3.1415926 / 2, 1.333f, 1, 5000);
@@ -175,9 +180,10 @@ class Sample_BSPViewer :public Window
 		LoadBSPMap(&bspMapModel, "assets/de_dust2.bsp");
 		LoadTexture(&bspMapTexture, "assets/256.bmp");
 		meshShader.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
-		meshShader.Set("tex", &bspMapTexture);
-		meshShader.Set("shadowmap", &light.RT.depthTexture);
-		meshShader.Set("lightmat", light.matrix);
+		meshMaterial.Set(meshShader);
+		meshMaterial.Set("tex", bspMapTexture);
+		meshMaterial.Set("shadowmap", light.RT.depthTexture);
+		meshMaterial.Set("lightmat", light.matrix);
 		
 		forwardRT.Init(4096, 2048, 1, true);
 
@@ -185,11 +191,12 @@ class Sample_BSPViewer :public Window
 
 		canvasRenderer.SetFullScreen();
 		canvasShader.Load("glsl/canvas.vert", "glsl/canvas.frag");
-		canvasShader.Set("ssize",16);
-		canvasShader.Set("blur", 4);
-		canvasShader.Set("clipRange", firstPersonCamera.ClipRange());
-		canvasShader.Set("tex", &forwardRT.colorTextures[0]);
-		canvasShader.Set("depth", &light.RT.depthTexture);
+		canvasMaterial.Set(canvasShader);
+		canvasMaterial.Set("ssize",16);
+		canvasMaterial.Set("blur", 4);
+		canvasMaterial.Set("clipRange", firstPersonCamera.ClipRange());
+		canvasMaterial.Set("tex", forwardRT.colorTextures[0]);
+		canvasMaterial.Set("depth", light.RT.depthTexture);
 
 		glEnable(GL_DEPTH_TEST);
 	}
@@ -199,14 +206,14 @@ class Sample_BSPViewer :public Window
 		light.RT.Bind();
 		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
 		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-		lightmapMeshShader.Use();
+		lightmapMaterial.Use();
 		meshRenderer.Draw();
 
 		forwardRT.Bind();
 		firstPersonCamController.Update();
 		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
 		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-		meshShader.Use();
+		meshMaterial.Use();
 		firstPersonCamera.SetShaderMat4(meshShader, "_mvp");
 		GLASSERT(meshRenderer.Draw());
 	}
@@ -214,7 +221,7 @@ class Sample_BSPViewer :public Window
 	virtual void Render() override
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		canvasShader.Use();
+		canvasMaterial.Use();
 		canvasRenderer.Draw();
 	}
 };

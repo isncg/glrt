@@ -43,7 +43,7 @@ public:
 	stWadTexture_C* meta;
 	stWadBGRA* mipmaps[4];
 	stWadRGB* palette;
-	void Init(char* buffer);
+	void Init(uint8_t* buffer);
 	void Release();
 };
 
@@ -62,7 +62,7 @@ struct stWadLumpItemInfo
 class WadLampItem
 {
 public:
-	char* buffer;
+	uint8_t* buffer;
 	stWadLumpItemInfo meta;
 	union
 	{
@@ -73,7 +73,7 @@ public:
 
 class WadFile
 {
-	char* buffer;
+	uint8_t* buffer;
 public:
 	stWadHeader header;
 	std::vector<WadLampItem> items;

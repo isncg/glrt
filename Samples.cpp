@@ -256,8 +256,8 @@ class Sample_WAD :public Window
 		cr.pos.y = hh;
 		cr.xMin = 5;
 		cr.yMax = -5;
-		cr.xMax = 405;
-		cr.yMin = -405;
+		cr.xMax = 517;
+		cr.yMin = -517;
 		canvasMesh.Set(cr, hw, hh);
 
 		shader.Load("glsl/canvas.vert", "glsl/canvas.frag");

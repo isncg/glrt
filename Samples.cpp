@@ -235,6 +235,13 @@ class Sample_WAD :public Window
 	Texture texture;
 	CanvasRenderer renderer;
 	WadFile wad;
+
+	virtual void GetInitSize(long* width, long* height) override
+	{
+		*width = 522;
+		*height = 522;
+	}
+
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
@@ -244,8 +251,8 @@ class Sample_WAD :public Window
 		auto mip0 = wadTexture.mipmaps[0];
 		glBindTexture(GL_TEXTURE_2D, texture.id);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wadTexture.meta->width, wadTexture.meta->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip0);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		texture.handle = glGetTextureHandleARB(texture.id);
 
 		RECT rect;

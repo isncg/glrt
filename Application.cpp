@@ -27,7 +27,8 @@ int Application::Run(Window* pMainWindow, bool allocConsole)
         RegisterClassExW(&wcex);
     }
 
-	RECT rect{ 0,0,1280,720 };
+    RECT rect{ 0 };
+    pMainWindow->GetInitSize(&rect.right, &rect.bottom);
     AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, TRUE);
     //HWND hWnd = InitInstance(hInstance, nCmdShow);
     HWND hWnd = CreateWindowW(wcex.lpszClassName, pMainWindow->szTitle, WS_OVERLAPPEDWINDOW,

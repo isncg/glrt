@@ -224,4 +224,58 @@ class Sample_BSPViewer :public Window
 		canvasRenderer.Draw();
 	}
 };
-RUN_WINDOW(Sample_BSPViewer)
+//RUN_WINDOW(Sample_BSPViewer)
+
+#include <wad/WADFile.h>
+class Sample_WAD :public Window
+{
+	Shader shader;
+	CanvasMesh canvasMesh;
+	CanvasRect cr;
+	Texture texture;
+	CanvasRenderer renderer;
+	WadFile wad;
+	virtual void OnCreate() override
+	{
+		Window::OnCreate();
+		wad.Load("assets/cs_dust.wad");
+		glGenTextures(1, &texture.id);
+		auto wadTexture = wad.items[0].textureC;
+		auto mip0 = wadTexture.mipmaps[0];
+		glBindTexture(GL_TEXTURE_2D, texture.id);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wadTexture.meta->width, wadTexture.meta->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip0);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		texture.handle = glGetTextureHandleARB(texture.id);
+
+		RECT rect;
+		GetClientRect(hWnd, &rect);
+		float hw = (rect.right - rect.left) / 2.0f;
+		float hh = (rect.bottom - rect.top) / 2.0f;
+		cr.pos.x = -hw;
+		cr.pos.y = hh;
+		cr.xMin = 5;
+		cr.yMax = -5;
+		cr.xMax = 405;
+		cr.yMin = -405;
+		canvasMesh.Set(cr, hw, hh);
+
+		shader.Load("glsl/canvas.vert", "glsl/canvas.frag");
+		shader.Set("tex", &texture);
+		shader.Use();
+
+		renderer.Set(&canvasMesh);
+		glAssert("oncreate finish");
+
+	}
+
+	virtual void Render() override
+	{
+		glClearColor(0.2, 0.2, 0.2, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		shader.Use();
+		GLASSERT(renderer.Draw());
+	}
+};
+
+RUN_WINDOW(Sample_WAD)

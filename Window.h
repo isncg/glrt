@@ -97,6 +97,7 @@ protected:
 	HGLRC hGLRC;
 	
 	virtual LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam);
+	virtual void GetInitSize(long* width, long* height);
 	virtual void OnPaint(HDC hdc);
 	virtual void OnDestroy();
 	virtual void OnCreate();

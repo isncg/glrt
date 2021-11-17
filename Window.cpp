@@ -136,6 +136,12 @@ LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+void Window::GetInitSize(long* width, long* height)
+{
+	*width = 1280;
+	*height = 720;
+}
+
 void Window::OnPaint(HDC hdc)
 {
 }

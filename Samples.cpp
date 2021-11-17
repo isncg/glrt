@@ -286,41 +286,28 @@ class Sample_WAD :public Window
 	Shader shader;
 	CanvasMesh canvasMesh;
 	CanvasRect cr;
-	//Texture texture;
+	Texture texture;
 	CanvasRenderer renderer;
 	WadFile wad;
-	std::vector<Texture> textures;
-	void LoadTextures()
+
+	virtual void GetInitSize(long* width, long* height) override
 	{
-		wad.Load("assets/cs_dust.wad");
-		for (auto& item : wad.items)
-		{
-			if (item.meta.type == 'C')
-			{
-				Texture texture;
-				glGenTextures(1, &texture.id);
-				glBindTexture(GL_TEXTURE_2D, texture.id);
-				auto wadTexture = item.textureC;
-				for (int level = 0; level < 4; level++)
-				{
-					auto mip = wadTexture.mipmaps[level];
-					glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, wadTexture.meta->width >> level, wadTexture.meta->height >> level, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip);
-				}
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				texture.handle = glGetTextureHandleARB(texture.id);
-				textures.push_back(texture);
-			}
-			else
-			{
-				textures.push_back(Texture{ 0 });
-			}
-		}
+		*width = 522;
+		*height = 522;
 	}
+
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
-		LoadTextures();	
+		wad.Load("assets/cs_dust.wad");
+		glGenTextures(1, &texture.id);
+		auto wadTexture = wad.items[0].textureC;
+		auto mip0 = wadTexture.mipmaps[0];
+		glBindTexture(GL_TEXTURE_2D, texture.id);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wadTexture.meta->width, wadTexture.meta->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip0);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		texture.handle = glGetTextureHandleARB(texture.id);
 
 		RECT rect;
 		GetClientRect(hWnd, &rect);
@@ -330,12 +317,12 @@ class Sample_WAD :public Window
 		cr.pos.y = hh;
 		cr.xMin = 5;
 		cr.yMax = -5;
-		cr.xMax = 405;
-		cr.yMin = -405;
+		cr.xMax = 517;
+		cr.yMin = -517;
 		canvasMesh.Set(cr, hw, hh);
 
 		shader.Load("glsl/canvas.vert", "glsl/canvas.frag");
-		shader.Set("tex", &textures[0]);
+		shader.Set("tex", &texture);
 		shader.Use();
 
 		renderer.Set(&canvasMesh);

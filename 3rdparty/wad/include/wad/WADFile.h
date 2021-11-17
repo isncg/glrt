@@ -8,17 +8,17 @@
 #include <vector>
 typedef struct
 {
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
 } stWadRGB;
 
 typedef struct
 {
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
-	unsigned char a;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	uint8_t a;
 } stWadBGRA;
 
 
@@ -43,7 +43,7 @@ public:
 	stWadTexture_C* meta;
 	stWadBGRA* mipmaps[4];
 	stWadRGB* palette;
-	void Init(char* buffer);
+	void Init(uint8_t* buffer);
 	void Release();
 };
 
@@ -53,16 +53,16 @@ struct stWadLumpItemInfo
 	int			filepos;
 	int			disksize;
 	int			size;					// uncompressed
-	char		type;
-	char		compression;
-	char		pad1, pad2;
+	uint8_t		type;
+	uint8_t		compression;
+	uint8_t		pad1, pad2;
 	char		name[16];				// must be null terminated
 };
 
 class WadLampItem
 {
 public:
-	char* buffer;
+	uint8_t* buffer;
 	stWadLumpItemInfo meta;
 	union
 	{
@@ -73,7 +73,7 @@ public:
 
 class WadFile
 {
-	char* buffer;
+	uint8_t* buffer;
 public:
 	stWadHeader header;
 	std::vector<WadLampItem> items;

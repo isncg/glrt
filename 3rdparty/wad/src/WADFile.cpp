@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <corecrt_malloc.h>
-
 void WadFile::Load(std::string filename)
 {
 	FILE* f = 0;
@@ -20,7 +19,7 @@ void WadFile::Load(std::string filename)
 	fseek(f, 0, SEEK_END);
 	auto size = ftell(f);
 	fseek(f, 0, SEEK_SET);
-	buffer = new char[size];
+	buffer = new uint8_t[size];
 	fread(buffer, 1, size, f);
 	fclose(f);
 	stWadLumpItemInfo* wadlumps = (stWadLumpItemInfo*)(buffer + header.infotableofs);
@@ -28,13 +27,16 @@ void WadFile::Load(std::string filename)
 	{
 		WadLampItem item{ buffer, wadlumps[i] };
 		auto ptr = buffer + item.meta.filepos;
-		if(item.meta.type == 'C')
+		printf("Lump %c %s\n", item.meta.type, item.meta.name);
+		if (item.meta.type == 'C')
 			item.textureC.Init(ptr);
+		else
+			continue;
 		items.push_back(item);
 	}	
 }
 
-void WadTexture_C::Init(char* buffer)
+void WadTexture_C::Init(uint8_t* buffer)
 {
 	meta = (stWadTexture_C*)buffer;
 	unsigned int mipsize0 = meta->width * meta->height;
@@ -47,7 +49,7 @@ void WadTexture_C::Init(char* buffer)
 	mipmaps[3] = new stWadBGRA[mipsize3];
 	int mipsize[4]{ mipsize0 ,mipsize1 ,mipsize2 ,mipsize3 };
 
-	char* unknown = buffer + meta->mipOffsets[3] + mipsize3;
+	uint8_t* unknown = buffer + meta->mipOffsets[3] + mipsize3;
 	if (unknown[0] != 0x00 && unknown[1] != 0x01)
 		return;
 	palette = (stWadRGB*)(unknown + 2);
@@ -55,10 +57,10 @@ void WadTexture_C::Init(char* buffer)
 	int miplevel = 0;
 	while (miplevel<4)
 	{
-		char* origin = buffer + meta->mipOffsets[miplevel];
+		uint8_t* origin = buffer + meta->mipOffsets[miplevel];
 		for (int i = 0; i < mipsize[miplevel]; i++)
 		{
-			char index = origin[i];
+			uint8_t index = origin[i];
 			stWadRGB color = palette[index];
 			if (color.b == 0xff)
 				mipmaps[miplevel][i] = stWadBGRA{ 0,0,0,0 };

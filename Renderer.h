@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <map>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <string>
@@ -76,6 +77,8 @@ struct ModelTreeNode
 struct Model
 {
     std::vector<Mesh> meshCollection;
+    std::vector<std::string> matNames;
+    std::map<std::string, int> meshDict;
     ModelTreeNode root;
 };
 

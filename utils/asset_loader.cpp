@@ -221,7 +221,7 @@ bool LoadBSPMap(Model* output, const char* file)
     unsigned nPolygons = model->nFaces;
     auto m_bspLoader = &loader;
     
-    Mesh mesh;
+    //Mesh mesh;
     
     // Go through all the faces of BSPMODEL
     for (unsigned faceId = model->iFirstFace; faceId < (model->iFirstFace + model->nFaces); faceId++) 
@@ -257,6 +257,20 @@ bool LoadBSPMap(Model* output, const char* file)
             normal.z *= -1.0f;
         }
       
+        Mesh* pMesh = nullptr;
+        auto meshit = output->meshDict.find(tex.szName);
+        if (meshit == output->meshDict.end())
+        {
+            Mesh mr;
+            output->meshCollection.push_back(mr);
+            output->matNames.push_back(tex.szName);
+            pMesh = (output->meshCollection.end() - 1)._Ptr;
+			output->meshDict[tex.szName] = output->meshCollection.size() - 1;
+        }
+        else
+        {
+            pMesh = &output->meshCollection[meshit->second];
+        }
 
         // For each surfedge
         bsp30::VECTOR3D v_;
@@ -286,21 +300,21 @@ bool LoadBSPMap(Model* output, const char* file)
                 Vector3 p1{ v1.x, v1.z, -v1.y };
 
                 Vector3 normal = glm::normalize(glm::cross(p0 - p_, p0 - p1));
-                float uvscale = 0.005f;
-                mesh.triangles.push_back(mesh.vertices.size());
-                mesh.vertices.push_back(p_);
-                mesh.normals.push_back(normal);
-				mesh.uv.push_back({ glm::dot(uvscale *p_ , texVS) + texInfo.fSShift, glm::dot(uvscale * p_ , texVT) + texInfo.fTShift });
+                float uvscale = 0.004f;
+                pMesh->triangles.push_back(pMesh->vertices.size());
+                pMesh->vertices.push_back(p_);
+                pMesh->normals.push_back(normal);
+				pMesh->uv.push_back({ glm::dot(uvscale *p_ , texVS) + texInfo.fSShift, glm::dot(uvscale * p_ , texVT) + texInfo.fTShift });
 
-                mesh.triangles.push_back(mesh.vertices.size());
-                mesh.vertices.push_back(p0);
-                mesh.normals.push_back(normal);
-                mesh.uv.push_back({ glm::dot(uvscale * p0 , texVS) + texInfo.fSShift, glm::dot(uvscale * p0 , texVT) + texInfo.fTShift });
+                pMesh->triangles.push_back(pMesh->vertices.size());
+                pMesh->vertices.push_back(p0);
+                pMesh->normals.push_back(normal);
+                pMesh->uv.push_back({ glm::dot(uvscale * p0 , texVS) + texInfo.fSShift, glm::dot(uvscale * p0 , texVT) + texInfo.fTShift });
                 
-                mesh.triangles.push_back(mesh.vertices.size());
-                mesh.vertices.push_back(p1);
-                mesh.normals.push_back(normal);
-                mesh.uv.push_back({ glm::dot(uvscale * p1 , texVS) + texInfo.fSShift, glm::dot(uvscale * p1 , texVT) + texInfo.fTShift });
+                pMesh->triangles.push_back(pMesh->vertices.size());
+                pMesh->vertices.push_back(p1);
+                pMesh->normals.push_back(normal);
+                pMesh->uv.push_back({ glm::dot(uvscale * p1 , texVS) + texInfo.fSShift, glm::dot(uvscale * p1 , texVT) + texInfo.fTShift });
             }
 
         // Every edge naturally defines a tangent as well
@@ -321,7 +335,7 @@ bool LoadBSPMap(Model* output, const char* file)
         }
     }    
    
-    output->meshCollection.push_back(mesh);
+    //output->meshCollection.push_back(mesh);
     return true;
 }
 

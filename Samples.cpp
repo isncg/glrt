@@ -132,6 +132,7 @@ class Sample_MouseLook :public Window
 #include "RenderTarget.h"
 #include "Light.h"
 #include "Material.h"
+#include <wad/WADFile.h>
 class Sample_BSPViewer :public Window
 {
 	Camera firstPersonCamera;
@@ -140,8 +141,10 @@ class Sample_BSPViewer :public Window
 	Model bspMapModel;
 	Texture bspMapTexture;
 	Shader meshShader;
-	Material meshMaterial;
-	MeshRenderer meshRenderer;
+	//Material meshMaterial;
+	//MeshRenderer meshRenderer;
+	std::vector<MeshRenderer> meshRenderer;
+	std::vector<Material> meshMaterial;
 	
 	RenderTarget forwardRT;
 	Shader canvasShader;
@@ -151,7 +154,33 @@ class Sample_BSPViewer :public Window
 	DirectionalLight light;
 	Shader lightmapMeshShader;
 	Material lightmapMaterial;
-
+	std::map<std::string, Texture> textures;
+	
+	WadFile wad;
+	void LoadTextures()
+	{
+		wad.Load("assets/cs_dust.wad");
+		for (auto& item : wad.items)
+		{
+			if (item.meta.type == 'C')
+			{
+				Texture texture;
+				glGenTextures(1, &texture.id);
+				glBindTexture(GL_TEXTURE_2D, texture.id);
+				auto wadTexture = item.textureC;
+				for (int level = 0; level < 4; level++)
+				{
+					auto mip = wadTexture.mipmaps[level];
+					glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, wadTexture.meta->width >> level, wadTexture.meta->height >> level, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip);
+				}
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				texture.handle = glGetTextureHandleARB(texture.id);
+				char* name = item.meta.name;
+				textures[name] = texture;
+			}
+		}
+	}
 	virtual void OnMouseMove(long dx, long dy, long x, long y) override
 	{
 		firstPersonCamController.OnMouseMove(dx, dy, x, y);
@@ -165,6 +194,7 @@ class Sample_BSPViewer :public Window
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
+		LoadTextures();
 		light.InitLightMap(8192, 8192);
 		Vector3 lightPos{ -2000,2000,-2000 };
 		Vector3 lightDir{ 1,-1,1 };
@@ -180,14 +210,31 @@ class Sample_BSPViewer :public Window
 		LoadBSPMap(&bspMapModel, "assets/de_dust2.bsp");
 		LoadTexture(&bspMapTexture, "assets/256.bmp");
 		meshShader.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
-		meshMaterial.Set(&meshShader);
-		meshMaterial.Set("tex", bspMapTexture);
-		meshMaterial.Set("shadowmap", light.RT.depthTexture);
-		meshMaterial.Set("lightmat", light.matrix);
 		
 		forwardRT.Init(4096, 2048, 1, true);
 
-		meshRenderer.Set(&bspMapModel.meshCollection.front());
+		for (int i = 0; i < bspMapModel.meshCollection.size(); i++)
+		{
+			MeshRenderer mr;
+			meshRenderer.push_back(mr);
+			meshRenderer[i].Set(&bspMapModel.meshCollection[i]);
+
+			Material mt;
+			meshMaterial.push_back(mt);
+			meshMaterial[i].Set(&meshShader);
+
+			auto texi = textures.find(bspMapModel.matNames[i]);
+			if(texi!=textures.end())
+				meshMaterial[i].Set("tex", texi->second);
+			else
+			{
+				meshMaterial[i].Set("tex", bspMapTexture);
+				std::cout << "Missing texture: " << bspMapModel.matNames[i] << std::endl;
+			}
+			meshMaterial[i].Set("shadowmap", light.RT.depthTexture);
+			meshMaterial[i].Set("lightmat", light.matrix);
+
+		}
 
 		canvasRenderer.SetFullScreen();
 		canvasShader.Load("glsl/canvas.vert", "glsl/canvas.frag");
@@ -206,16 +253,23 @@ class Sample_BSPViewer :public Window
 		light.RT.Bind();
 		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
 		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-		meshRenderer.material = &lightmapMaterial;
-		meshRenderer.Draw();
+		for (auto& mr : meshRenderer)
+		{
+			mr.material = &lightmapMaterial;
+			mr.Draw();
+		}
 
 		forwardRT.Bind();
 		firstPersonCamController.Update();
 		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
 		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-		meshMaterial.Set("_mvp", firstPersonCamera.GetMatrix());
-		meshRenderer.material = &meshMaterial;
-		GLASSERT(meshRenderer.Draw());
+
+		for (int i = 0; i < meshRenderer.size(); i++)
+		{
+			meshMaterial[i].Set("_mvp", firstPersonCamera.GetMatrix());
+			meshRenderer[i].material = &meshMaterial[i];
+			GLASSERT(meshRenderer[i].Draw());
+		}
 	}
 
 	virtual void Render() override
@@ -224,29 +278,49 @@ class Sample_BSPViewer :public Window
 		canvasRenderer.Draw();
 	}
 };
-//RUN_WINDOW(Sample_BSPViewer)
+RUN_WINDOW(Sample_BSPViewer)
 
-#include <wad/WADFile.h>
+
 class Sample_WAD :public Window
 {
 	Shader shader;
 	CanvasMesh canvasMesh;
 	CanvasRect cr;
-	Texture texture;
+	//Texture texture;
 	CanvasRenderer renderer;
 	WadFile wad;
+	std::vector<Texture> textures;
+	void LoadTextures()
+	{
+		wad.Load("assets/cs_dust.wad");
+		for (auto& item : wad.items)
+		{
+			if (item.meta.type == 'C')
+			{
+				Texture texture;
+				glGenTextures(1, &texture.id);
+				glBindTexture(GL_TEXTURE_2D, texture.id);
+				auto wadTexture = item.textureC;
+				for (int level = 0; level < 4; level++)
+				{
+					auto mip = wadTexture.mipmaps[level];
+					glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, wadTexture.meta->width >> level, wadTexture.meta->height >> level, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip);
+				}
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				texture.handle = glGetTextureHandleARB(texture.id);
+				textures.push_back(texture);
+			}
+			else
+			{
+				textures.push_back(Texture{ 0 });
+			}
+		}
+	}
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
-		wad.Load("assets/cs_dust.wad");
-		glGenTextures(1, &texture.id);
-		auto wadTexture = wad.items[0].textureC;
-		auto mip0 = wadTexture.mipmaps[0];
-		glBindTexture(GL_TEXTURE_2D, texture.id);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wadTexture.meta->width, wadTexture.meta->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip0);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		texture.handle = glGetTextureHandleARB(texture.id);
+		LoadTextures();	
 
 		RECT rect;
 		GetClientRect(hWnd, &rect);
@@ -261,7 +335,7 @@ class Sample_WAD :public Window
 		canvasMesh.Set(cr, hw, hh);
 
 		shader.Load("glsl/canvas.vert", "glsl/canvas.frag");
-		shader.Set("tex", &texture);
+		shader.Set("tex", &textures[0]);
 		shader.Use();
 
 		renderer.Set(&canvasMesh);
@@ -278,4 +352,4 @@ class Sample_WAD :public Window
 	}
 };
 
-RUN_WINDOW(Sample_WAD)
+//RUN_WINDOW(Sample_WAD)

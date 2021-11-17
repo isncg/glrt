@@ -6,7 +6,7 @@
 #include <assimp/postprocess.h>     // Post processing flags
 #include <bsp30/BSPLoader.h>
 #pragma comment(lib, "assimp-vc142-mt.lib")
-
+#include <wad/WADFile.h>
 bool LoadMesh(Mesh* output, aiMesh* input)
 {
     for (int i = 0; i < input->mNumVertices; i++)
@@ -203,7 +203,7 @@ bsp30::VECTOR3D SwitchHandedness(bsp30::VECTOR3D v) {
     return bsp30::VECTOR3D(v.x, v.z, v.y);
 }
 
-bool LoadBSPMap(Model* output, const char* file)
+bool LoadBSPMap(Model* output, std::map<std::string, Texture> *internalTextures,  const char* file)
 {
     bsp30::BSPLoader loader(file);
     loader.ReadVertices();
@@ -333,9 +333,33 @@ bool LoadBSPMap(Model* output, const char* file)
             float u = (texInfo.vS.x * v0.x + texInfo.vS.y * v0.y + texInfo.vS.z * v0.z) + texInfo.fSShift;
             float v = (texInfo.vT.x * v0.x + texInfo.vT.y * v0.y + texInfo.vT.z * v0.z) + texInfo.fTShift;
         }
-    }    
-   
-    //output->meshCollection.push_back(mesh);
+    }   
+
+    if (nullptr != internalTextures)
+    {
+        for (auto& item : loader.m_internalTextures)
+        {
+            WadTexture_C wadTexture;
+            wadTexture.Init((uint8_t*)item);
+            char* name = wadTexture.meta->name;
+            if (internalTextures->find(name) != internalTextures->end())
+            {
+                continue;
+            }
+            Texture texture;
+            glGenTextures(1, &texture.id);
+            glBindTexture(GL_TEXTURE_2D, texture.id);
+            for (int level = 0; level < 4; level++)
+            {
+                auto mip = wadTexture.mipmaps[level];
+                glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, wadTexture.meta->width >> level, wadTexture.meta->height >> level, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip);
+            }
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            texture.handle = glGetTextureHandleARB(texture.id);
+            (*internalTextures)[name] = texture;
+        }
+    }
     return true;
 }
 

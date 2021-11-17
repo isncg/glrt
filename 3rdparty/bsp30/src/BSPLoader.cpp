@@ -252,6 +252,21 @@ namespace bsp30
 			//printf("Texture offset : %u :: %u\n", i, m_TextureOffsets[i]);
 			m_FileStream.seekg(textureDataOffset + m_TextureOffsets[i], std::ios::beg);
 			m_FileStream.read((char*)&m_Textures[i], sizeof(BSPMIPTEX));
+			if (m_Textures[i].nOffsets[0]>0 && 
+				m_Textures[i].nOffsets[1] > 0 &&
+				m_Textures[i].nOffsets[2] > 0 &&
+				m_Textures[i].nOffsets[3] > 0)
+			{
+				uint32_t width = m_Textures[i].nWidth;
+				uint32_t height = m_Textures[i].nHeight;
+				uint32_t size = (width >> 3 + height >> 3) * 3 + m_Textures[i].nOffsets[3];
+				size += 2;
+				size += 256 * 6; // 不知道应该取多大，反正小了不行
+				m_FileStream.seekg(textureDataOffset + m_TextureOffsets[i], std::ios::beg);
+				char* buffer = new char[size];
+				m_FileStream.read(buffer, size);
+				m_internalTextures.push_back((BSPMIPTEX*)buffer);
+			}
 		}
 
 		// Print textures

@@ -95,6 +95,7 @@ namespace bsp30
 		unsigned			m_nTextures;
 		BSPMIPTEXOFFSET* m_TextureOffsets;	// Array of Texture Offsets
 		BSPMIPTEX* m_Textures;			// Array of Textures
+		std::vector<BSPMIPTEX*> m_internalTextures;
 
 		unsigned			m_nTextureInfos;
 		BSPTEXTUREINFO* m_TextureInfos;		// Array of TextureInfos

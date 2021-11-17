@@ -216,7 +216,7 @@ class Sample_BSPViewer :public Window
 
 		firstPersonCamera.SetProjectionMatrix(3.1415926 / 3, (float)w/(float)h, 1, 5000);
 		firstPersonCamController.camera = &firstPersonCamera;
-		LoadBSPMap(&bspMapModel, "assets/de_dust.bsp");
+		LoadBSPMap(&bspMapModel,&textures, "assets/de_dust2.bsp");
 		LoadTexture(&bspMapTexture, "assets/256.bmp");
 		meshShader.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
 		

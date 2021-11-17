@@ -300,7 +300,7 @@ bool LoadBSPMap(Model* output, const char* file)
                 Vector3 p1{ v1.x, v1.z, -v1.y };
 
                 Vector3 normal = glm::normalize(glm::cross(p0 - p_, p0 - p1));
-                float uvscale = 0.004f;
+                float uvscale = 1.0;
                 pMesh->triangles.push_back(pMesh->vertices.size());
                 pMesh->vertices.push_back(p_);
                 pMesh->normals.push_back(normal);

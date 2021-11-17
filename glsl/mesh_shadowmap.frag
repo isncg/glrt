@@ -28,6 +28,7 @@ void main()
         direct=0;
     float emmi = 0.5;
     float l = diffuse*direct+emmi;
-    color = vec4(texture(tex, frag_uv).rgb* l, 1.0);
+    ivec2 texSize = textureSize(tex, 0);
+    color = vec4(texture(tex, vec2(frag_uv.x/texSize.x, frag_uv.y/texSize.y)).rgb* l, 1.0);
 
 }

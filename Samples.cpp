@@ -156,14 +156,24 @@ class Sample_BSPViewer :public Window
 	Material lightmapMaterial;
 	std::map<std::string, Texture> textures;
 	
-	WadFile wad;
-	void LoadTextures()
+	long w = 1280, h = 720;
+	void GetInitSize(long* width, long* height) override
 	{
-		wad.Load("assets/cs_dust.wad");
+		*width = w;
+		*height = h;
+	}
+
+	void LoadTextures(std::string wadFilename)
+	{
+		WadFile wad;
+		wad.Load(wadFilename);
 		for (auto& item : wad.items)
 		{
 			if (item.meta.type == 'C')
 			{
+				char* name = item.meta.name;
+				if (textures.find(name) != textures.end())
+					continue;
 				Texture texture;
 				glGenTextures(1, &texture.id);
 				glBindTexture(GL_TEXTURE_2D, texture.id);
@@ -176,7 +186,6 @@ class Sample_BSPViewer :public Window
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				texture.handle = glGetTextureHandleARB(texture.id);
-				char* name = item.meta.name;
 				textures[name] = texture;
 			}
 		}
@@ -194,10 +203,10 @@ class Sample_BSPViewer :public Window
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
-		LoadTextures();
+		LoadTextures("assets/cs_dust.wad");
 		light.InitLightMap(8192, 8192);
-		Vector3 lightPos{ -2000,2000,-2000 };
-		Vector3 lightDir{ 1,-1,1 };
+		Vector3 lightPos{ -500,2000,1000 };
+		Vector3 lightDir{ 1,-4,-2 };
 		float lightRange = 4096;
 		light.SetLight(lightPos, lightDir, lightRange);
 		lightmapMeshShader.Load("glsl/mesh_depth.vert", "glsl/mesh_depth.frag");
@@ -205,9 +214,9 @@ class Sample_BSPViewer :public Window
 		lightmapMaterial.Set("lightmat", light.matrix);
 
 
-		firstPersonCamera.SetProjectionMatrix(3.1415926 / 2, 1.333f, 1, 5000);
+		firstPersonCamera.SetProjectionMatrix(3.1415926 / 3, (float)w/(float)h, 1, 5000);
 		firstPersonCamController.camera = &firstPersonCamera;
-		LoadBSPMap(&bspMapModel, "assets/de_dust2.bsp");
+		LoadBSPMap(&bspMapModel, "assets/de_dust.bsp");
 		LoadTexture(&bspMapTexture, "assets/256.bmp");
 		meshShader.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
 		
@@ -264,9 +273,10 @@ class Sample_BSPViewer :public Window
 		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
 		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
+		meshShader.Set("_mvp", firstPersonCamera.GetMatrix());
 		for (int i = 0; i < meshRenderer.size(); i++)
 		{
-			meshMaterial[i].Set("_mvp", firstPersonCamera.GetMatrix());
+			//meshMaterial[i].Set("_mvp", firstPersonCamera.GetMatrix());
 			meshRenderer[i].material = &meshMaterial[i];
 			GLASSERT(meshRenderer[i].Draw());
 		}

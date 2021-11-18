@@ -26,12 +26,13 @@ void WadFile::Load(std::string filename)
 	for (int i = 0; i < header.numlumps; i++)
 	{
 		WadLampItem item{ buffer, wadlumps[i] };
-		auto ptr = buffer + item.meta.filepos;
+		item.buffer += item.meta.filepos;
+		//auto ptr = buffer + item.meta.filepos;
 		printf("Lump %c %s\n", item.meta.type, item.meta.name);
-		if (item.meta.type == 'C')
+	/*	if (item.meta.type == 'C')
 			item.textureC.Init(ptr);
 		else
-			continue;
+			continue;*/
 		items.push_back(item);
 	}	
 }
@@ -68,5 +69,17 @@ void WadTexture_C::Init(uint8_t* buffer)
 				mipmaps[miplevel][i] = stWadBGRA{ color.r,color.g,color.b, 0xff };
 		}
 		miplevel++;
+	}
+}
+
+void WadTexture_C::Release()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (mipmaps[i])
+		{
+			delete[] mipmaps[i];
+			mipmaps[i] = nullptr;
+		}
 	}
 }

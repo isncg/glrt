@@ -178,6 +178,7 @@ class Sample_BSPViewer :public Window
 				glGenTextures(1, &texture.id);
 				glBindTexture(GL_TEXTURE_2D, texture.id);
 				auto wadTexture = item.textureC;
+				wadTexture.Init(item.buffer);
 				for (int level = 0; level < 4; level++)
 				{
 					auto mip = wadTexture.mipmaps[level];
@@ -187,6 +188,7 @@ class Sample_BSPViewer :public Window
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				texture.handle = glGetTextureHandleARB(texture.id);
 				textures[name] = texture;
+				wadTexture.Release();
 			}
 		}
 	}

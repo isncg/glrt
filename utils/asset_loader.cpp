@@ -235,12 +235,12 @@ bool LoadBSPMap(Model* output, std::map<std::string, Texture> *internalTextures,
 
         // Get face's material
         bsp30::BSPTEXTUREINFO texInfo = m_bspLoader->m_TextureInfos[face->iTextureInfo];
-        bsp30::BSPMIPTEX tex = m_bspLoader->m_Textures[texInfo.iMiptex];
+        bsp30::BSPMIPTEX* tex = m_bspLoader->m_Textures[texInfo.iMiptex];
 
         Vector3 texVS{ texInfo.vS.x, texInfo.vS.z, -texInfo.vS.y };
         Vector3 texVT{ texInfo.vT.x, texInfo.vT.z, -texInfo.vT.y };
         //	skyboxes are not to be added to our visible mesh
-        if (!strcmp(tex.szName, "sky")) {
+        if (!strcmp(tex->szName, "sky")) {
             // We're a polygon less now
             nPolygons--;
             continue;
@@ -258,14 +258,14 @@ bool LoadBSPMap(Model* output, std::map<std::string, Texture> *internalTextures,
         }
       
         Mesh* pMesh = nullptr;
-        auto meshit = output->meshDict.find(tex.szName);
+        auto meshit = output->meshDict.find(tex->szName);
         if (meshit == output->meshDict.end())
         {
             Mesh mr;
             output->meshCollection.push_back(mr);
-            output->matNames.push_back(tex.szName);
+            output->matNames.push_back(tex->szName);
             pMesh = (output->meshCollection.end() - 1)._Ptr;
-			output->meshDict[tex.szName] = output->meshCollection.size() - 1;
+			output->meshDict[tex->szName] = output->meshCollection.size() - 1;
         }
         else
         {
@@ -344,6 +344,7 @@ bool LoadBSPMap(Model* output, std::map<std::string, Texture> *internalTextures,
             char* name = wadTexture.meta->name;
             if (internalTextures->find(name) != internalTextures->end())
             {
+                wadTexture.Release();
                 continue;
             }
             Texture texture;
@@ -358,6 +359,7 @@ bool LoadBSPMap(Model* output, std::map<std::string, Texture> *internalTextures,
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             texture.handle = glGetTextureHandleARB(texture.id);
             (*internalTextures)[name] = texture;
+            wadTexture.Release();
         }
     }
     return true;

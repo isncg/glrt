@@ -19,9 +19,15 @@ namespace bsp30
 
 		printf("BSP file: %s opened successfully!\n", fileName);
 
+		m_FileStream.seekg(0, std::ios_base::end);
+		unsigned long fsize = m_FileStream.tellg();
+		m_FileStream.seekg(0, std::ios_base::beg);
+		buffer = new uint8_t[fsize];
+		m_FileStream.read((char*)buffer, fsize);
+		m_Header = (BSPHEADER*)buffer;
 		// Get header version
-		m_FileStream.read((char*)&m_Header, sizeof(BSPHEADER));
-		printf("Version: %d\n", m_Header.nVersion);
+		//m_FileStream.read((char*)&m_Header, sizeof(BSPHEADER));
+		printf("Version: %d\n", m_Header->nVersion);
 
 		m_Vertices = nullptr;
 		m_Planes = nullptr;
@@ -38,7 +44,9 @@ namespace bsp30
 
 		m_FileStream.close();
 
-		if (m_Vertices)
+		if (buffer)
+			delete[] buffer;
+		/*if (m_Vertices)
 			delete[] m_Vertices;
 
 		if (m_Planes)
@@ -60,25 +68,26 @@ namespace bsp30
 			delete[] m_Faces;
 
 		if (m_Nodes)
-			delete[] m_Nodes;
+			delete[] m_Nodes;*/
 	}
 
 	// -----------------------------------------------------------------
 	void BSPLoader::ReadNodes() {
 
 		// Get Node data offset and size from its LUMP
-		int32_t nodeDataOffset = m_Header.lump[LUMP_NODES].nOffset;
-		int32_t nodeDataSize = m_Header.lump[LUMP_NODES].nLength;
+		int32_t nodeDataOffset = m_Header->lump[LUMP_NODES].nOffset;
+		int32_t nodeDataSize = m_Header->lump[LUMP_NODES].nLength;
 
 		unsigned nNodes = nodeDataSize / sizeof(BSPNODE);
-
+		m_nNodes = nNodes;
 		// Allocate memory for Node array
-		m_Nodes = new BSPNODE[nNodes];
+		//m_Nodes = new BSPNODE[nNodes];
 
-		// Read Node array from file
-		m_FileStream.seekg(nodeDataOffset, std::ios::beg);
-		m_FileStream.read((char*)m_Nodes, nodeDataSize);
+		//// Read Node array from file
+		//m_FileStream.seekg(nodeDataOffset, std::ios::beg);
+		//m_FileStream.read((char*)m_Nodes, nodeDataSize);
 
+		m_Nodes = (BSPNODE*)(buffer + nodeDataOffset);
 		// Print out all the nodes for now doing a simple array traversal
 		// Ideally we should be doing the hiearchial traversal 
 		for (unsigned i = 0; i < nNodes; i++) {
@@ -125,18 +134,18 @@ namespace bsp30
 	void BSPLoader::ReadVertices()
 	{
 		// Get Vertex data offset and size from its LUMP
-		int32_t vertexDataOffset = m_Header.lump[LUMP_VERTICES].nOffset;
-		int32_t vertexDataSize = m_Header.lump[LUMP_VERTICES].nLength;
+		int32_t vertexDataOffset = m_Header->lump[LUMP_VERTICES].nOffset;
+		int32_t vertexDataSize = m_Header->lump[LUMP_VERTICES].nLength;
 
 		m_nVertices = vertexDataSize / sizeof(VECTOR3D);
 
 		// Allocate vertices memory
-		m_Vertices = new VECTOR3D[m_nVertices];
+		//m_Vertices = new VECTOR3D[m_nVertices];
 
-		// Read Node array from file
-		m_FileStream.seekg(vertexDataOffset, std::ios::beg);
-		m_FileStream.read((char*)m_Vertices, vertexDataSize);
-
+		//// Read Node array from file
+		//m_FileStream.seekg(vertexDataOffset, std::ios::beg);
+		//m_FileStream.read((char*)m_Vertices, vertexDataSize);
+		m_Vertices = (VECTOR3D*)(buffer + vertexDataOffset);
 		// Print all vertices
 		printf("Number of vertices : %u\n", m_nVertices);
 		/*for (unsigned i = 0; i < nVertices; i++) {
@@ -148,18 +157,18 @@ namespace bsp30
 	void BSPLoader::ReadPlanes()
 	{
 		// Get Vertex data offset and size from its LUMP
-		int32_t planeDataOffset = m_Header.lump[LUMP_PLANES].nOffset;
-		int32_t planeDataSize = m_Header.lump[LUMP_PLANES].nLength;
+		int32_t planeDataOffset = m_Header->lump[LUMP_PLANES].nOffset;
+		int32_t planeDataSize = m_Header->lump[LUMP_PLANES].nLength;
 
 		m_nPlanes = planeDataSize / sizeof(BSPPLANE);
 
 		// Allocate vertices memory
-		m_Planes = new BSPPLANE[m_nPlanes];
+		//m_Planes = new BSPPLANE[m_nPlanes];
 
-		// Read Node array from file
-		m_FileStream.seekg(planeDataOffset, std::ios::beg);
-		m_FileStream.read((char*)m_Planes, planeDataSize);
-
+		//// Read Node array from file
+		//m_FileStream.seekg(planeDataOffset, std::ios::beg);
+		//m_FileStream.read((char*)m_Planes, planeDataSize);
+		m_Planes = (BSPPLANE*)(buffer + planeDataOffset);
 		// Print all planes
 		printf("Number of planes : %u\n", m_nPlanes);
 		/*for (unsigned i = 0; i < nPlanes; i++) {
@@ -171,18 +180,18 @@ namespace bsp30
 	void BSPLoader::ReadEdges()
 	{
 		// Get Vertex data offset and size from its LUMP
-		int32_t edgeDataOffset = m_Header.lump[LUMP_EDGES].nOffset;
-		int32_t edgeDataSize = m_Header.lump[LUMP_EDGES].nLength;
+		int32_t edgeDataOffset = m_Header->lump[LUMP_EDGES].nOffset;
+		int32_t edgeDataSize = m_Header->lump[LUMP_EDGES].nLength;
 
 		m_nEdges = edgeDataSize / sizeof(BSPEDGE);
 
 		// Allocate vertices memory
-		m_Edges = new BSPEDGE[m_nEdges];
+		//m_Edges = new BSPEDGE[m_nEdges];
 
-		// Read Node array from file
-		m_FileStream.seekg(edgeDataOffset, std::ios::beg);
-		m_FileStream.read((char*)m_Edges, edgeDataSize);
-
+		//// Read Node array from file
+		//m_FileStream.seekg(edgeDataOffset, std::ios::beg);
+		//m_FileStream.read((char*)m_Edges, edgeDataSize);
+		m_Edges = (BSPEDGE*)(buffer + edgeDataOffset);
 		// Print all edges
 		printf("Number of edges : %u\n", m_nEdges);
 		/*for (unsigned i = 0; i < nEdges; i++) {
@@ -206,17 +215,18 @@ namespace bsp30
 	void BSPLoader::ReadSurfEdges()
 	{
 		// Get Vertex data offset and size from its LUMP
-		int32_t surfEdgeDataOffset = m_Header.lump[LUMP_SURFEDGES].nOffset;
-		int32_t surfEdgeDataSize = m_Header.lump[LUMP_SURFEDGES].nLength;
+		int32_t surfEdgeDataOffset = m_Header->lump[LUMP_SURFEDGES].nOffset;
+		int32_t surfEdgeDataSize = m_Header->lump[LUMP_SURFEDGES].nLength;
 
 		m_nSurfEdges = surfEdgeDataSize / sizeof(BSPSURFEDGE);
 
-		// Allocate vertices memory
-		m_SurfEdges = new BSPSURFEDGE[m_nSurfEdges];
+		//// Allocate vertices memory
+		//m_SurfEdges = new BSPSURFEDGE[m_nSurfEdges];
 
-		// Read Node array from file
-		m_FileStream.seekg(surfEdgeDataOffset, std::ios::beg);
-		m_FileStream.read((char*)m_SurfEdges, surfEdgeDataSize);
+		//// Read Node array from file
+		//m_FileStream.seekg(surfEdgeDataOffset, std::ios::beg);
+		//m_FileStream.read((char*)m_SurfEdges, surfEdgeDataSize);
+		m_SurfEdges = (BSPSURFEDGE*)(buffer + surfEdgeDataOffset);
 
 		// Print all surfedges
 		printf("Number of surface edges : %u\n", m_nSurfEdges);
@@ -226,46 +236,49 @@ namespace bsp30
 	void BSPLoader::ReadTextures()
 	{
 		// Get Vertex data offset and size from its LUMP
-		int32_t textureDataOffset = m_Header.lump[LUMP_TEXTURES].nOffset;
-		int32_t textureDataSize = m_Header.lump[LUMP_TEXTURES].nLength;
+		int32_t textureDataOffset = m_Header->lump[LUMP_TEXTURES].nOffset;
+		int32_t textureDataSize = m_Header->lump[LUMP_TEXTURES].nLength;
 
 		// First, read the texture header
-		BSPTEXTUREHEADER textureHeader;
+		BSPTEXTUREHEADER* textureHeader = (BSPTEXTUREHEADER*)(buffer+ textureDataOffset);
 
-		// texture header only
-		m_FileStream.seekg(textureDataOffset, std::ios::beg);
-		m_FileStream.read((char*)&textureHeader, sizeof(BSPTEXTUREHEADER));
+		//// texture header only
+		//m_FileStream.seekg(textureDataOffset, std::ios::beg);
+		//m_FileStream.read((char*)&textureHeader, sizeof(BSPTEXTUREHEADER));
 
 		//printf("Number of texture offsets : %u\n", textureHeader.nMipTextures);
 
-		m_nTextures = textureHeader.nMipTextures;
+		m_nTextures = textureHeader->nMipTextures;
 
 		// Read texture offsets
-		m_TextureOffsets = new BSPMIPTEXOFFSET[m_nTextures];
-		m_Textures = new BSPMIPTEX[m_nTextures];
+		//m_TextureOffsets = new BSPMIPTEXOFFSET[m_nTextures];
+		//m_Textures = new BSPMIPTEX[m_nTextures];
 
 		// texture header only
-		m_FileStream.read((char*)m_TextureOffsets, sizeof(BSPMIPTEXOFFSET) * m_nTextures);
-
+		//m_FileStream.read((char*)m_TextureOffsets, sizeof(BSPMIPTEXOFFSET) * m_nTextures);
+		m_TextureOffsets = (BSPMIPTEXOFFSET*)(buffer + textureDataOffset + sizeof(BSPTEXTUREHEADER));
 		// Read texture MIPOFFSETS
 		for (unsigned i = 0; i < m_nTextures; i++) {
 			//printf("Texture offset : %u :: %u\n", i, m_TextureOffsets[i]);
-			m_FileStream.seekg(textureDataOffset + m_TextureOffsets[i], std::ios::beg);
-			m_FileStream.read((char*)&m_Textures[i], sizeof(BSPMIPTEX));
-			if (m_Textures[i].nOffsets[0]>0 && 
-				m_Textures[i].nOffsets[1] > 0 &&
-				m_Textures[i].nOffsets[2] > 0 &&
-				m_Textures[i].nOffsets[3] > 0)
+			/*m_FileStream.seekg(textureDataOffset + m_TextureOffsets[i], std::ios::beg);
+			m_FileStream.read((char*)&m_Textures[i], sizeof(BSPMIPTEX));*/
+			auto p_texture = (BSPMIPTEX*)(buffer + textureDataOffset + m_TextureOffsets[i]);
+			m_Textures.push_back(p_texture);
+			if (p_texture->nOffsets[0]>0 &&
+				p_texture->nOffsets[1] > 0 &&
+				p_texture->nOffsets[2] > 0 &&
+				p_texture->nOffsets[3] > 0)
 			{
-				uint32_t width = m_Textures[i].nWidth;
-				uint32_t height = m_Textures[i].nHeight;
-				uint32_t size = (width >> 3 + height >> 3) * 3 + m_Textures[i].nOffsets[3];
-				size += 2;
-				size += 256 * 6; // 不知道应该取多大，反正小了不行
-				m_FileStream.seekg(textureDataOffset + m_TextureOffsets[i], std::ios::beg);
-				char* buffer = new char[size];
-				m_FileStream.read(buffer, size);
-				m_internalTextures.push_back((BSPMIPTEX*)buffer);
+				m_internalTextures.push_back(m_Textures[i]);
+				//uint32_t width = m_Textures[i].nWidth;
+				//uint32_t height = m_Textures[i].nHeight;
+				//uint32_t size = (width >> 3 + height >> 3) * 3 + m_Textures[i].nOffsets[3];
+				//size += 2;
+				//size += 256 * 6; // 不知道应该取多大，反正小了不行
+				//m_FileStream.seekg(textureDataOffset + m_TextureOffsets[i], std::ios::beg);
+				//char* buffer = new char[size];
+				//m_FileStream.read(buffer, size);
+				//m_internalTextures.push_back((BSPMIPTEX*)buffer);
 			}
 		}
 
@@ -283,36 +296,36 @@ namespace bsp30
 	void BSPLoader::ReadTexInfo()
 	{
 		// Get TexInfo offset and size from its LUMP
-		int32_t texInfoDataOffset = m_Header.lump[LUMP_TEXINFO].nOffset;
-		int32_t texInfoDataSize = m_Header.lump[LUMP_TEXINFO].nLength;
+		int32_t texInfoDataOffset = m_Header->lump[LUMP_TEXINFO].nOffset;
+		int32_t texInfoDataSize = m_Header->lump[LUMP_TEXINFO].nLength;
 
 		m_nTextureInfos = texInfoDataSize / sizeof(BSPTEXTUREINFO);
 
-		// Allocate texture infos
-		m_TextureInfos = new BSPTEXTUREINFO[m_nTextureInfos];
+		//// Allocate texture infos
+		//m_TextureInfos = new BSPTEXTUREINFO[m_nTextureInfos];
 
-		// Read Node array from file
-		m_FileStream.seekg(texInfoDataOffset, std::ios::beg);
-		m_FileStream.read((char*)m_TextureInfos, texInfoDataSize);
-
+		//// Read Node array from file
+		//m_FileStream.seekg(texInfoDataOffset, std::ios::beg);
+		//m_FileStream.read((char*)m_TextureInfos, texInfoDataSize);
+		m_TextureInfos = (BSPTEXTUREINFO*)(buffer + texInfoDataOffset);
 		printf("Number of TexInfos : %u\n", m_nTextureInfos);
 	}
 
 	// -----------------------------------------------------------------
 	void BSPLoader::ReadFaces() {
 		// Get Vertex data offset and size from its LUMP
-		int32_t faceDataOffset = m_Header.lump[LUMP_FACES].nOffset;
-		int32_t faceDataSize = m_Header.lump[LUMP_FACES].nLength;
+		int32_t faceDataOffset = m_Header->lump[LUMP_FACES].nOffset;
+		int32_t faceDataSize = m_Header->lump[LUMP_FACES].nLength;
 
 		m_nFaces = faceDataSize / sizeof(BSPFACE);
 
-		// Allocate vertices memory
-		m_Faces = new BSPFACE[m_nFaces];
+		//// Allocate vertices memory
+		//m_Faces = new BSPFACE[m_nFaces];
 
-		// Read Node array from file
-		m_FileStream.seekg(faceDataOffset, std::ios::beg);
-		m_FileStream.read((char*)m_Faces, faceDataSize);
-
+		//// Read Node array from file
+		//m_FileStream.seekg(faceDataOffset, std::ios::beg);
+		//m_FileStream.read((char*)m_Faces, faceDataSize);
+		m_Faces = (BSPFACE*)(buffer + faceDataOffset);
 		printf("Number of Faces : %u\n", m_nFaces);
 	}
 
@@ -419,22 +432,22 @@ namespace bsp30
 	void BSPLoader::ReadEntities()
 	{
 		// Get Vertex data offset and size from its LUMP
-		int32_t entityDataOffset = m_Header.lump[LUMP_ENTITIES].nOffset;
-		int32_t entityDataSize = m_Header.lump[LUMP_ENTITIES].nLength;
+		int32_t entityDataOffset = m_Header->lump[LUMP_ENTITIES].nOffset;
+		int32_t entityDataSize = m_Header->lump[LUMP_ENTITIES].nLength;
 
 		// Allocate vertices memory
-		char* entities = new char[entityDataSize];
+		//char* entities = new char[entityDataSize];
 
-		// Read Node array from file
-		m_FileStream.seekg(entityDataOffset, std::ios::beg);
-		m_FileStream.read(entities, entityDataSize);
-
+		//// Read Node array from file
+		//m_FileStream.seekg(entityDataOffset, std::ios::beg);
+		//m_FileStream.read(entities, entityDataSize);
+		char* entities = (char*)(buffer + entityDataOffset);
 		// Print all surfedges
 		//printf("Entities : %s\n", entities);
 
 		// C++ strings are simpler to use
 		std::string entitiesStr(entities);
-		delete[] entities;
+		//delete[] entities;
 
 		// Extract entities from the string
 
@@ -470,18 +483,18 @@ namespace bsp30
 	void BSPLoader::ReadModels()
 	{
 		// Get Vertex data offset and size from its LUMP
-		int32_t modelDataOffset = m_Header.lump[LUMP_MODELS].nOffset;
-		int32_t modelDataSize = m_Header.lump[LUMP_MODELS].nLength;
+		int32_t modelDataOffset = m_Header->lump[LUMP_MODELS].nOffset;
+		int32_t modelDataSize = m_Header->lump[LUMP_MODELS].nLength;
 
 		unsigned nModels = modelDataSize / sizeof(BSPMODEL);
 
-		// Allocate vertices memory
-		m_Models = new BSPMODEL[nModels];
+		//// Allocate vertices memory
+		//m_Models = new BSPMODEL[nModels];
 
-		// Read Node array from file
-		m_FileStream.seekg(modelDataOffset, std::ios::beg);
-		m_FileStream.read((char*)m_Models, modelDataSize);
-
+		//// Read Node array from file
+		//m_FileStream.seekg(modelDataOffset, std::ios::beg);
+		//m_FileStream.read((char*)m_Models, modelDataSize);
+		m_Models = (BSPMODEL*)(buffer + modelDataOffset);
 		// Print all surfedges
 		printf("Number of Models : %u\n", nModels);
 	}
@@ -490,18 +503,18 @@ namespace bsp30
 	void BSPLoader::ReadLeaves() {
 
 		// Get Leaves data offset and size from its LUMP
-		int32_t leavesDataOffset = m_Header.lump[LUMP_LEAVES].nOffset;
-		int32_t leavesDataSize = m_Header.lump[LUMP_MODELS].nLength;
+		int32_t leavesDataOffset = m_Header->lump[LUMP_LEAVES].nOffset;
+		int32_t leavesDataSize = m_Header->lump[LUMP_MODELS].nLength;
 
 		unsigned nLeaves = leavesDataSize / sizeof(BSPLEAF);
 
-		// Allocate leaves memory
-		m_Leaves = new BSPLEAF[nLeaves];
+		//// Allocate leaves memory
+		//m_Leaves = new BSPLEAF[nLeaves];
 
-		// Read Node array from file
-		m_FileStream.seekg(leavesDataOffset, std::ios::beg);
-		m_FileStream.read((char*)m_Leaves, leavesDataSize);
-
+		//// Read Node array from file
+		//m_FileStream.seekg(leavesDataOffset, std::ios::beg);
+		//m_FileStream.read((char*)m_Leaves, leavesDataSize);
+		m_Leaves = (BSPLEAF*)(buffer + leavesDataOffset);
 		// Print all surfedges
 		printf("Number of Leaves : %u\n", nLeaves);
 

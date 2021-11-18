@@ -29,6 +29,7 @@ namespace bsp30
 
 		// Destructor
 		~BSPLoader();
+		uint8_t* buffer;
 
 		// --------- Class interface ---------;
 
@@ -78,7 +79,7 @@ namespace bsp30
 		// --------- Class data ---------
 
 		std::ifstream		m_FileStream;		// BSP file read handle	
-		BSPHEADER			m_Header;			// Stores version and lump information
+		BSPHEADER*			m_Header;			// Stores version and lump information
 
 		unsigned			m_nVertices;		// Number of Vertices
 		VECTOR3D* m_Vertices;			// Array of Vertices
@@ -94,7 +95,7 @@ namespace bsp30
 
 		unsigned			m_nTextures;
 		BSPMIPTEXOFFSET* m_TextureOffsets;	// Array of Texture Offsets
-		BSPMIPTEX* m_Textures;			// Array of Textures
+		std::vector<BSPMIPTEX*> m_Textures;			// Array of Textures
 		std::vector<BSPMIPTEX*> m_internalTextures;
 
 		unsigned			m_nTextureInfos;

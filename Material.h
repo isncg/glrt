@@ -3,7 +3,28 @@
 #include <vector>
 #include <memory>
 #include <map>
-#include "Renderer.h"
+#include "framework.h"
+#include "Texture.h"
+
+class Shader
+{
+	friend class Material;
+	Material* lastMaterial = NULL;
+	GLuint program;
+public:
+	void Load(const char* vert, const char* frag);
+	void Use();
+	void Set(const char* name, Matrix4x4& value);
+	void Set(const char* name, Matrix4x4&& value);
+	void Set(const char* name, Vector2& value);
+	void Set(const char* name, Vector2&& value);
+	void Set(const char* name, Vector3& value);
+	void Set(const char* name, Vector3&& value);
+	void Set(const char* name, float value);
+	void Set(const char* name, Texture* texture);
+};
+
+
 class IMaterialParam
 {
 	friend class Material;

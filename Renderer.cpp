@@ -59,7 +59,7 @@ void MeshRenderer::Set(Mesh* pMesh)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void MeshRenderer::Draw()
+void MeshRenderer::Draw(int passID)
 {
 	if (vao <= 0 || indices.size() < 3)
 		return;
@@ -93,8 +93,7 @@ Specifies the starting index in the enabled arrays.
 count
 Specifies the number of indices to be rendered.
 ********************************************************************** glDrawArrays ********************************************************************/
-	if (nullptr != material)
-		material->Use();
+	UseMaterial(passID);
 	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
 	//GLASSERT(glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3));
 }
@@ -287,12 +286,11 @@ void CanvasRenderer::SetFullScreen()
 	Set(&mesh);
 }
 
-void CanvasRenderer::Draw()
+void CanvasRenderer::Draw(int passID)
 {
 	if (vao <= 0 || indices.size() < 3)
 		return;
-	if (nullptr != this->material)
-		material->Use();
+	UseMaterial(passID);
 	GLASSERT(glBindVertexArray(vao));
 	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
 }
@@ -324,4 +322,19 @@ int CanvasMesh::GetBufferSize()
 		vectorsizeof(vertices) +
 		vectorsizeof(uv) +
 		vectorsizeof(uv2);
+}
+
+void Renderer::UseMaterial(int passID)
+{
+	if (passID >= 0)
+	{
+		auto mat = materialPassDict.find(passID);
+		if (mat == materialPassDict.end())
+			return;
+		mat->second->Use();
+	}
+	else if (nullptr != material)
+	{
+		material->Use();
+	}
 }

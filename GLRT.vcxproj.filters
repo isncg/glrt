@@ -62,6 +62,9 @@
     <ClInclude Include="Material.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GLRT.cpp">

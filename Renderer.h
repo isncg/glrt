@@ -1,26 +1,8 @@
 #pragma once
-#include <vector>
-#include <map>
-#include <glad/glad.h>
-#include <glm/glm.hpp>
+#include "framework.h"
 #include <string>
-//#include "Material.h"
-typedef glm::vec3 Vector3;
-typedef glm::vec2 Vector2;
-typedef glm::vec4 Vector4;
-typedef glm::mat4 Matrix4x4;
-typedef glm::vec4 Color;
-typedef glm::lowp_i8vec4 Color32;
-typedef glm::ivec2 Vector2i;
-
-template<typename T>
-GLint GetComponentCount(const T& tag);
-GLint GetComponentCount(const Color32& tag);
-
-GLenum GetComponentType(const Vector3& tag);
-GLenum GetComponentType(const Vector2& tag);
-GLenum GetComponentType(const Vector4& tag);
-GLenum GetComponentType(const Color32& tag);
+#include "Texture.h"
+#include "Material.h"
 
 enum IndexFormat
 {
@@ -88,37 +70,19 @@ struct Sampler
     //TBD
 };
 
-struct Texture
-{
-    GLuint id;
-    GLuint64 handle;
-};
 
-class Shader
-{
-    friend class Material;
-    Material* lastMaterial = NULL;
-	GLuint program;
-public:
-	void Load(const char* vert, const char* frag);
-	void Use();
-	void Set(const char* name, Matrix4x4& value);
-    void Set(const char* name, Matrix4x4&& value);
-    void Set(const char* name, Vector2& value);
-    void Set(const char* name, Vector2&& value);
-    void Set(const char* name, Vector3& value);
-    void Set(const char* name, Vector3&& value);
-    void Set(const char* name, float value);
-    void Set(const char* name, Texture* texture);
-};
 
 
 class Renderer
 {
+public:
+    std::map<int, Material*> materialPassDict;
+    Material* material;
+    void UseMaterial(int passID);
+    virtual void Draw(int passID = -1) = 0;
 };
 
-
-class MeshRenderer
+class MeshRenderer: public Renderer
 {
     GLuint vao;
     GLuint vbo;
@@ -127,9 +91,8 @@ class MeshRenderer
     std::vector<unsigned int> indices;
     int triangleCount;
 public:
-    Material* material;
     void Set(Mesh* pMesh);
-    void Draw();
+    void Draw(int passID = -1);
 };
 
 template<typename T>
@@ -166,7 +129,7 @@ typedef struct tagCanvasMesh
     void MergeBatch(tagCanvasMesh& mesh);
 }CanvasMesh;
 
-class CanvasRenderer
+class CanvasRenderer: public Renderer
 {
     GLuint vao;
     GLuint vbo;
@@ -174,8 +137,7 @@ class CanvasRenderer
     std::vector<unsigned int> indices;
     int triangleCount;
 public:
-    Material* material;
     void Set(CanvasMesh* pMesh);
     void SetFullScreen();
-    void Draw();
+    void Draw(int passID = -1);
 };

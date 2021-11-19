@@ -135,16 +135,20 @@ class Sample_MouseLook :public Window
 #include <wad/WADFile.h>
 class Sample_BSPViewer :public Window
 {
+	enum PASS
+	{
+		SHADOWMAP = 0,
+		FORWARD = 1,
+		CANVAS = 2
+	};
 	Camera firstPersonCamera;
 	CameraFirstPersonController firstPersonCamController;
 
 	Model bspMapModel;
 	Texture bspMapTexture;
-	Shader meshShader;
-	//Material meshMaterial;
-	//MeshRenderer meshRenderer;
+	Shader shaderMeshShadowMap;
 	std::vector<MeshRenderer> meshRenderer;
-	std::vector<Material> meshMaterial;
+	std::vector<Material> matMeshShadowMap;
 	
 	RenderTarget forwardRT;
 	Shader canvasShader;
@@ -220,10 +224,11 @@ class Sample_BSPViewer :public Window
 		firstPersonCamController.camera = &firstPersonCamera;
 		LoadBSPMap(&bspMapModel,&textures, "assets/de_dust2.bsp");
 		LoadTexture(&bspMapTexture, "assets/256.bmp");
-		meshShader.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
-		
+		shaderMeshShadowMap.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
+		shaderMeshShadowMap.Set("shadowmap", &light.RT.depthTexture);
+		shaderMeshShadowMap.Set("lightmat", light.matrix);
 		forwardRT.Init(4096, 2048, 1, true);
-
+		
 		for (int i = 0; i < bspMapModel.meshCollection.size(); i++)
 		{
 			MeshRenderer mr;
@@ -231,21 +236,22 @@ class Sample_BSPViewer :public Window
 			meshRenderer[i].Set(&bspMapModel.meshCollection[i]);
 
 			Material mt;
-			meshMaterial.push_back(mt);
-			meshMaterial[i].Set(&meshShader);
+			matMeshShadowMap.push_back(mt);
+			matMeshShadowMap[i].Set(&shaderMeshShadowMap);
 
 			auto texi = textures.find(bspMapModel.matNames[i]);
 			if(texi!=textures.end())
-				meshMaterial[i].Set("tex", texi->second);
+				matMeshShadowMap[i].Set("tex", texi->second);
 			else
 			{
-				meshMaterial[i].Set("tex", bspMapTexture);
+				matMeshShadowMap[i].Set("tex", bspMapTexture);
 				std::cout << "Missing texture: " << bspMapModel.matNames[i] << std::endl;
 			}
-			meshMaterial[i].Set("shadowmap", light.RT.depthTexture);
-			meshMaterial[i].Set("lightmat", light.matrix);
-
+			meshRenderer[i].materialPassDict[PASS::SHADOWMAP] = &lightmapMaterial;
 		}
+
+		for (int i = 0; i < bspMapModel.meshCollection.size(); i++)
+			meshRenderer[i].materialPassDict[PASS::FORWARD] = &matMeshShadowMap[i];
 
 		canvasRenderer.SetFullScreen();
 		canvasShader.Load("glsl/canvas.vert", "glsl/canvas.frag");
@@ -255,39 +261,27 @@ class Sample_BSPViewer :public Window
 		canvasMaterial.Set("clipRange", firstPersonCamera.ClipRange());
 		canvasMaterial.Set("tex", forwardRT.colorTextures[0]);
 		canvasMaterial.Set("depth", light.RT.depthTexture);
-		canvasRenderer.material = &canvasMaterial;
+		canvasRenderer.materialPassDict[PASS::CANVAS] = &canvasMaterial;
 		glEnable(GL_DEPTH_TEST);
 	}
 
 	virtual void BeforeRender() override
 	{
-		light.RT.Bind();
-		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
-		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+		light.RT.Bind(PASS::SHADOWMAP);
 		for (auto& mr : meshRenderer)
-		{
-			mr.material = &lightmapMaterial;
-			mr.Draw();
-		}
+			light.RT.Draw(mr);
 
-		forwardRT.Bind();
+		forwardRT.Bind(PASS::FORWARD);
 		firstPersonCamController.Update();
-		GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
-		GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-
-		meshShader.Set("_mvp", firstPersonCamera.GetMatrix());
+		shaderMeshShadowMap.Set("_mvp", firstPersonCamera.GetMatrix());
 		for (int i = 0; i < meshRenderer.size(); i++)
-		{
-			//meshMaterial[i].Set("_mvp", firstPersonCamera.GetMatrix());
-			meshRenderer[i].material = &meshMaterial[i];
-			GLASSERT(meshRenderer[i].Draw());
-		}
+			forwardRT.Draw(meshRenderer[i]);
 	}
 
 	virtual void Render() override
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		canvasRenderer.Draw();
+		canvasRenderer.Draw(PASS::CANVAS);
 	}
 };
 RUN_WINDOW(Sample_BSPViewer)

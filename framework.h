@@ -17,3 +17,23 @@
 #include <sstream>
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <vector>
+#include <map>
+
+typedef glm::vec3 Vector3;
+typedef glm::vec2 Vector2;
+typedef glm::vec4 Vector4;
+typedef glm::mat4 Matrix4x4;
+typedef glm::vec4 Color;
+typedef glm::lowp_i8vec4 Color32;
+typedef glm::ivec2 Vector2i;
+
+template<typename T>
+GLint GetComponentCount(const T& tag);
+GLint GetComponentCount(const Color32& tag);
+
+GLenum GetComponentType(const Vector3& tag);
+GLenum GetComponentType(const Vector2& tag);
+GLenum GetComponentType(const Vector4& tag);
+GLenum GetComponentType(const Color32& tag);

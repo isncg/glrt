@@ -69,8 +69,16 @@ void RenderTarget::Init(int width, int height, int nColors, bool depth)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void RenderTarget::Bind()
+void RenderTarget::Bind(int passID)
 {
 	GLASSERT(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
 	glViewport(0, 0, _size.x, _size.y);
+	this->passID = passID;
+	glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
+	glClear(clearBit);
+}
+
+void RenderTarget::Draw(Renderer& renderer)
+{
+	renderer.Draw(passID);
 }

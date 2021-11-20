@@ -65,6 +65,9 @@
     <ClInclude Include="Texture.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="utils\HL\HL.h">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GLRT.cpp">
@@ -120,6 +123,9 @@
     </ClCompile>
     <ClCompile Include="3rdparty\wad\src\WADFile.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\HL\HL.cpp">
+      <Filter>utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

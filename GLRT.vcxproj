@@ -158,6 +158,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="utils\asset_loader.h" />
     <ClInclude Include="utils\buffer_builder.h" />
+    <ClInclude Include="utils\HL\HL.h" />
     <ClInclude Include="utils\log.h" />
     <ClInclude Include="utils\stdhelpers.h" />
     <ClInclude Include="utils\vertex_buffer_builder.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="utils\asset_loader.cpp" />
     <ClCompile Include="utils\buffer_builder.cpp" />
     <ClCompile Include="utils\glhelpers.cpp" />
+    <ClCompile Include="utils\HL\HL.cpp" />
     <ClCompile Include="utils\log.cpp" />
     <ClCompile Include="utils\vertex_buffer_builder.cpp" />
     <ClCompile Include="utils\stdhelpers.cpp" />

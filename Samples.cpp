@@ -132,7 +132,7 @@ class Sample_MouseLook :public Window
 #include "RenderTarget.h"
 #include "Light.h"
 #include "Material.h"
-#include <wad/WADFile.h>
+#include "utils/HL/HL.h"
 class Sample_BSPViewer :public Window
 {
 	enum PASS
@@ -167,35 +167,6 @@ class Sample_BSPViewer :public Window
 		*height = h;
 	}
 
-	void LoadTextures(std::string wadFilename)
-	{
-		WadFile wad;
-		wad.Load(wadFilename);
-		for (auto& item : wad.items)
-		{
-			if (item.meta.type == 'C')
-			{
-				char* name = item.meta.name;
-				if (textures.find(name) != textures.end())
-					continue;
-				Texture texture;
-				glGenTextures(1, &texture.id);
-				glBindTexture(GL_TEXTURE_2D, texture.id);
-				auto wadTexture = item.textureC;
-				wadTexture.Init(item.buffer);
-				for (int level = 0; level < 4; level++)
-				{
-					auto mip = wadTexture.mipmaps[level];
-					glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, wadTexture.meta->width >> level, wadTexture.meta->height >> level, 0, GL_RGBA, GL_UNSIGNED_BYTE, mip);
-				}
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				texture.handle = glGetTextureHandleARB(texture.id);
-				textures[name] = texture;
-				wadTexture.Release();
-			}
-		}
-	}
 	virtual void OnMouseMove(long dx, long dy, long x, long y) override
 	{
 		firstPersonCamController.OnMouseMove(dx, dy, x, y);
@@ -209,7 +180,6 @@ class Sample_BSPViewer :public Window
 	virtual void OnCreate() override
 	{
 		Window::OnCreate();
-		LoadTextures("assets/cs_dust.wad");
 		light.InitLightMap(8192, 8192);
 		Vector3 lightPos{ -500,2000,1000 };
 		Vector3 lightDir{ 1,-4,-2 };
@@ -222,7 +192,7 @@ class Sample_BSPViewer :public Window
 
 		firstPersonCamera.SetProjectionMatrix(3.1415926 / 3, (float)w/(float)h, 1, 5000);
 		firstPersonCamController.camera = &firstPersonCamera;
-		LoadBSPMap(&bspMapModel,&textures, "assets/de_dust2.bsp");
+		HLMapLoad("assets/de_dust2.bsp", "assets/cs_dust.wad", bspMapModel, &textures);
 		LoadTexture(&bspMapTexture, "assets/256.bmp");
 		shaderMeshShadowMap.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
 		shaderMeshShadowMap.Set("shadowmap", &light.RT.depthTexture);

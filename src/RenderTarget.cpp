@@ -1,20 +1,19 @@
-#include "RenderTarget.h"
-#include "utils/glhelpers.h"
-#include "utils/log.h"
-#include "utils/stdhelpers.h"
-int RenderTarget::width()
+#include "../include/RenderTarget.h"
+#include "../utils/utils.h"
+
+int RenderPass::width()
 {
 	return _size.x;
 }
-int RenderTarget::height()
+int RenderPass::height()
 {
 	return _size.y;
 }
-const glm::ivec2& RenderTarget::size()
+const glm::ivec2& RenderPass::size()
 {
 	return _size;
 }
-void RenderTarget::Init(int width, int height, int nColors, bool depth)
+void RenderPass::Init(int width, int height, int nColors, bool depth)
 {
 	_size.x = width;
 	_size.y = height;
@@ -35,7 +34,7 @@ void RenderTarget::Init(int width, int height, int nColors, bool depth)
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, tex[i], 0);
 			//GLASSERT(glTextureStorage2D(pColorTextures[i], 1, GL_RGBA8, width, height));
 			//GLASSERT(glNamedFramebufferTexture2DEXT(fbo, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, pColorTextures[i], 0));
-			colorTextures.push_back({ tex[i] });
+			colorBuffers.push_back({ tex[i] });
 		}
 
 		delete[] tex;
@@ -50,7 +49,7 @@ void RenderTarget::Init(int width, int height, int nColors, bool depth)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
-		depthTexture.id = tex;
+		depthBuffer.id = tex;
 	}
 	auto err = glCheckNamedFramebufferStatus(fbo, GL_FRAMEBUFFER);
 	if (err != GL_FRAMEBUFFER_COMPLETE)
@@ -69,16 +68,27 @@ void RenderTarget::Init(int width, int height, int nColors, bool depth)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void RenderTarget::Bind(int passID)
+void RenderPass::Bind()
 {
 	GLASSERT(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
 	glViewport(0, 0, _size.x, _size.y);
-	this->passID = passID;
+	//this->passID = passID;
 	glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 	glClear(clearBit);
 }
 
-void RenderTarget::Draw(Renderer& renderer)
+void RenderPass::Draw(Renderer& renderer)
 {
-	renderer.Draw(passID);
+	if (nullptr != renderer.material)
+		renderer.material->Use();
+	renderer.Draw();
 }
+
+void RenderPass::Draw(Renderer& renderer, Shader& shader)
+{
+	shader.Use();
+	renderer.Draw();
+}
+
+
+

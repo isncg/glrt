@@ -30,7 +30,8 @@ public:
 	virtual void OnMouseMove(long dx, long dy, long x, long y) = 0;
 	virtual void OnKeyboard(KEYS key, KEYACTION action) = 0;
 	Camera* camera;
-	void Update();
+	CameraController& Update();
+	Matrix4x4& GetCameraMatrix();
 };
 
 class CameraFirstPersonController: public CameraController

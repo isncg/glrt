@@ -1,8 +1,8 @@
-#include "Light.h"
+#include "../include/Light.h"
 
 void DirectionalLight::InitLightMap(int width, int height)
 {
-	RT.Init(width, height, 0, true);
+	m_ShadowMappingPass.Init(width, height, 0, true);
 }
 
 void DirectionalLight::SetLight(const Vector3& origin, const Vector3& direction, float range)

@@ -1,5 +1,5 @@
 #pragma once
-#include "../Renderer.h"
+#include "../include/Renderer.h"
 
 bool LoadModel(Model* output, const char* file);
 

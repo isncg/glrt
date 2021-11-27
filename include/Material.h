@@ -3,25 +3,27 @@
 #include <vector>
 #include <memory>
 #include <map>
-#include "framework.h"
+#include <framework.h>
 #include "Texture.h"
+#include "Shader.h"
 
-class Shader
+class IMaterialParam;
+class Material
 {
-	friend class Material;
-	Material* lastMaterial = NULL;
-	GLuint program;
+	Shader* pShader;
+	std::map<GLint, IMaterialParam*> params;
+	std::map<GLint, IMaterialParam*> managedParams;
 public:
-	void Load(const char* vert, const char* frag);
+	Material();
+	Material(Shader* shader);
+	void Set(Shader* shader);
+	void Set(IMaterialParam* param);
+	template <typename T>
+	void Set(std::string name, T&& value);
+	template <typename T>
+	void Set(std::string name, T& value);
+	void Set(std::string name, float value);
 	void Use();
-	void Set(const char* name, Matrix4x4& value);
-	void Set(const char* name, Matrix4x4&& value);
-	void Set(const char* name, Vector2& value);
-	void Set(const char* name, Vector2&& value);
-	void Set(const char* name, Vector3& value);
-	void Set(const char* name, Vector3&& value);
-	void Set(const char* name, float value);
-	void Set(const char* name, Texture* texture);
 };
 
 
@@ -41,6 +43,7 @@ public:
 	static void _SetUniform(Matrix4x4& value, GLuint program, GLint location);
 };
 
+
 template <typename T>
 class MaterialParam : public IMaterialParam
 {
@@ -50,25 +53,6 @@ public:
 	void SetUniform(GLuint program, GLint location) override;
 };
 
-class Material
-{
-	//GLuint program;
-	Shader* pShader;
-	std::map<GLint, IMaterialParam*> params;
-	std::map<GLint, IMaterialParam*> managedParams;
-public:
-	Material();
-	Material(Shader* shader);
-	void Set(Shader* shader);
-	void Set(IMaterialParam* param);
-	template <typename T>
-	void Set(std::string name, T&& value);
-	template <typename T>
-	void Set(std::string name, T& value);
-	void Set(std::string name, float value);
-	//void Set(std::string name, int value);
-	void Use();
-};
 
 template<typename T>
 inline MaterialParam<T>::MaterialParam(std::string& name, T&& value)
@@ -78,12 +62,14 @@ inline MaterialParam<T>::MaterialParam(std::string& name, T&& value)
 	this->isDirty = true;
 }
 
+
 template<typename T>
 inline void MaterialParam<T>::SetUniform(GLuint program, GLint location)
 {
 	_SetUniform(value, program, location);
 	isDirty = false;
 }
+
 
 template<typename T>
 inline void Material::Set(std::string name, T&& value)
@@ -99,6 +85,7 @@ inline void Material::Set(std::string name, T&& value)
 	managedParams[location] = pParam;
 	pParam->isDirty = true;
 }
+
 
 template<typename T>
 inline void Material::Set(std::string name, T& value)

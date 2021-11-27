@@ -1,8 +1,7 @@
-#include "Material.h"
-#include "Renderer.h"
-#include "utils/vertex_buffer_builder.h"
-#include "utils/stdhelpers.h"
-#include "utils/log.h"
+#include "../include/Application.h"
+#include "../include/Renderer.h"
+#include "../utils/utils.h"
+
 bool MeshRenderer::ValidateMesh(Mesh* pMesh)
 {
 	int vertexCount = 0;
@@ -47,6 +46,8 @@ void MeshRenderer::Set(Mesh* pMesh)
 	vbb.append_attribute_data(pMesh->uv6);
 	vbb.append_attribute_data(pMesh->uv7);
 	vbb.append_attribute_data(pMesh->uv8);
+	vbb.append_attribute_data(pMesh->colors);
+	vbb.append_attribute_data(pMesh->colors32);
 
 	vbb.build();
 
@@ -59,7 +60,7 @@ void MeshRenderer::Set(Mesh* pMesh)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void MeshRenderer::Draw(int passID)
+void MeshRenderer::Draw()
 {
 	if (vao <= 0 || indices.size() < 3)
 		return;
@@ -93,7 +94,7 @@ Specifies the starting index in the enabled arrays.
 count
 Specifies the number of indices to be rendered.
 ********************************************************************** glDrawArrays ********************************************************************/
-	UseMaterial(passID);
+	//UseMaterial();
 	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
 	//GLASSERT(glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3));
 }
@@ -116,123 +117,28 @@ int Mesh::GetBufferSize()
 		vectorsizeof(colors32);
 }
 
-
-GLuint loadShader(const char* filename, GLenum shaderType)
+void Mesh::Clear()
 {
-	auto glsl = string_readf(filename);
-	GLuint shader = glCreateShader(shaderType);
-	const GLchar* string = glsl.c_str();
-	GLint length = glsl.length();
-	glAssert("before_loadShader");
-	GLASSERT(glShaderSource(shader, 1, &string, &length));
-	log(string_format("Compile shader %s %d", filename, shaderType).c_str());
-	GLASSERT(glCompileShader(shader));
-	//https://www.khronos.org/opengl/wiki/Example/GLSL_Shader_Compile_Error_Testing
-	GLint isCompiled = 0;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
-	if (isCompiled == GL_FALSE)
-	{
-		GLint maxLength = 0;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
-
-		// The maxLength includes the NULL character
-		std::vector<GLchar> errorLog(maxLength);
-		glGetShaderInfoLog(shader, maxLength, &maxLength, &errorLog[0]);
-
-		// Provide the infolog in whatever manor you deem best.
-		log(string_format("Shader compiling failed '%s'\n%s", filename, &errorLog.front()).c_str(), LogLevel::Error);
-		// Exit with failure.
-		glDeleteShader(shader); // Don't leak the shader.
-		return 0;
-	}
-	return shader;
+	vertices.clear();
+	normals.clear();
+	tangents.clear();
+	uv.clear();
+	uv2.clear();
+	uv3.clear();
+	uv4.clear();
+	uv5.clear();
+	uv6.clear();
+	uv7.clear();
+	uv8.clear();
+	colors.clear();
+	colors32.clear();
+	triangles.clear();
 }
 
-void Shader::Load(const char* vert, const char* frag)
-{
-	GLuint vertexShader = loadShader(vert, GL_VERTEX_SHADER);
-	GLuint fragmentShader = loadShader(frag, GL_FRAGMENT_SHADER);
 
-	GLASSERT(program = glCreateProgram());
-	GLASSERT(glAttachShader(program, vertexShader));
-	GLASSERT(glAttachShader(program, fragmentShader));
 
-	GLASSERT(glLinkProgram(program));
-}
 
-void Shader::Use()
-{
-	glAssert("before shader Use");
-	GLASSERT(glUseProgram(program));
-}
 
-void Shader::Set(const char* name, Matrix4x4& value)
-{
-	Set(name, std::move(value));
-}
-
-void Shader::Set(const char* name, Matrix4x4&& value)
-{
-	auto loc = glGetUniformLocation(program, name);
-	if (loc < 0)
-		return;
-	GLASSERT(glProgramUniformMatrix4fv(program, loc, 1, false, (const GLfloat*)&value));
-}
-
-void Shader::Set(const char* name, Vector2& value)
-{
-	Set(name, std::move(value));
-}
-
-void Shader::Set(const char* name, Vector2&& value)
-{
-	auto loc = glGetUniformLocation(program, name);
-	if (loc < 0)
-		return;
-	GLASSERT(glProgramUniform2fv(program, loc, 1, (const GLfloat*)&value));
-}
-
-void Shader::Set(const char* name, Vector3& value)
-{
-	Set(name, std::move(value));
-}
-
-void Shader::Set(const char* name, Vector3&& value)
-{
-	auto loc = glGetUniformLocation(program, name);
-	if (loc < 0)
-		return;
-	GLASSERT(glProgramUniform3fv(program, loc, 1, (const GLfloat*)&value));
-}
-
-void Shader::Set(const char* name, float value)
-{
-	GLASSERT(auto loc = glGetUniformLocation(program, name));
-	if (loc < 0)
-		return;
-	GLASSERT(glProgramUniform1f(program, loc, value));
-}
-
-void Shader::Set(const char* name, Texture* texture)
-{
-	GLASSERT(auto loc = glGetUniformLocation(program, name));
-	if (loc < 0)
-		return;
-	if (texture->handle == 0)
-	{
-		GLASSERT(texture->handle = glGetTextureHandleARB(texture->id));
-	}
-	if (!glIsTextureHandleResidentARB(texture->handle))
-		GLASSERT(glMakeTextureHandleResidentARB(texture->handle));
-	GLASSERT(glProgramUniformHandleui64ARB(program, loc, texture->handle));
-}
-
-GLint GetComponentCount(const Color32& tag) { return 4; }
-
-GLenum GetComponentType(const Vector3& tag) { return GL_FLOAT; }
-GLenum GetComponentType(const Vector4& tag) { return GL_FLOAT; }
-GLenum GetComponentType(const Vector2& tag) { return GL_FLOAT; }
-GLenum GetComponentType(const Color32& tag) { return GL_UNSIGNED_BYTE; }
 
 void CanvasRenderer::Set(CanvasMesh* pMesh)
 {
@@ -286,11 +192,11 @@ void CanvasRenderer::SetFullScreen()
 	Set(&mesh);
 }
 
-void CanvasRenderer::Draw(int passID)
+void CanvasRenderer::Draw()
 {
 	if (vao <= 0 || indices.size() < 3)
 		return;
-	UseMaterial(passID);
+	//UseMaterial();
 	GLASSERT(glBindVertexArray(vao));
 	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
 }
@@ -324,17 +230,27 @@ int CanvasMesh::GetBufferSize()
 		vectorsizeof(uv2);
 }
 
-void Renderer::UseMaterial(int passID)
+//void Renderer::UseMaterial()
+//{
+//	material->Use();
+//	/*if (passID >= 0)
+//	{
+//		auto mat = materialPassDict.find(passID);
+//		if (mat == materialPassDict.end())
+//			return;
+//		mat->second->Use();
+//	}
+//	else if (nullptr != material)
+//	{
+//		material->Use();
+//	}*/
+//}
+
+void Model::Clear()
 {
-	if (passID >= 0)
-	{
-		auto mat = materialPassDict.find(passID);
-		if (mat == materialPassDict.end())
-			return;
-		mat->second->Use();
-	}
-	else if (nullptr != material)
-	{
-		material->Use();
-	}
+	for (auto& i : meshCollection)
+		i.Clear();
+	meshCollection.clear();
+	matNames.clear();
+	meshDict.clear();
 }

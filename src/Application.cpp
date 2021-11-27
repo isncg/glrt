@@ -1,6 +1,7 @@
-#include "Application.h"
-#include "resource.h"
-#include "utils/log.h"
+#include "../include/Application.h"
+#include "../resource.h"
+#include "../utils/utils.h"
+
 #pragma comment (lib, "opengl32.lib")
 
 void Application::Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
@@ -86,5 +87,17 @@ int Application::Run(Window* pMainWindow, bool allocConsole)
     return (int)msg.wParam;
 }
 
+std::string GetAssetPath(std::string && path)
+{
+    return string_format("%s%s", Application::Instance().assetDir, path.c_str());
+}
 
 
+
+#include <glm/glm.hpp>
+GLint GetVectorComponentCount(const Color32& tag) { return 4; }
+
+GLenum GetVectorComponentType(const Vector3& tag) { return GL_FLOAT; }
+GLenum GetVectorComponentType(const Vector4& tag) { return GL_FLOAT; }
+GLenum GetVectorComponentType(const Vector2& tag) { return GL_FLOAT; }
+GLenum GetVectorComponentType(const Color32& tag) { return GL_UNSIGNED_BYTE; }

@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "../include/Camera.h"
 
 Vector2& Camera::ClipRange()
 {
@@ -24,10 +24,16 @@ Matrix4x4& Camera::GetMatrix()
 }
 
 
-void CameraController::Update()
+CameraController& CameraController::Update()
 {
 	FrameUpdate();
 	CalcViewMatrix(camera->mat_view);
+	return *this;
+}
+
+Matrix4x4& CameraController::GetCameraMatrix()
+{
+	return camera->GetMatrix();
 }
 
 void CameraFirstPersonController::OnMouseMove(long dx, long dy, long x, long y)

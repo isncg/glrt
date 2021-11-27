@@ -1,14 +1,13 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <sstream>
-#include "framework.h"
 #include <windowsx.h>
-#include "Resource.h"
-#include "Application.h"
-#include "Window.h"
 #include <strsafe.h>
-#include "utils/glhelpers.h"
-#include "utils/log.h"
+#include <framework.h>
+#include "../Resource.h"
+#include "../include/GLRT.h"
+#include "../utils/glhelpers.h"
+#include "../utils/log.h"
 
 
 

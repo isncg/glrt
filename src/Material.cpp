@@ -1,5 +1,6 @@
-#include "Material.h"
-#include "utils/glhelpers.h"
+#include "../include/Material.h"
+#include "../utils/utils.h"
+
 void IMaterialParam::_SetUniform(float value, GLuint program, GLint location)
 {
 	glProgramUniform1f(program, location, value);

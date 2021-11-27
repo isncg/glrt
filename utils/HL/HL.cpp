@@ -1,4 +1,5 @@
 #include "HL.h"
+#include "../../include/Application.h"
 
 bool LoadBSPMap(Model& outputModel, std::map<std::string, Texture>* outputTextures, const char* fnbsp)
 {

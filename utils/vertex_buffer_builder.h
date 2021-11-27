@@ -55,8 +55,8 @@ inline void vertex_buffer_builder::append_attribute_data(const typename std::vec
 
 		pointer
 		Specifies a offset of the first component of the first generic vertex attribute in the array in the data store of the buffer currently bound to the GL_ARRAY_BUFFER target. The initial value is 0.*/
-		auto size = GetComponentCount(vec.front());
-		auto type = GetComponentType(vec.front());
+		auto size = GetVectorComponentCount(vec.front());
+		auto type = GetVectorComponentType(vec.front());
 		int stride = sizeof(T);
 		attr_info.push_back(vertex_attribute_info{
 			attr_index,

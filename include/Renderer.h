@@ -1,5 +1,5 @@
 #pragma once
-#include "framework.h"
+#include <framework.h>
 #include <string>
 #include "Texture.h"
 #include "Material.h"
@@ -48,6 +48,7 @@ struct Mesh
     std::vector<unsigned int> triangles;
 
     int GetBufferSize();
+    void Clear();
 };
 
 struct ModelTreeNode
@@ -62,6 +63,7 @@ struct Model
     std::vector<std::string> matNames;
     std::map<std::string, int> meshDict;
     ModelTreeNode root;
+    void Clear();
 };
 
 struct Sampler
@@ -76,10 +78,10 @@ struct Sampler
 class Renderer
 {
 public:
-    std::map<int, Material*> materialPassDict;
+    //std::map<int, Material*> materialPassDict;
     Material* material;
-    void UseMaterial(int passID);
-    virtual void Draw(int passID = -1) = 0;
+    //void UseMaterial();
+    virtual void Draw() = 0;
 };
 
 class MeshRenderer: public Renderer
@@ -92,14 +94,10 @@ class MeshRenderer: public Renderer
     int triangleCount;
 public:
     void Set(Mesh* pMesh);
-    void Draw(int passID = -1);
+    void Draw();
 };
 
-template<typename T>
-inline GLint GetComponentCount(const T& tag)
-{
-    return T::length();
-}
+
 
 typedef struct tagCanvasRect
 {
@@ -139,5 +137,5 @@ class CanvasRenderer: public Renderer
 public:
     void Set(CanvasMesh* pMesh);
     void SetFullScreen();
-    void Draw(int passID = -1);
+    void Draw();
 };

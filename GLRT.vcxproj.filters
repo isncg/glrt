@@ -12,120 +12,207 @@
     <Filter Include="utils">
       <UniqueIdentifier>{178bee7f-2bd0-4492-b09d-81288ca472c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="examples">
+      <UniqueIdentifier>{5ccf0730-1d42-4931-812f-1f6cf33c5d91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
+    <ClInclude Include="include\*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
+    <ClInclude Include="include\*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
+    <ClInclude Include="include\*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
+    <ClInclude Include="include\*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Window.h">
+    <ClInclude Include="include\*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.h">
+    <ClInclude Include="include\*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="utils\buffer_builder.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\stdhelpers.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\vertex_buffer_builder.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\singleton.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\log.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\asset_loader.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderTarget.h">
+    <ClInclude Include="include\*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="include\*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
+    <ClInclude Include="include\*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
+    <ClInclude Include="include\*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
+    <ClInclude Include="*.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="utils\HL\HL.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="*.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GLRT.cpp">
+    <ClCompile Include="3rdparty\bsp30\src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Window.cpp">
+    <ClCompile Include="3rdparty\glad\src\*.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\glad\src\glad.c">
+    <ClCompile Include="3rdparty\wad\src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
+    <ClCompile Include="src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="utils\buffer_builder.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\vertex_buffer_builder.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\stdhelpers.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
+    <ClCompile Include="src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="utils\glhelpers.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\log.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\asset_loader.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Samples.cpp">
+    <ClCompile Include="src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\bsp30\src\BSPLoader.cpp">
+    <ClCompile Include="src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="RenderTarget.cpp">
+    <ClCompile Include="src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
+    <ClCompile Include="src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
+    <ClCompile Include="src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\wad\src\WADFile.cpp">
+    <ClCompile Include="src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="utils\HL\HL.cpp">
-      <Filter>utils</Filter>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\HL\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLRT.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Light.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Material.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderTarget.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Samples.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\halflife1\halflife1.cpp">
+      <Filter>examples</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

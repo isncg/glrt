@@ -134,3 +134,28 @@
 #include "matrix.hpp"
 #include "vector_relational.hpp"
 #include "integer.hpp"
+
+
+#ifdef __gl_h_
+// Custom helpers for OpenGL
+typedef glm::vec3 Vector3;
+typedef glm::vec2 Vector2;
+typedef glm::vec4 Vector4;
+typedef glm::mat4 Matrix4x4;
+typedef glm::vec4 Color;
+typedef glm::lowp_i8vec4 Color32;
+typedef glm::ivec2 Vector2i;
+
+GLenum GetVectorComponentType(const Vector3& tag);
+GLenum GetVectorComponentType(const Vector2& tag);
+GLenum GetVectorComponentType(const Vector4& tag);
+GLenum GetVectorComponentType(const Color32& tag);
+
+GLint GetVectorComponentCount(const Color32& tag);
+
+template<typename T>
+inline GLint GetVectorComponentCount(const T& tag)
+{
+    return T::length();
+}
+#endif

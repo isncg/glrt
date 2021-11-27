@@ -10,7 +10,7 @@ class DirectionalLight: public Light
 {
 public:
 	Matrix4x4 matrix;
-	RenderTarget RT;
+	RenderPass m_ShadowMappingPass;
 	void InitLightMap(int width, int height);
 	void SetLight(const Vector3& origin, const Vector3& direction, float range);
 };

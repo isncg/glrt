@@ -1,10 +1,6 @@
-#include "framework.h"
-#include "Application.h"
-#include "Window.h"
-#include "Renderer.h"
-#include "utils/glhelpers.h"
-#include "utils/asset_loader.h"
-#include <math.h>
+#include "../include/GLRT.h"
+#include "../utils/utils.h"
+
 class Sample_ModelLoadingAndRendering :public Window
 {
 	Shader shader;
@@ -64,7 +60,7 @@ class Sample_UICanvas :public Window
 		canvasMesh.Set(cr, hw, hh);
 		
 		shader.Load("glsl/canvas.vert", "glsl/canvas.frag");
-		shader.Set("tex", &texture);
+		shader.Set("tex", texture);
 		shader.Use();
 
 		renderer.Set(&canvasMesh);
@@ -128,133 +124,133 @@ class Sample_MouseLook :public Window
 	}
 };
 //RUN_WINDOW(Sample_MouseLook)
-#include "Camera.h"
-#include "RenderTarget.h"
-#include "Light.h"
-#include "Material.h"
-#include "utils/HL/HL.h"
-class Sample_BSPViewer :public Window
-{
-	enum PASS
-	{
-		SHADOWMAP = 0,
-		FORWARD = 1,
-		CANVAS = 2
-	};
-	Camera firstPersonCamera;
-	CameraFirstPersonController firstPersonCamController;
-
-	Model bspMapModel;
-	Texture bspMapTexture;
-	Shader shaderMeshShadowMap;
-	std::vector<MeshRenderer> meshRenderer;
-	std::vector<Material> matMeshShadowMap;
-	
-	RenderTarget forwardRT;
-	Shader canvasShader;
-	Material canvasMaterial;
-	CanvasRenderer canvasRenderer;
-
-	DirectionalLight light;
-	Shader lightmapMeshShader;
-	Material lightmapMaterial;
-	std::map<std::string, Texture> textures;
-	
-	long w = 1280, h = 720;
-	void GetInitSize(long* width, long* height) override
-	{
-		*width = w;
-		*height = h;
-	}
-
-	virtual void OnMouseMove(long dx, long dy, long x, long y) override
-	{
-		firstPersonCamController.OnMouseMove(dx, dy, x, y);
-	}
-
-	virtual void OnKeyboard(KEYS key, KEYACTION action) override
-	{
-		firstPersonCamController.OnKeyboard(key, action);
-	}
-
-	virtual void OnCreate() override
-	{
-		Window::OnCreate();
-		light.InitLightMap(8192, 8192);
-		Vector3 lightPos{ -500,2000,1000 };
-		Vector3 lightDir{ 1,-4,-2 };
-		float lightRange = 4096;
-		light.SetLight(lightPos, lightDir, lightRange);
-		lightmapMeshShader.Load("glsl/mesh_depth.vert", "glsl/mesh_depth.frag");
-		lightmapMaterial.Set(&lightmapMeshShader);
-		lightmapMaterial.Set("lightmat", light.matrix);
-
-
-		firstPersonCamera.SetProjectionMatrix(3.1415926 / 3, (float)w/(float)h, 1, 5000);
-		firstPersonCamController.camera = &firstPersonCamera;
-		HLMapLoad("assets/de_dust2.bsp", "assets/cs_dust.wad", bspMapModel, &textures);
-		LoadTexture(&bspMapTexture, "assets/256.bmp");
-		shaderMeshShadowMap.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
-		shaderMeshShadowMap.Set("shadowmap", &light.RT.depthTexture);
-		shaderMeshShadowMap.Set("lightmat", light.matrix);
-		forwardRT.Init(4096, 2048, 1, true);
-		
-		for (int i = 0; i < bspMapModel.meshCollection.size(); i++)
-		{
-			MeshRenderer mr;
-			meshRenderer.push_back(mr);
-			meshRenderer[i].Set(&bspMapModel.meshCollection[i]);
-
-			Material mt;
-			matMeshShadowMap.push_back(mt);
-			matMeshShadowMap[i].Set(&shaderMeshShadowMap);
-
-			auto texi = textures.find(bspMapModel.matNames[i]);
-			if(texi!=textures.end())
-				matMeshShadowMap[i].Set("tex", texi->second);
-			else
-			{
-				matMeshShadowMap[i].Set("tex", bspMapTexture);
-				std::cout << "Missing texture: " << bspMapModel.matNames[i] << std::endl;
-			}
-			meshRenderer[i].materialPassDict[PASS::SHADOWMAP] = &lightmapMaterial;
-		}
-
-		for (int i = 0; i < bspMapModel.meshCollection.size(); i++)
-			meshRenderer[i].materialPassDict[PASS::FORWARD] = &matMeshShadowMap[i];
-
-		canvasRenderer.SetFullScreen();
-		canvasShader.Load("glsl/canvas.vert", "glsl/canvas.frag");
-		canvasMaterial.Set(&canvasShader);
-		canvasMaterial.Set("ssize",16);
-		canvasMaterial.Set("blur", 4);
-		canvasMaterial.Set("clipRange", firstPersonCamera.ClipRange());
-		canvasMaterial.Set("tex", forwardRT.colorTextures[0]);
-		canvasMaterial.Set("depth", light.RT.depthTexture);
-		canvasRenderer.materialPassDict[PASS::CANVAS] = &canvasMaterial;
-		glEnable(GL_DEPTH_TEST);
-	}
-
-	virtual void BeforeRender() override
-	{
-		light.RT.Bind(PASS::SHADOWMAP);
-		for (auto& mr : meshRenderer)
-			light.RT.Draw(mr);
-
-		forwardRT.Bind(PASS::FORWARD);
-		firstPersonCamController.Update();
-		shaderMeshShadowMap.Set("_mvp", firstPersonCamera.GetMatrix());
-		for (int i = 0; i < meshRenderer.size(); i++)
-			forwardRT.Draw(meshRenderer[i]);
-	}
-
-	virtual void Render() override
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		canvasRenderer.Draw(PASS::CANVAS);
-	}
-};
-RUN_WINDOW(Sample_BSPViewer)
+#include "../include/Camera.h"
+#include "../include/RenderTarget.h"
+#include "../include/Light.h"
+#include "../include/Material.h"
+#include "../utils/HL/HL.h"
+//class Sample_BSPViewer :public Window
+//{
+//	enum PASS
+//	{
+//		SHADOWMAP = 0,
+//		FORWARD = 1,
+//		CANVAS = 2
+//	};
+//	Camera firstPersonCamera;
+//	CameraFirstPersonController firstPersonCamController;
+//
+//	Model bspMapModel;
+//	Texture bspMapTexture;
+//	Shader shaderMeshShadowMap;
+//	std::vector<MeshRenderer> meshRenderer;
+//	std::vector<Material> matMeshShadowMap;
+//	
+//	RenderPass forwardRT;
+//	Shader canvasShader;
+//	Material canvasMaterial;
+//	CanvasRenderer canvasRenderer;
+//
+//	DirectionalLight light;
+//	Shader lightmapMeshShader;
+//	//Material lightmapMaterial;
+//	std::map<std::string, Texture> textures;
+//	
+//	long w = 1280, h = 720;
+//	void GetInitSize(long* width, long* height) override
+//	{
+//		*width = w;
+//		*height = h;
+//	}
+//
+//	virtual void OnMouseMove(long dx, long dy, long x, long y) override
+//	{
+//		firstPersonCamController.OnMouseMove(dx, dy, x, y);
+//	}
+//
+//	virtual void OnKeyboard(KEYS key, KEYACTION action) override
+//	{
+//		firstPersonCamController.OnKeyboard(key, action);
+//	}
+//
+//	virtual void OnCreate() override
+//	{
+//		Window::OnCreate();
+//		light.InitLightMap(8192, 8192);
+//		Vector3 lightPos{ -500,2000,1000 };
+//		Vector3 lightDir{ 1,-4,-2 };
+//		float lightRange = 4096;
+//		light.SetLight(lightPos, lightDir, lightRange);
+//		lightmapMeshShader.Load("glsl/mesh_depth.vert", "glsl/mesh_depth.frag");
+//		//lightmapMaterial.Set(&lightmapMeshShader);
+//		//lightmapMaterial.Set("lightmat", light.matrix);
+//
+//
+//		firstPersonCamera.SetProjectionMatrix(3.1415926 / 3, (float)w/(float)h, 1, 5000);
+//		firstPersonCamController.camera = &firstPersonCamera;
+//		HLMapLoad("assets/de_dust2.bsp", "assets/cs_dust.wad", bspMapModel, &textures);
+//		LoadTexture(&bspMapTexture, "assets/256.bmp");
+//		shaderMeshShadowMap.Load("glsl/mesh_shadowmap.vert", "glsl/mesh_shadowmap.frag");
+//		shaderMeshShadowMap.Set("shadowmap", &light.RT.depthBuffer);
+//		shaderMeshShadowMap.Set("lightmat", light.matrix);
+//		forwardRT.Init(4096, 2048, 1, true);
+//		
+//		for (int i = 0; i < bspMapModel.meshCollection.size(); i++)
+//		{
+//			MeshRenderer mr;
+//			meshRenderer.push_back(mr);
+//			meshRenderer[i].Set(&bspMapModel.meshCollection[i]);
+//
+//			Material mt;
+//			matMeshShadowMap.push_back(mt);
+//			matMeshShadowMap[i].Set(&shaderMeshShadowMap);
+//
+//			auto texi = textures.find(bspMapModel.matNames[i]);
+//			if(texi!=textures.end())
+//				matMeshShadowMap[i].Set("tex", texi->second);
+//			else
+//			{
+//				matMeshShadowMap[i].Set("tex", bspMapTexture);
+//				std::cout << "Missing texture: " << bspMapModel.matNames[i] << std::endl;
+//			}
+//			meshRenderer[i].materialPassDict[PASS::SHADOWMAP] = &lightmapMaterial;
+//		}
+//
+//		for (int i = 0; i < bspMapModel.meshCollection.size(); i++)
+//			meshRenderer[i].materialPassDict[PASS::FORWARD] = &matMeshShadowMap[i];
+//
+//		canvasRenderer.SetFullScreen();
+//		canvasShader.Load("glsl/canvas.vert", "glsl/canvas.frag");
+//		canvasMaterial.Set(&canvasShader);
+//		canvasMaterial.Set("ssize",16);
+//		canvasMaterial.Set("blur", 4);
+//		canvasMaterial.Set("clipRange", firstPersonCamera.ClipRange());
+//		canvasMaterial.Set("tex", forwardRT.colorBuffers[0]);
+//		canvasMaterial.Set("depth", light.RT.depthBuffer);
+//		canvasRenderer.materialPassDict[PASS::CANVAS] = &canvasMaterial;
+//		glEnable(GL_DEPTH_TEST);
+//	}
+//
+//	virtual void BeforeRender() override
+//	{
+//		light.RT.Bind(PASS::SHADOWMAP);
+//		for (auto& mr : meshRenderer)
+//			light.RT.Draw(mr);
+//
+//		forwardRT.Bind(PASS::FORWARD);
+//		firstPersonCamController.Update();
+//		shaderMeshShadowMap.Set("_mvp", firstPersonCamera.GetMatrix());
+//		for (int i = 0; i < meshRenderer.size(); i++)
+//			forwardRT.Draw(meshRenderer[i]);
+//	}
+//
+//	virtual void Render() override
+//	{
+//		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//		canvasRenderer.Draw(PASS::CANVAS);
+//	}
+//};
+//RUN_WINDOW(Sample_BSPViewer)
 
 
 class Sample_WAD :public Window
@@ -298,7 +294,7 @@ class Sample_WAD :public Window
 		canvasMesh.Set(cr, hw, hh);
 
 		shader.Load("glsl/canvas.vert", "glsl/canvas.frag");
-		shader.Set("tex", &texture);
+		shader.Set("tex", texture);
 		shader.Use();
 
 		renderer.Set(&canvasMesh);

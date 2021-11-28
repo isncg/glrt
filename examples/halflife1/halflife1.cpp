@@ -34,7 +34,7 @@ namespace example
 			float lightRange = 4096;
 
 			HLMapLoad(GetAssetPath("de_dust2.bsp"), GetAssetPath("cs_dust.wad"), m_LevelModel, &textureDict);
-			LoadTexture(&m_LevelPlaceHolderTexture, "assets/256.bmp");
+			LoadTexture(&m_LevelPlaceHolderTexture, GetAssetPath("256.bmp"));
 
 			m_ShadowMappingLight.InitLightMap(8192, 8192);
 			m_ShadowMappingLight.SetLight(lightPos, lightDir, lightRange);
@@ -66,6 +66,7 @@ namespace example
 					m_LevelSubmeshMaterials[i].Set("tex", m_LevelPlaceHolderTexture);
 					std::cout << "Missing texture: " << m_LevelModel.matNames[i] << std::endl;
 				}
+				m_LevelSubmeshMaterials[i].name = m_LevelModel.matNames[i];
 			}
 
 			for (int i = 0; i < m_LevelModel.meshCollection.size(); i++)

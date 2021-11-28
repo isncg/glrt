@@ -7,6 +7,8 @@
 #include <bsp30/BSPLoader.h>
 #pragma comment(lib, "assimp-vc142-mt.lib")
 #include <wad/WADFile.h>
+#include <exception>
+#include "stdhelpers.h"
 bool LoadMesh(Mesh* output, aiMesh* input)
 {
     for (int i = 0; i < input->mNumVertices; i++)
@@ -236,7 +238,7 @@ BOOL SwapRedBlue32(FIBITMAP* dib) {
     return TRUE;
 }
 
-bool LoadTexture(Texture* output, const char* filename, Sampler* sampler)
+bool LoadTexture(Texture* output, std::string filename, Sampler* sampler)
 {
     //image format
     FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
@@ -250,20 +252,30 @@ bool LoadTexture(Texture* output, const char* filename, Sampler* sampler)
     GLuint gl_texID = 0;
     GLuint64 gl_texHandle = 0;
     //check the file signature and deduce its format
-    fif = FreeImage_GetFileType(filename, 0);
+    fif = FreeImage_GetFileType(filename.c_str(), 0);
     //if still unknown, try to guess the file format from the file extension
     if (fif == FIF_UNKNOWN)
-        fif = FreeImage_GetFIFFromFilename(filename);
+        fif = FreeImage_GetFIFFromFilename(filename.c_str());
     //if still unkown, return failure
     if (fif == FIF_UNKNOWN)
+    {
+        auto err = string_format("Unknown texture file format: %s", filename.c_str());
+        MessageBoxA(NULL, err.c_str(), "Resource error", MB_ICONERROR);
+        output->name = err;
         return false;
+    }
 
     //check that the plugin has reading capabilities and load the file
     if (FreeImage_FIFSupportsReading(fif))
-        dib = FreeImage_Load(fif, filename);
+        dib = FreeImage_Load(fif, filename.c_str());
     //if the image failed to load, return failure
     if (!dib)
+    {
+        auto err = string_format("Failed to load texture: %s", filename.c_str());
+        MessageBoxA(NULL, err.c_str(),"Resource error", MB_ICONERROR);
+        output->name = err;
         return false;
+    }
     SwapRedBlue32(dib);
     //retrieve the image data
     bits = FreeImage_GetBits(dib);
@@ -296,6 +308,7 @@ bool LoadTexture(Texture* output, const char* filename, Sampler* sampler)
     FreeImage_Unload(dib);
     output->id = gl_texID;
     output->handle = gl_texHandle;
+    output->name = filename;
     return true;
 }
 

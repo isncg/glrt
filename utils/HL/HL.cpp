@@ -195,6 +195,7 @@ void HLMapLoad(std::string fnbsp, std::string fnwad, Model& outputModel, std::ma
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 texture.handle = glGetTextureHandleARB(texture.id);
+                texture.name = name;
                 (*outputTextures)[name] = texture;
                 wadTexture.Release();
             }

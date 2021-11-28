@@ -14,6 +14,7 @@ class Material
 	std::map<GLint, IMaterialParam*> params;
 	std::map<GLint, IMaterialParam*> managedParams;
 public:
+	std::string name;
 	Material();
 	Material(Shader* shader);
 	void Set(Shader* shader);

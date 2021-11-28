@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 struct Texture
 {
+    std::string name;
     GLuint id;
     GLuint64 handle;
 };

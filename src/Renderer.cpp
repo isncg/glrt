@@ -201,13 +201,13 @@ void CanvasRenderer::Draw()
 	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
 }
 
-void CanvasMesh::Set(CanvasRect& rect, float halfWidth, float halfHeight)
+void CanvasMesh::Set(CanvasRect&& rect, Vector2 halfsize)
 {
 	vertices.clear();
-	vertices.push_back(Vector2{ (rect.pos.x + rect.xMin) / halfWidth, (rect.pos.y + rect.yMin) / halfHeight });
-	vertices.push_back(Vector2{ (rect.pos.x + rect.xMax) / halfWidth, (rect.pos.y + rect.yMin) / halfHeight });
-	vertices.push_back(Vector2{ (rect.pos.x + rect.xMax) / halfWidth, (rect.pos.y + rect.yMax) / halfHeight });
-	vertices.push_back(Vector2{ (rect.pos.x + rect.xMin) / halfWidth, (rect.pos.y + rect.yMax) / halfHeight });
+	vertices.push_back(Vector2{ (rect.pos.x + rect.xMin) / halfsize.x, (rect.pos.y + rect.yMin) / halfsize.y });
+	vertices.push_back(Vector2{ (rect.pos.x + rect.xMax) / halfsize.x, (rect.pos.y + rect.yMin) / halfsize.y });
+	vertices.push_back(Vector2{ (rect.pos.x + rect.xMax) / halfsize.x, (rect.pos.y + rect.yMax) / halfsize.y });
+	vertices.push_back(Vector2{ (rect.pos.x + rect.xMin) / halfsize.x, (rect.pos.y + rect.yMax) / halfsize.y });
 
 	uv.clear();
 	uv.push_back(Vector2{ 0,0 });
@@ -253,4 +253,36 @@ void Model::Clear()
 	meshCollection.clear();
 	matNames.clear();
 	meshDict.clear();
+}
+
+void CanvasRect::SetRect(Vector2 pos, Vector2 size, Vector2 pivot)
+{
+	this->pos = pos;
+	xMin =  - pivot.x * size.x;
+	xMax = (1 - pivot.x) * size.x;
+	yMin =  - pivot.y * size.y;
+	yMax = (1 - pivot.y) * size.y;
+}
+
+CanvasRect::CanvasRect()
+{
+}
+
+CanvasRect::CanvasRect(Vector2 pos, Vector2 size, Vector2 pivot)
+{
+	SetRect(pos, size, pivot);
+}
+
+void tagCanvasMesh::MergeBatch(tagCanvasMesh& mesh)
+{
+	vertices.insert(vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
+	uv.insert(uv.end(), mesh.uv.begin(), mesh.uv.end());
+	uv2.insert(uv2.end(), mesh.uv2.begin(), mesh.uv2.end());
+}
+
+void tagCanvasMesh::MergeBatch(CanvasRect&& rect, Vector2 halfsize)
+{
+	CanvasMesh mesh;
+	mesh.Set(std::move(rect), halfsize);
+	MergeBatch(mesh);
 }

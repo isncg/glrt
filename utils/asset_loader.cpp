@@ -157,7 +157,7 @@ void DumpMesh(Mesh* m)
 }
 
 
-bool LoadModel(Model* output, const char* file)
+bool LoadModel(Model* output, std::string file)
 {
     // Create an instance of the Importer class
     Assimp::Importer importer;

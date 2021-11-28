@@ -73,6 +73,9 @@ LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_SIZE:
 		OnResize(LOWORD(lParam), HIWORD(lParam));
+		/*RECT rt;
+		GetClientRect(hWnd, &rt);
+		OnResize(rt.right - rt.left, rt.bottom - rt.top);*/
 		OnIdle();
 		break;
 	case WM_DESTROY:
@@ -190,7 +193,7 @@ void Window::OnCreate()
 	ready = true;
 }
 
-void Window::OnResize(int width, int height)
+void Window::OnResize(long width, long height)
 {
 	//if (ready)
 	//	glViewport(0, 0, width, height);
@@ -237,6 +240,13 @@ void Window::OnMouseWheel(int delta)
 
 void Window::OnKeyboard(KEYS key, KEYACTION action)
 {
+}
+
+Vector2 Window::GetClientSize()
+{
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+	return Vector2(rect.right - rect.left, rect.bottom - rect.top);
 }
 
 LPCWSTR Window::GetWindowClassName()

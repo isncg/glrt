@@ -99,7 +99,7 @@ public:
 
 
 
-typedef struct tagCanvasRect
+typedef struct CanvasRect
 {
     Vector2 pos;
     float xMin;
@@ -111,10 +111,10 @@ typedef struct tagCanvasRect
     float pivotX();
     float pivotY();
     Vector2 pivot();
-    void setWidth(float width, float pivot);
-    void setHeight(float width, float pivot);
-    void setSize(Vector2 size, Vector2 pivot);
-}CanvasRect;
+    CanvasRect();
+    CanvasRect(Vector2 pos, Vector2 size, Vector2 pivot);
+    void SetRect(Vector2 pos, Vector2 size, Vector2 pivot);
+};
 
 typedef struct tagCanvasMesh
 {
@@ -122,9 +122,10 @@ typedef struct tagCanvasMesh
     std::vector<Vector2> uv;
     std::vector<Vector2> uv2;
 
-    void Set(CanvasRect& rect, float halfWidth, float halfHeight);
+    void Set(CanvasRect&& rect, Vector2 halfsize);
     int GetBufferSize();
     void MergeBatch(tagCanvasMesh& mesh);
+    void MergeBatch(CanvasRect&& rect, Vector2 halfsize);
 }CanvasMesh;
 
 class CanvasRenderer: public Renderer

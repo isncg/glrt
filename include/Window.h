@@ -101,7 +101,7 @@ protected:
 	virtual void OnPaint(HDC hdc);
 	virtual void OnDestroy();
 	virtual void OnCreate();
-	virtual void OnResize(int width, int height);
+	virtual void OnResize(long width, long height);
 	virtual void OnIdle();
 	virtual void BeforeRender();
 	virtual void Render();
@@ -109,7 +109,9 @@ protected:
 	virtual void OnMouseMove(long dx, long dy, long x, long y);
 	virtual void OnMouseWheel(int delta);
 	virtual void OnKeyboard(KEYS key, KEYACTION action);
+
 public:
+	Vector2 GetClientSize();
 	virtual LPCWSTR GetWindowClassName();
 	virtual void PopulateClassInfo(WNDCLASSEXW* pwcex);
 	HWND hWnd = NULL;

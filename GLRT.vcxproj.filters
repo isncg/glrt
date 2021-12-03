@@ -161,6 +161,42 @@
     <ClInclude Include="examples\empty3d\empty3d.h">
       <Filter>examples</Filter>
     </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdparty\bsp30\src\*.cpp">
@@ -214,7 +250,25 @@
     <ClCompile Include="src\Window.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\*.cpp">
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Light.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Material.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderTarget.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\*.cpp">
@@ -352,8 +406,20 @@
     <ClCompile Include="examples\empty3d\empty3d.cpp">
       <Filter>examples</Filter>
     </ClCompile>
-    <ClCompile Include="examples\teapot\teapot.cpp">
-      <Filter>examples</Filter>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -71,6 +71,19 @@ void CameraFirstPersonController::OnKeyboard(KEYS key, KEYACTION action)
 	}
 }
 
+void CameraFirstPersonController::Setup(Vector3& pos)
+{
+	this->focus = pos;
+}
+
+void CameraFirstPersonController::Setup(Vector3& pos, float yall, float pitch)
+{
+	this->focus = pos;
+	this->yall = yall;
+	this->pitch = pitch;
+}
+
+
 void CameraFirstPersonController::FrameUpdate()
 {
 	//Vector3 r{ cos(yall) * cos(pitch), sin(pitch), sin(yall) * cos(pitch) };
@@ -78,8 +91,8 @@ void CameraFirstPersonController::FrameUpdate()
 	fw.y = sin(pitch);
 	fw.z = sin(yall) * cos(pitch);
 	Vector3 rt{ sin(yall), 0, -cos(yall) };
-	focus += -(float)(md - ma) * rt * 20.0f;
-	focus += (float)(mw - ms) * fw * 20.0f;
+	focus += -(float)(md - ma) * rt * speed;
+	focus += (float)(mw - ms) * fw * speed;
 }
 
 void CameraFirstPersonController::CalcViewMatrix(Matrix4x4& mat_proj)

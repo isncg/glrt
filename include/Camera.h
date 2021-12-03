@@ -48,6 +48,10 @@ class CameraFirstPersonController: public CameraController
 	virtual void FrameUpdate() override;
 	virtual void CalcViewMatrix(Matrix4x4& mat_proj) override;
 public:
+	float speed = 20.0f;
 	virtual void OnMouseMove(long dx, long dy, long x, long y) override;
 	virtual void OnKeyboard(KEYS key, KEYACTION action) override;
+	void Setup(Vector3& pos);
+	void Setup(Vector3& pos, float yall, float pitch);
+	void Setup(Vector3& pos, Vector3& lookat);
 };

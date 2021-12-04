@@ -54,18 +54,26 @@ namespace example
 
 		GetInitSize(&w, &h);
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
 		glAssert("oncreate finish");
 	}
 
 
 	void Empty3D::GetInitSize(long* width, long* height) { *width = w; *height = h; }
 	void Empty3D::OnMouseMove(long dx, long dy, long x, long y) { m_CamController.OnMouseMove(dx, dy, x, y); }
-	void Empty3D::DrawHorizonGrid(float size, float brightness)
+	void Empty3D::DrawHorizonGrid(float size)
 	{
+		auto pos = m_CamController.position;
+		Vector2 offset;
+		offset.x = (long)(pos.x / size) * size;
+		offset.y = (long)(pos.z / size) * size;
 		gridShader.Use();
 		gridShader.Set("cam", m_Camera.GetMatrix());
 		gridShader.Set("size", size);
-		gridShader.Set("brightness", brightness);
+		gridShader.Set("viewpos", m_CamController.position);
+		gridShader.Set("gridcolor", Vector3{ 1,1,1 });
+		gridShader.Set("offset", offset);
 		GLASSERT(glBindVertexArray(grid));
 		GLASSERT(glDrawArrays(GL_LINES, 0, 404));
 	}
@@ -82,7 +90,12 @@ namespace example
 		glClearColor(0.2, 0.2, 0.2, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		DrawHorizonGrid(1.0f, 1.0f);
+		glDisable(GL_DEPTH_TEST);
+		DrawHorizonGrid(0.1f);
+		DrawHorizonGrid(1.0f);
+		DrawHorizonGrid(10.0f);
+		DrawHorizonGrid(100.0f);
+		glEnable(GL_DEPTH_TEST);
 		
 		shader.Use();
 		shader.Set("_mvp", m_Camera.GetMatrix());

@@ -42,12 +42,12 @@ class CameraFirstPersonController: public CameraController
 	int ms = 0;
 	float yall = 0;
 	float pitch = 0;
-	Vector3 focus;
 	Vector3 fw;
 	Vector3 rt;
 	virtual void FrameUpdate() override;
 	virtual void CalcViewMatrix(Matrix4x4& mat_proj) override;
 public:
+	Vector3 position;
 	float speed = 20.0f;
 	virtual void OnMouseMove(long dx, long dy, long x, long y) override;
 	virtual void OnKeyboard(KEYS key, KEYACTION action) override;

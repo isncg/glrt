@@ -28,7 +28,7 @@ namespace example
 		virtual void Render() override;
 		void DrawSkyboxBg();
 		void DrawAxis();
-		void DrawHorizonGrid(float size, float brightness);
+		void DrawHorizonGrid(float size);
 
 		virtual void AfterRender() override;
 	};

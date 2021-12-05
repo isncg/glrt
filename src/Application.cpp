@@ -87,10 +87,10 @@ int Application::Run(Window* pMainWindow, bool allocConsole)
     return (int)msg.wParam;
 }
 
-std::string GetAssetPath(std::string && path)
-{
-    return string_format("%s%s", Application::Instance().assetDir, path.c_str());
-}
+//std::string GetAssetPath(std::string && path)
+//{
+//    return string_format("%s%s", Application::Instance().assetDir, path.c_str());
+//}
 
 
 

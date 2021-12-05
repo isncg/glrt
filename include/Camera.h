@@ -20,6 +20,7 @@ public:
 	void SetProjectionMatrix(float fovY, float aspect, float zNear, float zFar);
 	void SetShaderMat4(Shader& shader, const char* name = "_cam");
 	Matrix4x4& GetMatrix();
+	const Matrix4x4& GetProjectionMatrix();
 };
 
 class CameraController
@@ -48,6 +49,7 @@ class CameraFirstPersonController: public CameraController
 	virtual void CalcViewMatrix(Matrix4x4& mat_proj) override;
 public:
 	Vector3 position;
+	const Vector3& GetForwardDirection();
 	float speed = 20.0f;
 	virtual void OnMouseMove(long dx, long dy, long x, long y) override;
 	virtual void OnKeyboard(KEYS key, KEYACTION action) override;

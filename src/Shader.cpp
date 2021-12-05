@@ -33,7 +33,20 @@ GLuint loadShader(std::string& filename, GLenum shaderType)
 }
 
 
-void Shader::Load(std::string vert, std::string frag)
+//void Shader::Load(std::string vert, std::string frag)
+//{
+//	Load(std::move(vert), std::move(frag));
+//	/*GLuint vertexShader = loadShader(vert, GL_VERTEX_SHADER);
+//	GLuint fragmentShader = loadShader(frag, GL_FRAGMENT_SHADER);
+//
+//	GLASSERT(program = glCreateProgram());
+//	GLASSERT(glAttachShader(program, vertexShader));
+//	GLASSERT(glAttachShader(program, fragmentShader));
+//
+//	GLASSERT(glLinkProgram(program));*/
+//}
+
+void Shader::Load(std::string&& vert, std::string&& frag)
 {
 	GLuint vertexShader = loadShader(vert, GL_VERTEX_SHADER);
 	GLuint fragmentShader = loadShader(frag, GL_FRAGMENT_SHADER);

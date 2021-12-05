@@ -8,7 +8,8 @@ class Shader
 	Material* lastMaterial = NULL;
 	GLuint program;
 public:
-	void Load(std::string vert, std::string frag);
+	//void Load(std::string vert, std::string frag);
+	void Load(std::string&& vert, std::string&& frag);
 	void Use();
 	void Set(const char* name, Matrix4x4& value);
 	void Set(const char* name, Matrix4x4&& value);

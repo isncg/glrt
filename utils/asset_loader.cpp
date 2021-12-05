@@ -282,6 +282,7 @@ bool LoadTexture(Texture* output, std::string filename, Sampler* sampler)
     //get the image width and height
     width = FreeImage_GetWidth(dib);
     height = FreeImage_GetHeight(dib);
+    int bpp = FreeImage_GetBPP(dib);
     //if this somehow one of these failed (they shouldn't), return failure
     if ((bits == 0) || (width == 0) || (height == 0))
         return false;
@@ -297,13 +298,21 @@ bool LoadTexture(Texture* output, std::string filename, Sampler* sampler)
     //bind to the new texture ID
     glBindTexture(GL_TEXTURE_2D, gl_texID);
     //store the texture data for OpenGL use
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, bits);
+    GLenum format = 0;
+    if (bpp == 24)
+        format = GL_RGB;
+    else if (bpp == 32)
+        format = GL_RGBA;
+    else if (bpp == 8)
+        format = GL_RED;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, bits);
     if (NULL == sampler) 
     {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         gl_texHandle = glGetTextureHandleARB(gl_texID);
     }
+    glGenerateMipmap(GL_TEXTURE_2D);
     //Free FreeImage's copy of the data
     FreeImage_Unload(dib);
     output->id = gl_texID;

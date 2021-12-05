@@ -23,6 +23,11 @@ Matrix4x4& Camera::GetMatrix()
 	return mat_cache;
 }
 
+const Matrix4x4& Camera::GetProjectionMatrix()
+{
+	return mat_proj;
+}
+
 
 CameraController& CameraController::Update()
 {
@@ -34,6 +39,11 @@ CameraController& CameraController::Update()
 Matrix4x4& CameraController::GetCameraMatrix()
 {
 	return camera->GetMatrix();
+}
+
+const Vector3& CameraFirstPersonController::GetForwardDirection()
+{
+	return fw;
 }
 
 void CameraFirstPersonController::OnMouseMove(long dx, long dy, long x, long y)

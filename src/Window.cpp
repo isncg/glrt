@@ -213,6 +213,7 @@ void Window::OnIdle()
 	GetClientRect(hWnd, &rt);
 	glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top);
 	Render();
+	PostRender();
 	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
 	AfterRender();
 }
@@ -222,6 +223,10 @@ void Window::BeforeRender()
 }
 
 void Window::Render()
+{
+}
+
+void Window::PostRender()
 {
 }
 

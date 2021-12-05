@@ -1,6 +1,7 @@
 #pragma once
 #include "framework.h"
 #include <vector>
+#include "../utils/stdhelpers.h"
 
 enum KEYS
 {
@@ -86,6 +87,9 @@ enum KEYACTION
 	KEYUP = 1,
 };
 
+#define ASSETDIR(dir) const char* __asset_dir__ = dir
+#define ASSETPATH(path) string_format("%s%s", __asset_dir__, path)
+
 class Window
 {
 	friend class Application;
@@ -105,6 +109,7 @@ protected:
 	virtual void OnIdle();
 	virtual void BeforeRender();
 	virtual void Render();
+	virtual void PostRender();
 	virtual void AfterRender();
 	virtual void OnMouseMove(long dx, long dy, long x, long y);
 	virtual void OnMouseWheel(int delta);

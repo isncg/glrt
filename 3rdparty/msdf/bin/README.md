@@ -1,0 +1,1 @@
+https://github.com/Chlumsky/msdf-atlas-gen#character-set-specification-syntax

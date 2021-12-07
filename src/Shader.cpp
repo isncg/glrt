@@ -46,16 +46,34 @@ GLuint loadShader(std::string& filename, GLenum shaderType)
 //	GLASSERT(glLinkProgram(program));*/
 //}
 
-void Shader::Load(std::string&& vert, std::string&& frag)
+GLuint ComplieAndLink(std::string& vert, std::string& frag)
 {
 	GLuint vertexShader = loadShader(vert, GL_VERTEX_SHADER);
+	GLuint fragmentShader = loadShader(frag, GL_FRAGMENT_SHADER);
+
+	GLASSERT(GLuint program = glCreateProgram());
+	GLASSERT(glAttachShader(program, vertexShader));
+	GLASSERT(glAttachShader(program, fragmentShader));
+	GLASSERT(glLinkProgram(program));
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+	return program;
+}
+
+void Shader::Load(std::string&& vert, std::string&& frag)
+{
+	/*GLuint vertexShader = loadShader(vert, GL_VERTEX_SHADER);
 	GLuint fragmentShader = loadShader(frag, GL_FRAGMENT_SHADER);
 
 	GLASSERT(program = glCreateProgram());
 	GLASSERT(glAttachShader(program, vertexShader));
 	GLASSERT(glAttachShader(program, fragmentShader));
 
-	GLASSERT(glLinkProgram(program));
+	GLASSERT(glLinkProgram(program));*/
+	program = ComplieAndLink(vert, frag);
+
+	this->vert = vert;
+	this->frag = frag;
 }
 
 void Shader::Use()
@@ -123,4 +141,20 @@ void Shader::Set(const char* name, Texture& texture)
 	if (!glIsTextureHandleResidentARB(texture.handle))
 		GLASSERT(glMakeTextureHandleResidentARB(texture.handle));
 	GLASSERT(glProgramUniformHandleui64ARB(program, loc, texture.handle));
+}
+
+
+void Shader::OnResourceUpdated()
+{
+	GLuint newProgram = ComplieAndLink(vert, frag);
+	if (newProgram != 0)
+	{
+		glDeleteProgram(program);
+		program = newProgram;
+		log(string_format("Shader reload finished %s,%s", vert.c_str(), frag.c_str()).c_str());
+	}
+	else
+	{
+		log(string_format("Shader reload fail %s,%s", vert.c_str(), frag.c_str()).c_str());
+	}
 }

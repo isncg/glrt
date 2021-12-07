@@ -1,43 +1,43 @@
 #include "../include/ResourceMonitor.h"
 #include "../utils/utils.h"
 #include <Windows.h>
-struct ResourceListenerThreadParam
+
+class ResourceListener
 {
-	int id;
+public:
+	std::string path;
+	FILETIME lastWriteTime{ 0 };
+	IResourceUpdateNotify* notify = NULL;
 };
 
-DWORD WINAPI ResourceListenerThread(_In_ LPVOID lpParameter)
+
+int ResourceMonitor::Create(std::string path, IResourceUpdateNotify* notify)
 {
-	ResourceListenerThreadParam* ptr = (ResourceListenerThreadParam*)lpParameter;
-	while (true)
+	ResourceListener* listener = new ResourceListener;
+
+	HANDLE hfile = CreateFileA(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	GetFileTime(hfile, NULL, NULL, &listener->lastWriteTime);
+	CloseHandle(hfile);
+	listener->path = path;
+	listener->notify = notify;
+	int id = listeners.size();
+	listeners.push_back(listener);
+	return id;
+}
+
+void ResourceMonitor::NotifyAll()
+{
+	FILETIME lastWriteTime;
+	for (auto& l : listeners)
 	{
-		WaitForSingleObject(ResourceMonitor::Instance().Get(ptr->id)->handle, 1000);
-		if (FindNextChangeNotification(ResourceMonitor::Instance().Get(ptr->id)->handle))
+		HANDLE hfile = CreateFileA(l->path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		GetFileTime(hfile, NULL, NULL, &lastWriteTime);
+		CloseHandle(hfile);
+		if (l->lastWriteTime.dwHighDateTime != lastWriteTime.dwHighDateTime ||
+			l->lastWriteTime.dwLowDateTime != lastWriteTime.dwLowDateTime)
 		{
-			log(string_format("File change detected: %s", ResourceMonitor::Instance().Get(ptr->id)->fullpath.c_str()).c_str());
-			ResourceMonitor::Instance().Get(ptr->id)->flag |= 0x01;
+			l->lastWriteTime = lastWriteTime;
+			l->notify->OnResourceUpdated();
 		}
 	}
-	delete ptr;
-}
-
-
-int ResourceMonitor::Create(std::string path)
-{
-	char buffer[1024];
-	GetFullPathNameA(path.c_str(), path.size(), buffer, NULL);
-	ResourceListener listener;
-	listener.fullpath = buffer;
-	listener.flag = 0;
-	listener.id = listeners.size();
-	listener.handle = FindFirstChangeNotificationA(listener.fullpath.c_str(), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE);
-	listeners.push_back(listener);
-	listeners.back().thread = CreateThread(NULL, 0, ResourceListenerThread, new ResourceListenerThreadParam{ listener.id }, 0, 0);
-	log(string_format("Listen file: %s", buffer).c_str());
-	return listener.id;
-}
-
-ResourceListener* ResourceMonitor::Get(int id)
-{
-	return &listeners[id];
 }

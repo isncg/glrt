@@ -1,22 +1,23 @@
 #pragma once
+#include <filesystem>
+#include <chrono>
 #include<vector>
 #include<string>
 #include"../utils/singleton.h"
-class ResourceListener
+
+class IResourceUpdateNotify
 {
 public:
-	int id;
-	unsigned int flag = 0;
-	void* handle;
-	void* thread;
-	std::string fullpath;
+	virtual void OnResourceUpdated() = 0;
 };
 
+
+class ResourceListener;
 class ResourceMonitor: public Singleton<ResourceMonitor>
 {
 	SINGLETON_CTOR(ResourceMonitor)
-	std::vector<ResourceListener> listeners;
+	std::vector<ResourceListener*> listeners;
 public:
-	int Create(std::string fullpath);
-	ResourceListener* Get(int id);
+	int Create(std::string path, IResourceUpdateNotify* notify);
+	void NotifyAll();
 };

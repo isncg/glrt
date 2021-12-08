@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <chrono>
 #include<vector>
+#include<stack>
 #include<string>
 #include"../utils/singleton.h"
 
@@ -16,8 +17,14 @@ class ResourceListener;
 class ResourceMonitor: public Singleton<ResourceMonitor>
 {
 	SINGLETON_CTOR(ResourceMonitor)
-	std::vector<ResourceListener*> listeners;
+	void* thread;
 public:
-	int Create(std::string path, IResourceUpdateNotify* notify);
+	std::vector<ResourceListener*> listeners;
+	std::stack<int> emptyIndices;
+	bool running = false;
+	int Watch(std::string path, IResourceUpdateNotify* notify);
+	void StopWatch(IResourceUpdateNotify* notify);
+	void Start();
+	void Stop();
 	void NotifyAll();
 };

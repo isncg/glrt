@@ -12,6 +12,7 @@ class Shader: public IResourceUpdateNotify
 	std::string frag;
 	
 public:
+	~Shader();
 	//void Load(std::string vert, std::string frag);
 	void Load(std::string&& vert, std::string&& frag);
 	void Use();

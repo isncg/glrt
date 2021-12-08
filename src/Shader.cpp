@@ -74,6 +74,9 @@ void Shader::Load(std::string&& vert, std::string&& frag)
 
 	this->vert = vert;
 	this->frag = frag;
+	ResourceMonitor::Instance().StopWatch(this);
+	ResourceMonitor::Instance().Watch(vert, this);
+	ResourceMonitor::Instance().Watch(frag, this);
 }
 
 void Shader::Use()
@@ -157,4 +160,9 @@ void Shader::OnResourceUpdated()
 	{
 		log(string_format("Shader reload fail %s,%s", vert.c_str(), frag.c_str()).c_str());
 	}
+}
+
+Shader::~Shader()
+{
+	ResourceMonitor::Instance().StopWatch(this);
 }

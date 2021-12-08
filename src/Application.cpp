@@ -65,7 +65,7 @@ int Application::Run(Window* pMainWindow, bool allocConsole)
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GLRT));
     MSG msg;
-
+    ResourceMonitor::Instance().Start();
     while (true)
     {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -81,6 +81,7 @@ int Application::Run(Window* pMainWindow, bool allocConsole)
         else
         {
             pMainWindow->OnIdle();
+            ResourceMonitor::Instance().NotifyAll();
         }
     }
 

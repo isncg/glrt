@@ -45,7 +45,6 @@ namespace example
 			m_TerrainShader.Load(ASSETPATH("glsl/terrain.vert"), ASSETPATH("glsl/terrain.frag"));
 			LoadTexture(&m_HeightMap, ASSETPATH("043-ue4-heightmap-guide-02.jpg"));
 			m_TerrainShader.Set("hightmap", m_HeightMap);
-			ResourceMonitor::Instance().Create(ASSETPATH("glsl/terrain.vert"), &m_TerrainShader);
 		}
 
 		virtual void Render() override
@@ -54,12 +53,6 @@ namespace example
 			m_TerrainShader.Use();
 			m_TerrainShader.Set("cam", m_Camera.GetMatrix());
 			m_TerrainMeshRenderer.Draw();
-		}
-
-		virtual void AfterRender() override
-		{
-			Empty3D::AfterRender();
-			ResourceMonitor::Instance().NotifyAll();
 		}
 	};
 }

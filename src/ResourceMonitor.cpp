@@ -5,13 +5,15 @@
 class ResourceListener
 {
 public:
+
+	bool needUpdate = false;
 	std::string path;
 	FILETIME lastWriteTime{ 0 };
 	IResourceUpdateNotify* notify = NULL;
 };
 
 
-int ResourceMonitor::Create(std::string path, IResourceUpdateNotify* notify)
+int ResourceMonitor::Watch(std::string path, IResourceUpdateNotify* notify)
 {
 	ResourceListener* listener = new ResourceListener;
 
@@ -20,24 +22,84 @@ int ResourceMonitor::Create(std::string path, IResourceUpdateNotify* notify)
 	CloseHandle(hfile);
 	listener->path = path;
 	listener->notify = notify;
-	int id = listeners.size();
-	listeners.push_back(listener);
+	if (emptyIndices.size() <= 0)
+	{
+		int id = listeners.size();
+		listeners.push_back(listener);
+		return id;
+	}
+	int id = emptyIndices.top();
+	emptyIndices.pop();
+	listeners[id] = listener;
 	return id;
+}
+
+void ResourceMonitor::StopWatch(IResourceUpdateNotify* notify)
+{
+	for (int i = 0; i < listeners.size(); i++)
+	{
+		if (listeners[i] != nullptr && listeners[i]->notify == notify);
+		{
+			delete listeners[i];
+			listeners[i] = nullptr;
+			emptyIndices.push(i);
+		}
+	}
 }
 
 void ResourceMonitor::NotifyAll()
 {
-	FILETIME lastWriteTime;
+	if (!running)
+		return;
 	for (auto& l : listeners)
 	{
-		HANDLE hfile = CreateFileA(l->path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-		GetFileTime(hfile, NULL, NULL, &lastWriteTime);
-		CloseHandle(hfile);
-		if (l->lastWriteTime.dwHighDateTime != lastWriteTime.dwHighDateTime ||
-			l->lastWriteTime.dwLowDateTime != lastWriteTime.dwLowDateTime)
+		if (nullptr != l && l->needUpdate)
 		{
-			l->lastWriteTime = lastWriteTime;
+			l->needUpdate = false;
 			l->notify->OnResourceUpdated();
 		}
 	}
+}
+
+void CheckResources()
+{
+}
+
+DWORD WINAPI MonitorThread(LPVOID lpParameter)
+{
+	ResourceMonitor* pMonitor = (ResourceMonitor*)lpParameter;
+	FILETIME lastWriteTime;
+	while (nullptr != pMonitor && pMonitor->running)
+	{
+		for (int i = 0; i < pMonitor->listeners.size(); i++)
+		{
+			if (nullptr == pMonitor || nullptr == pMonitor->listeners[i])
+				continue;
+			HANDLE hfile = CreateFileA(pMonitor->listeners[i]->path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+			GetFileTime(hfile, NULL, NULL, &lastWriteTime);
+			CloseHandle(hfile);
+			if (nullptr == pMonitor || nullptr == pMonitor->listeners[i])
+				continue;
+			if (pMonitor->listeners[i]->lastWriteTime.dwHighDateTime != lastWriteTime.dwHighDateTime ||
+				pMonitor->listeners[i]->lastWriteTime.dwLowDateTime != lastWriteTime.dwLowDateTime)
+			{
+				pMonitor->listeners[i]->lastWriteTime = lastWriteTime;
+				pMonitor->listeners[i]->needUpdate = true;
+			}
+		}
+	}
+	return 0;
+}
+
+void ResourceMonitor::Start()
+{
+	running = true;
+	thread = CreateThread(NULL, 0, MonitorThread, this, 0, NULL);
+}
+
+
+void ResourceMonitor::Stop()
+{
+	running = false;
+	WaitForSingleObject(thread, 1000);
 }

@@ -15,6 +15,13 @@ public:
 
 int ResourceMonitor::Watch(std::string path, IResourceUpdateNotify* notify)
 {
+	for (int i = 0; i < listeners.size(); i++)
+	{
+		if (listeners[i] != nullptr && listeners[i]->notify == notify && listeners[i]->path == path)
+		{
+			return i;
+		}
+	}
 	ResourceListener* listener = new ResourceListener;
 
 	HANDLE hfile = CreateFileA(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);

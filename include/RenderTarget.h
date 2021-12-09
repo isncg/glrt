@@ -12,7 +12,7 @@ public:
 	int width();
 	int height();
 	const glm::ivec2& size();
-	std::vector<Texture> colorBuffers;
+	std::vector<std::shared_ptr<Texture>> colorBuffers;
 	Texture depthBuffer;
 	void Init(int width, int height, int nColors, bool depth);
 	void Bind();

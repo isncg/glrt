@@ -12,11 +12,11 @@ void main()
 	float dfactor = 0.5;
     vec2 dx = vec2(dfactor*d, 0.0);
     vec2 dz = vec2(0.0, dfactor*d);
-    height = texture(hightmap, vertex.xz).r;
-    float heightx = texture(hightmap, vertex.xz+dx).r;
-    float heightz = texture(hightmap, vertex.xz+dz).r;
-    float heightx2 = texture(hightmap, vertex.xz-dx).r;
-    float heightz2 = texture(hightmap, vertex.xz-dz).r;
+    height = texture(hightmap, vertex.zx).r;
+    float heightx = texture(hightmap, vertex.zx+dx).r;
+    float heightz = texture(hightmap, vertex.zx+dz).r;
+    float heightx2 = texture(hightmap, vertex.zx-dx).r;
+    float heightz2 = texture(hightmap, vertex.zx-dz).r;
     //height = (heightx + heightz + height) / 3.0;
     gl_Position = cam * vec4(vertex.x * meshScale.x-meshScale.x*0.5, height * heightScale, vertex.z * meshScale.y-meshScale.y*0.5, 1.0);
     norm = normalize(vec3(-heightScale*0.5*(heightx-heightx2), d*length(meshScale), -heightScale*0.5*(heightz-heightx2)));

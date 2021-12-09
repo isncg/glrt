@@ -43,8 +43,7 @@ namespace example
 
 			m_TerrainMeshRenderer.Set(&m_TerrainMesh);
 			m_TerrainShader.Load(ASSETPATH("glsl/terrain.vert"), ASSETPATH("glsl/terrain.frag"));
-			LoadTexture(&m_HeightMap, ASSETPATH("043-ue4-heightmap-guide-02.jpg"));
-			m_TerrainShader.Set("hightmap", m_HeightMap);
+			m_HeightMap.Load(ASSETPATH("terrain_height.png"));
 		}
 
 		virtual void Render() override
@@ -52,6 +51,7 @@ namespace example
 			Empty3D::Render();
 			m_TerrainShader.Use();
 			m_TerrainShader.Set("cam", m_Camera.GetMatrix());
+			m_TerrainShader.Set("hightmap", m_HeightMap);
 			m_TerrainMeshRenderer.Draw();
 		}
 	};

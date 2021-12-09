@@ -34,7 +34,10 @@ void RenderPass::Init(int width, int height, int nColors, bool depth)
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, tex[i], 0);
 			//GLASSERT(glTextureStorage2D(pColorTextures[i], 1, GL_RGBA8, width, height));
 			//GLASSERT(glNamedFramebufferTexture2DEXT(fbo, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, pColorTextures[i], 0));
-			colorBuffers.push_back(Texture{ string_format("fbo_c_%d", i), tex[i]});
+			Texture* pTexture = new Texture();
+			pTexture->name = string_format("fbo_c_%d", i);
+			pTexture->id = tex[i];
+			colorBuffers.push_back(std::shared_ptr<Texture>(pTexture));
 		}
 
 		delete[] tex;

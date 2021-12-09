@@ -1,10 +1,15 @@
 #ifndef _GLRT_TEXTURE_
 #define _GLRT_TEXTURE_
 #include <glad/glad.h>
-struct Texture
+#include "ResourceMonitor.h"
+class Texture : public IResourceUpdateNotify
 {
+    std::string filepath;
+public:
     std::string name;
-    GLuint id;
-    GLuint64 handle;
+    GLuint id = 0;
+    GLuint64 handle = 0;
+    void Load(std::string&& filepath);
+    virtual void OnResourceUpdated() override;
 };
 #endif

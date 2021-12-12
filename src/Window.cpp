@@ -146,6 +146,11 @@ void Window::GetInitSize(long* width, long* height)
 	*height = 720;
 }
 
+bool Window::IsEnableVsync()
+{
+	return false;
+}
+
 void Window::OnPaint(HDC hdc)
 {
 }
@@ -189,7 +194,8 @@ void Window::OnCreate()
 	glInst = LoadLibrary(TEXT("opengl32.dll"));
 	gladLoadGLLoader(cWGLGetProcAddr);
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress("wglSwapIntervalEXT");
-	wglSwapIntervalEXT(0);
+	if (wglSwapIntervalEXT)
+		wglSwapIntervalEXT(IsEnableVsync() ? 1 : 0);
 
 	std::stringstream ss;
 	ss << "GL_VERSION: " << glGetString(GL_VERSION);

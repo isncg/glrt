@@ -82,7 +82,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(ProjectDir)3rdparty\glm;$(ProjectDir)3rdparty\FreeImage\include;$(ProjectDir)3rdparty\bsp30\include;$(ProjectDir)3rdparty\wad\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)3rdparty\imgui-glrt\include;$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(ProjectDir)3rdparty\glm;$(ProjectDir)3rdparty\FreeImage\include;$(ProjectDir)3rdparty\bsp30\include;$(ProjectDir)3rdparty\wad\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)3rdparty\assimp;$(ProjectDir)3rdparty\FreeImage;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ProjectDir)3rdparty\assimp;$(ProjectDir)3rdparty\FreeImage;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
@@ -153,10 +153,12 @@
   <ItemGroup>
     <ClCompile Include="3rdparty\bsp30\src\*.cpp" />
     <ClCompile Include="3rdparty\glad\src\*.c" />
+    <ClCompile Include="3rdparty\imgui-glrt\src\*.cpp" />
     <ClCompile Include="3rdparty\wad\src\*.cpp" />
     <ClCompile Include="examples\empty3d\empty3d.cpp" />
     <ClCompile Include="examples\teapot\teapot.cpp" />
     <ClCompile Include="examples\terrain\Terrain.cpp" />
+    <ClCompile Include="examples\ui\ui.cpp" />
     <ClCompile Include="src\*.cpp" />
     <ClCompile Include="utils\*.cpp" />
     <ClCompile Include="utils\HL\*.cpp" />

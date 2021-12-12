@@ -269,6 +269,84 @@
     <ClInclude Include="*.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="*.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdparty\bsp30\src\*.cpp">
@@ -278,48 +356,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="3rdparty\wad\src\*.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Light.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Material.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RenderTarget.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Shader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Window.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Light.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Material.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RenderTarget.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Shader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Window.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Camera.cpp">
@@ -478,9 +514,6 @@
     <ClCompile Include="utils\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\Application.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="utils\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -564,6 +597,114 @@
     </ClCompile>
     <ClCompile Include="examples\terrain\Terrain.cpp">
       <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\ui\ui.cpp">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\*.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\imgui-glrt\backends\imgui_impl_opengl3.cpp">
+      <Filter>examples\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\imgui-glrt\backends\imgui_impl_win32.cpp">
+      <Filter>examples\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\imgui-glrt\imgui.cpp">
+      <Filter>examples\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\imgui-glrt\imgui_demo.cpp">
+      <Filter>examples\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\imgui-glrt\imgui_draw.cpp">
+      <Filter>examples\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\imgui-glrt\imgui_tables.cpp">
+      <Filter>examples\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\imgui-glrt\imgui_widgets.cpp">
+      <Filter>examples\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

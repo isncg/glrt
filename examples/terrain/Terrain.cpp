@@ -57,4 +57,4 @@ namespace example
 	};
 }
 
-RUN_WINDOW(example::Terrain)
+//RUN_WINDOW(example::Terrain)

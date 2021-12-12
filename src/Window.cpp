@@ -8,6 +8,8 @@
 #include "../include/GLRT.h"
 #include "../utils/glhelpers.h"
 #include "../utils/log.h"
+typedef BOOL(APIENTRY* PFNWGLSWAPINTERVALFARPROC)(int);
+PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
 
 
 
@@ -186,6 +188,8 @@ void Window::OnCreate()
 	wglMakeCurrent(hdc, hGLRC);
 	glInst = LoadLibrary(TEXT("opengl32.dll"));
 	gladLoadGLLoader(cWGLGetProcAddr);
+	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress("wglSwapIntervalEXT");
+	wglSwapIntervalEXT(0);
 
 	std::stringstream ss;
 	ss << "GL_VERSION: " << glGetString(GL_VERSION);

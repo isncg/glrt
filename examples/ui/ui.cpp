@@ -86,4 +86,4 @@ namespace example
 	};
 }
 
-RUN_WINDOW(example::UI)
+//RUN_WINDOW(example::UI)

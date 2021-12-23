@@ -5,7 +5,7 @@ out vec4 color;
 in float flaten;
 in vec2 uv;
 in vec2 flatenuv;
-uniform vec3 flatenColor = vec3(1, 0.88, 0.71);
+uniform vec3 flatenColor = vec3(0.43, 0.35, 0.27);
 uniform sampler2D rgbmap;
 void main()
 {

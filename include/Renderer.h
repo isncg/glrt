@@ -29,8 +29,8 @@ enum VertexElement
 
 struct Mesh
 {
-	int vertexBufferCount;
-	int blendShapeCount;
+	//int vertexBufferCount;
+	//int blendShapeCount;
     std::vector<Vector3> vertices;
     std::vector<Vector3> normals;
     std::vector<Vector4> tangents;
@@ -44,11 +44,12 @@ struct Mesh
     std::vector<Vector2> uv8;
     std::vector<Color> colors;
     std::vector<Color32> colors32;
-    int vertexAttributeCount;
+    //int vertexAttributeCount;
     std::vector<unsigned int> triangles;
-
+    int materialid = 0;
     int GetBufferSize();
     void Clear();
+    void Merge(Mesh& other);
 };
 
 struct ModelTreeNode
@@ -60,6 +61,7 @@ struct ModelTreeNode
 struct Model
 {
     std::vector<Mesh> meshCollection;
+    std::vector<Mesh> mergedMesh;
     std::vector<std::string> matNames;
     std::map<std::string, int> meshDict;
     ModelTreeNode root;

@@ -11,6 +11,7 @@
 #include "stdhelpers.h"
 bool LoadMesh(Mesh* output, aiMesh* input)
 {
+    output->materialid = input->mMaterialIndex;
     for (int i = 0; i < input->mNumVertices; i++)
     {
         if (input->mVertices != NULL)
@@ -178,6 +179,14 @@ bool LoadModel(Model* output, std::string file)
     }
     // Now we can access the file's contents. 
 
+    for (int i = 0; i < scene->mNumMaterials; i++)
+    {
+        output->matNames.push_back(std::string(scene->mMaterials[i]->GetName().C_Str()));
+        Mesh mesh;
+        mesh.materialid = i;
+        output->mergedMesh.push_back(mesh);
+    }
+
 	for (int i = 0; i < scene->mNumMeshes; i++)
 	{
 		Mesh mesh;
@@ -187,6 +196,7 @@ bool LoadModel(Model* output, std::string file)
 		{
 		    //DumpMesh(&mesh);
 			output->meshCollection.push_back(mesh);
+            output->mergedMesh[mesh.materialid].Merge(mesh);
 		}
 		else
 		{

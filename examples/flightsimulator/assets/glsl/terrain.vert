@@ -2,11 +2,11 @@
 layout(location = 0) in vec3 vertex;
 uniform sampler2D hightmap;
 uniform sampler2D flatenmap;
-uniform vec3 flatenPos = vec3(-10.0, 0.17, -20.0);
-uniform vec2 flatenSize = vec2(10.0, 10.0);
+uniform vec3 flatenPos = vec3(-100.0, 0.17, -200.0);
+uniform vec2 flatenSize = vec2(100.0, 100.0);
 uniform mat4 cam;
-uniform float heightScale = 20.0;
-uniform float meshScale = 100.0;
+uniform float heightScale = 200.0;
+uniform float meshScale = 1000.0;
 out float height;
 out vec3 norm;
 out float flaten;

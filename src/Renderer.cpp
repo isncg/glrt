@@ -135,8 +135,30 @@ void Mesh::Clear()
 	triangles.clear();
 }
 
+#define MERGE_COMPONENT(c) this->c.insert(this->c.end(), other.c.begin(), other.c.end())
 
+void Mesh::Merge(Mesh& other)
+{
+	int indicesoffset = this->vertices.size();
+	MERGE_COMPONENT(vertices);
+	MERGE_COMPONENT(normals);
+	MERGE_COMPONENT(tangents);
+	MERGE_COMPONENT(uv);
+	MERGE_COMPONENT(uv2);
+	MERGE_COMPONENT(uv3);
+	MERGE_COMPONENT(uv4);
+	MERGE_COMPONENT(uv5);
+	MERGE_COMPONENT(uv6);
+	MERGE_COMPONENT(uv7);
+	MERGE_COMPONENT(uv8);
+	MERGE_COMPONENT(colors);
+	MERGE_COMPONENT(colors32);
 
+	for (auto i : other.triangles)
+	{
+		this->triangles.push_back(indicesoffset + i);
+	}
+}
 
 
 

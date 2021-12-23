@@ -124,6 +124,19 @@ void Shader::Set(const char* name, Vector3&& value)
 	GLASSERT(glProgramUniform3fv(program, loc, 1, (const GLfloat*)&value));
 }
 
+void Shader::Set(const char* name, Vector4& value)
+{
+	Set(name, std::move(value));
+}
+
+void Shader::Set(const char* name, Vector4&& value)
+{
+	auto loc = glGetUniformLocation(program, name);
+	if (loc < 0)
+		return;
+	GLASSERT(glProgramUniform4fv(program, loc, 1, (const GLfloat*)&value));
+}
+
 void Shader::Set(const char* name, float value)
 {
 	GLASSERT(auto loc = glGetUniformLocation(program, name));

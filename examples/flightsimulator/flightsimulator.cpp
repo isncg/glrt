@@ -8,8 +8,11 @@ namespace example
 	{
 		ASSETDIR("examples/flightsimulator/assets/");
 		Mesh m_TerrainMesh;
+		Model m_airportModel;
 		MeshRenderer m_TerrainMeshRenderer;
+		std::vector<MeshRenderer> m_airportMeshRenderers;
 		Shader m_TerrainShader;
+		Shader m_AirportShader;
 		Texture m_HeightMap;
 		Texture m_RGBMap;
 		Texture m_Flat;
@@ -45,9 +48,20 @@ namespace example
 
 			m_TerrainMeshRenderer.Set(&m_TerrainMesh);
 			m_TerrainShader.Load(ASSETPATH("glsl/terrain.vert"), ASSETPATH("glsl/terrain.frag"));
+			m_AirportShader.Load(ASSETPATH("glsl/airport.vert"), ASSETPATH("glsl/airport.frag"));
 			m_HeightMap.Load(ASSETPATH("terrain_height.png"));
 			m_RGBMap.Load(ASSETPATH("terrain_rgb.png"));
 			m_Flat.Load(ASSETPATH("flat.png"));
+			LoadModel(&m_airportModel, ASSETPATH("airport.obj"));
+
+			for (auto& mesh : m_airportModel.mergedMesh)
+			{
+				if (mesh.vertices.size() <= 0)
+					continue;
+				MeshRenderer mr;
+				mr.Set(&mesh);
+				m_airportMeshRenderers.push_back(mr);
+			}
 		}
 
 
@@ -60,6 +74,25 @@ namespace example
 			m_TerrainShader.Set("flatenmap", m_Flat);
 			m_TerrainShader.Set("rgbmap", m_RGBMap);
 			m_TerrainMeshRenderer.Draw();
+
+			m_AirportShader.Use();
+			glEnable(GL_POLYGON_OFFSET_FILL);
+			glPolygonOffset(0.0f, -200.0f);
+			glDepthMask(false);
+			Matrix4x4 mat = m_Camera.GetMatrix();
+			mat = glm::translate(mat, Vector3{ -170,34,-20 });
+			mat = glm::scale(mat, Vector3{0.03,0.03,0.03});
+
+			m_AirportShader.Set("_mvp", mat);
+			m_AirportShader.Set("diffuse", Color{ 0.674510, 0.674510, 0.674510,1.0 });
+			m_airportMeshRenderers[0].Draw();
+			m_AirportShader.Set("diffuse", Color{ 0.800000, 0.439216, 0.203922,1.0 });
+			m_airportMeshRenderers[1].Draw();
+			m_AirportShader.Set("diffuse", Color{ 1.000000, 1.000000, 1.000000,1.0 });
+			m_airportMeshRenderers[2].Draw();
+
+			glDisable(GL_POLYGON_OFFSET_FILL);
+			glDepthMask(true);
 		}
 	};
 }

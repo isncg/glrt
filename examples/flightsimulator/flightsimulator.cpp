@@ -1,7 +1,7 @@
 #include "../../include/GLRT.h"
 #include "../../utils/utils.h"
 #include "../empty3d/empty3d.h"
-
+#include<algorithm>
 namespace example
 {
 	class FlightSimulator : public Empty3D
@@ -9,6 +9,7 @@ namespace example
 		ASSETDIR("examples/flightsimulator/assets/");
 		Mesh m_TerrainMesh;
 		Model m_airportModel;
+		std::vector<Material*> m_airportMaterials;
 		MeshRenderer m_TerrainMeshRenderer;
 		std::vector<MeshRenderer> m_airportMeshRenderers;
 		Shader m_TerrainShader;
@@ -54,14 +55,65 @@ namespace example
 			m_Flat.Load(ASSETPATH("flat.png"));
 			LoadModel(&m_airportModel, ASSETPATH("airport.obj"));
 
+		
+			const char* kd = "diffuse";
+			Material* pmat;
+			pmat = new Material(&m_AirportShader);
+			pmat->name = "ground";
+			pmat->renderingOrder = -1;
+			pmat->Set(kd, Color{ 0.674510, 0.674510, 0.674510,1.0 });
+			m_airportMaterials.push_back(pmat);
+
+			pmat = new Material(&m_AirportShader);
+			pmat->name = "runwayext";
+			pmat->renderingOrder = -1;
+			pmat->Set(kd, Color{ 0.400000, 0.400000, 0.400000,1.0 });
+			m_airportMaterials.push_back(pmat);
+
+			pmat = new Material(&m_AirportShader);
+			pmat->name = "orangeline";
+			pmat->Set(kd, Color{ 0.800000, 0.439216, 0.203922,1.0 });
+			m_airportMaterials.push_back(pmat);
+
+			pmat = new Material(&m_AirportShader);
+			pmat->name = "runway";
+			pmat->renderingOrder = -1;
+			pmat->Set(kd, Color{ 0.556863, 0.556863, 0.556863,1.0 });
+			m_airportMaterials.push_back(pmat);
+
+			pmat = new Material(&m_AirportShader);
+			pmat->name = "whiteline";
+			pmat->Set(kd, Color{ 1.000000, 1.000000, 1.000000,1.0 });
+			m_airportMaterials.push_back(pmat);
+
+			pmat = new Material(&m_AirportShader);
+			pmat->name = "taxiline";
+			pmat->Set(kd, Color{ 1.000000, 0.972549, 0.486275,1.0 });
+			m_airportMaterials.push_back(pmat);
+			
+
 			for (auto& mesh : m_airportModel.mergedMesh)
 			{
 				if (mesh.vertices.size() <= 0)
 					continue;
-				MeshRenderer mr;
-				mr.Set(&mesh);
-				m_airportMeshRenderers.push_back(mr);
+				for (auto pmat : m_airportMaterials)
+				{
+					if (pmat->name == m_airportModel.matNames[mesh.materialid])
+					{
+						MeshRenderer mr;
+						mr.material = pmat;
+						mr.Set(&mesh);
+						m_airportMeshRenderers.push_back(mr);
+						break;
+					}
+				}
 			}
+
+			std::sort(m_airportMeshRenderers.begin(), m_airportMeshRenderers.end(),
+				[](const MeshRenderer& a, const MeshRenderer& b)
+				{
+					return a.material->renderingOrder < b.material->renderingOrder;
+				});
 		}
 
 
@@ -84,12 +136,16 @@ namespace example
 			mat = glm::scale(mat, Vector3{0.03,0.03,0.03});
 
 			m_AirportShader.Set("_mvp", mat);
-			m_AirportShader.Set("diffuse", Color{ 0.674510, 0.674510, 0.674510,1.0 });
-			m_airportMeshRenderers[0].Draw();
+			for (auto& r : m_airportMeshRenderers)
+			{
+				r.Draw();
+			}
+			/*m_AirportShader.Set("diffuse", Color{ 0.674510, 0.674510, 0.674510,1.0 });
+			a[0].Draw();
 			m_AirportShader.Set("diffuse", Color{ 0.800000, 0.439216, 0.203922,1.0 });
 			m_airportMeshRenderers[1].Draw();
 			m_AirportShader.Set("diffuse", Color{ 1.000000, 1.000000, 1.000000,1.0 });
-			m_airportMeshRenderers[2].Draw();
+			m_airportMeshRenderers[2].Draw();*/
 
 			glDisable(GL_POLYGON_OFFSET_FILL);
 			glDepthMask(true);

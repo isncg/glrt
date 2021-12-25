@@ -15,6 +15,11 @@ void IMaterialParam::_SetUniform(Vector2& value, GLuint program, GLint location)
 	glProgramUniform2fv(program, location, 1, (const GLfloat*)&value);
 }
 
+void IMaterialParam::_SetUniform(Vector4& value, GLuint program, GLint location)
+{
+	glProgramUniform4fv(program, location, 1, (const GLfloat*)&value);
+}
+
 void IMaterialParam::_SetUniform(Texture& value, GLuint program, GLint location)
 {
 	if (value.handle == 0)

@@ -15,6 +15,7 @@ class Material
 	std::map<GLint, IMaterialParam*> managedParams;
 public:
 	std::string name;
+	int renderingOrder = 0;
 	Material();
 	Material(Shader* shader);
 	void Set(Shader* shader);
@@ -40,6 +41,7 @@ public:
 	static void _SetUniform(float value, GLuint program, GLint location);
 	static void _SetUniform(Vector3& value, GLuint program, GLint location);
 	static void _SetUniform(Vector2& value, GLuint program, GLint location);
+	static void _SetUniform(Vector4& value, GLuint program, GLint location);
 	static void _SetUniform(Texture& value, GLuint program, GLint location);
 	static void _SetUniform(Matrix4x4& value, GLuint program, GLint location);
 };

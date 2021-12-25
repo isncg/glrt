@@ -82,8 +82,7 @@ void RenderPass::Bind()
 
 void RenderPass::Draw(Renderer& renderer)
 {
-	if (nullptr != renderer.material)
-		renderer.material->Use();
+
 	renderer.Draw();
 }
 

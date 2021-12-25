@@ -64,6 +64,7 @@ void MeshRenderer::Draw()
 {
 	if (vao <= 0 || indices.size() < 3)
 		return;
+	Renderer::Draw();
 	GLASSERT(glBindVertexArray(vao));
 	/********************************************************************* glDrawElements *********************************************************************
 	https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glDrawElements.xhtml
@@ -218,6 +219,7 @@ void CanvasRenderer::Draw()
 {
 	if (vao <= 0 || indices.size() < 3)
 		return;
+	Renderer::Draw();
 	//UseMaterial();
 	GLASSERT(glBindVertexArray(vao));
 	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
@@ -307,4 +309,10 @@ void tagCanvasMesh::MergeBatch(CanvasRect&& rect, Vector2 halfsize)
 	CanvasMesh mesh;
 	mesh.Set(std::move(rect), halfsize);
 	MergeBatch(mesh);
+}
+
+void Renderer::Draw()
+{
+	if (nullptr != material)
+		material->Use();
 }

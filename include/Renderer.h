@@ -83,7 +83,7 @@ public:
     //std::map<int, Material*> materialPassDict;
     Material* material;
     //void UseMaterial();
-    virtual void Draw() = 0;
+    virtual void Draw();
 };
 
 class MeshRenderer: public Renderer
@@ -96,7 +96,7 @@ class MeshRenderer: public Renderer
     int triangleCount;
 public:
     void Set(Mesh* pMesh);
-    void Draw();
+    virtual void Draw() override;
 };
 
 
@@ -140,5 +140,5 @@ class CanvasRenderer: public Renderer
 public:
     void Set(CanvasMesh* pMesh);
     void SetFullScreen();
-    void Draw();
+    virtual void Draw() override;
 };

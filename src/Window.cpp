@@ -222,10 +222,16 @@ void Window::OnIdle()
 	RECT rt;
 	GetClientRect(hWnd, &rt);
 	glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top);
-	Render();
-	PostRender();
+	RenderPipline();
 	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
 	AfterRender();
+}
+
+void Window::RenderPipline()
+{
+	Render();
+	PostRender();
+	OnGUI();
 }
 
 void Window::BeforeRender()
@@ -237,6 +243,10 @@ void Window::Render()
 }
 
 void Window::PostRender()
+{
+}
+
+void Window::OnGUI()
 {
 }
 
@@ -262,6 +272,12 @@ Vector2 Window::GetClientSize()
 	RECT rect;
 	GetClientRect(hWnd, &rect);
 	return Vector2(rect.right - rect.left, rect.bottom - rect.top);
+}
+
+float Window::GetClientAspect()
+{
+	auto size = GetClientSize();
+	return size.x / size.y;
 }
 
 LPCWSTR Window::GetWindowClassName()

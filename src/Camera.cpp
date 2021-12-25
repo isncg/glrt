@@ -10,6 +10,15 @@ void Camera::SetProjectionMatrix(float fovY, float aspect, float zNear, float zF
 	_clipRange.x = zNear;
 	_clipRange.y = zFar;
 	mat_proj = Matrix4x4::Perspective(fovY, aspect, zNear, zFar);
+	projectionParam.zNear = zNear;
+	projectionParam.zFar = zFar;
+	projectionParam.fovY = fovY;
+	projectionParam.aspect = aspect;
+}
+
+void Camera::SetProjectionMatrix(CameraProjectionParam& param)
+{
+	SetProjectionMatrix(param.fovY, param.aspect, param.zNear, param.zFar);
 }
 
 void Camera::SetShaderMat4(Shader& shader, const char* name)
@@ -19,6 +28,12 @@ void Camera::SetShaderMat4(Shader& shader, const char* name)
 
 Matrix4x4& Camera::GetMatrix()
 {
+	if (dynamicProjection)
+	{
+		_clipRange.x = projectionParam.zNear;
+		_clipRange.y = projectionParam.zFar;
+		mat_proj = Matrix4x4::Perspective(projectionParam.fovY, projectionParam.aspect, projectionParam.zNear, projectionParam.zFar);
+	}
 	mat_cache = mat_proj * mat_view;
 	return mat_cache;
 }
@@ -26,6 +41,25 @@ Matrix4x4& Camera::GetMatrix()
 const Matrix4x4& Camera::GetProjectionMatrix()
 {
 	return mat_proj;
+}
+
+Vector2 Camera::GetYallPitchFromDirection(Vector3 direction)
+{
+	return Vector2
+	{
+		glm::atan(direction.z, direction.x) + glm::pi<float>() / 2,
+		glm::atan(direction.y, glm::length(Vector2{ direction.x, direction.z }))
+	};
+}
+
+Vector3 Camera::GetDirectionFromYallPitch(Vector2 yallpitch)
+{
+	return Vector3
+	{
+		glm::sin(yallpitch.x) * glm::cos(yallpitch.y),
+		glm::sin(yallpitch.y),
+	   -glm::cos(yallpitch.x) * glm::cos(yallpitch.y)
+	};
 }
 
 
@@ -48,6 +82,8 @@ const Vector3& CameraFirstPersonController::GetForwardDirection()
 
 void CameraFirstPersonController::OnMouseMove(long dx, long dy, long x, long y)
 {
+	if (!enabled)
+		return;
 #define M_PI 3.14159265358979323846
 	float hp = M_PI / 2.0f - 0.000001f;
 	yall += dx * 0.005f;
@@ -60,6 +96,12 @@ void CameraFirstPersonController::OnMouseMove(long dx, long dy, long x, long y)
 
 void CameraFirstPersonController::OnKeyboard(KEYS key, KEYACTION action)
 {
+	if (key == KEYS::KEY_ESCAPE && action == KEYACTION::KEYDOWN)
+	{
+		enabled = !enabled;
+	}
+	if (!enabled)
+		return;
 	if (key == KEYS::KEY_W)
 	{
 		mw = action == KEYACTION::KEYDOWN ? 1 : 0;
@@ -96,12 +138,14 @@ void CameraFirstPersonController::Setup(Vector3& pos, float yall, float pitch)
 
 void CameraFirstPersonController::FrameUpdate()
 {
+	if (!enabled)
+		return;
 	//Vector3 r{ cos(yall) * cos(pitch), sin(pitch), sin(yall) * cos(pitch) };
-	fw.x = cos(yall) * cos(pitch);
+	fw.x = sin(yall) * cos(pitch);
 	fw.y = sin(pitch);
-	fw.z = sin(yall) * cos(pitch);
-	Vector3 rt{ sin(yall), 0, -cos(yall) };
-	position += -(float)(md - ma) * rt * speed;
+	fw.z = -cos(yall) * cos(pitch);
+	Vector3 rt{ cos(yall), 0, sin(yall) };
+	position += (float)(md - ma) * rt * speed;
 	position += (float)(mw - ms) * fw * speed;
 }
 

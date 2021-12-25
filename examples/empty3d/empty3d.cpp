@@ -1,6 +1,9 @@
 #include "empty3d.h"
 #include "../../utils/utils.h"
+#include <imgui/imgui_impl_win32.h>
+#include <imgui/imgui_impl_opengl3.h>
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 namespace example
 {
 	void Empty3D::InitHorizonGrid()
@@ -59,19 +62,27 @@ namespace example
 		GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	}
 
+	LRESULT Empty3D::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
+	{
+		ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam);
+		return Window::WndProc(message, wParam, lParam);
+	}
+
 	void Empty3D::OnCreate()
 	{
 		Window::OnCreate();
-		m_Camera.SetProjectionMatrix(3.1415926 / 3, (float)w / (float)h, 1, 5000);
+		CameraStartupParam camparam;
+		SetCameraStartupParam(camparam);
+		m_Camera.SetProjectionMatrix(camparam.projection.fovY, GetClientAspect(), camparam.projection.zNear, camparam.projection.zFar);
 		m_CamController.camera = &m_Camera;
 		m_CamController.speed = 0.2f;
-		Vector3 initCamPos{ 4,3,4 };
-		m_CamController.Setup(initCamPos, -3 * glm::pi<float>() / 4,
-			glm::atan(
-				-initCamPos.y /
-				glm::sqrt(glm::pow(initCamPos.x, 2) + glm::pow(initCamPos.z, 2))
-			)
-		);
+		Vector3 initCamPos = camparam.position;
+		Vector2 initCamYallPitch = Camera::GetYallPitchFromDirection(camparam.direction);
+	/*	Vector3 initCamDir = camparam.direction;
+		initCamDir = glm::normalize(initCamDir);
+		vector
+		float yall = glm::atan(initCamDir.z, initCamDir.x);*/
+		m_CamController.Setup(initCamPos, initCamYallPitch.x, initCamYallPitch.y);
 
 		InitHorizonGrid();
 		InitAxis();
@@ -79,6 +90,18 @@ namespace example
 		GLASSERT(glEnable(GL_DEPTH_TEST));
 		GLASSERT(glEnable(GL_BLEND));
 		GLASSERT(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+		ImGui::CreateContext();
+		ImGui_ImplWin32_Init(hWnd);
+		ImGui_ImplOpenGL3_Init("#version 330");
+	}
+
+	void Empty3D::OnDestroy()
+	{
+		// Cleanup
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
 	}
 
 
@@ -116,6 +139,16 @@ namespace example
 	{
 		m_CamController.Update();
 	}
+	void Empty3D::SetCameraStartupParam(CameraStartupParam& param)
+	{
+		param.projection.fovY = 3.1415926 / 3;
+		param.projection.zFar = 5000;
+		param.projection.zNear = 1;
+
+		param.position = Vector3{ 4,3,4 };
+		param.direction = -param.position;
+
+	}
 	void Empty3D::OnKeyboard(KEYS key, KEYACTION action) 
 	{
 		m_CamController.OnKeyboard(key, action); 
@@ -133,9 +166,18 @@ namespace example
 		
 	}
 
-	void Empty3D::PostRender()
+	void Empty3D::RenderPipline()
 	{
+		Render();
+		PostRender();
 		DrawAxis();
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+		OnGUI();
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 }
 

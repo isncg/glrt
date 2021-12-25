@@ -1,48 +1,20 @@
 #include "../../include/GLRT.h"
 #include "../../utils/utils.h"
 #include "../empty3d/empty3d.h"
-#include <imgui/imgui_impl_win32.h>
-#include <imgui/imgui_impl_opengl3.h>
-
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#include <imgui/imgui.h>
 
 namespace example
 {
 	class UI : public Empty3D
 	{
 	public:
-		virtual void OnCreate() override
-		{
-			Empty3D::OnCreate();
-			ImGui::CreateContext();
-			ImGui_ImplWin32_Init(hWnd);
-			ImGui_ImplOpenGL3_Init("#version 330");
-		}
 
-		virtual void OnDestroy() override
-		{
-			// Cleanup
-			ImGui_ImplOpenGL3_Shutdown();
-			ImGui_ImplWin32_Shutdown();
-			ImGui::DestroyContext();
-		}
 		bool show_demo_window = true;
 		bool show_another_window = false;
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-		virtual LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam) override
-		{
-			ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam);
-			return Empty3D::WndProc(message, wParam, lParam);
-		}
-
-		virtual void PostRender() override
+		virtual void OnGUI() override
 		{
 			Empty3D::PostRender();
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplWin32_NewFrame();
-			//ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
 
 			if (show_demo_window)
 				ImGui::ShowDemoWindow(&show_demo_window);
@@ -80,8 +52,7 @@ namespace example
 					show_another_window = false;
 				ImGui::End();
 			}
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		}
 	};
 }

@@ -1,7 +1,8 @@
 #include "../../include/GLRT.h"
 #include "../../utils/utils.h"
 #include "../empty3d/empty3d.h"
-#include<algorithm>
+#include <algorithm>
+#include <imgui/imgui.h>
 namespace example
 {
 	class FlightSimulator : public Empty3D
@@ -129,7 +130,7 @@ namespace example
 
 			m_AirportShader.Use();
 			glEnable(GL_POLYGON_OFFSET_FILL);
-			glPolygonOffset(0.0f, -200.0f);
+			glPolygonOffset(0.0f, -1000.0f);
 			glDepthMask(false);
 			Matrix4x4 mat = m_Camera.GetMatrix();
 			mat = glm::translate(mat, Vector3{ -170,34,-20 });
@@ -149,6 +150,36 @@ namespace example
 
 			glDisable(GL_POLYGON_OFFSET_FILL);
 			glDepthMask(true);
+		}
+
+		virtual void OnGUI() override
+		{
+			if (!m_CamController.enabled)
+			{
+				ImGui::Begin("Camera Info");
+				ImGui::InputFloat3("Position", &m_CamController.position.x);
+				ImGui::InputFloat("Yall", &m_CamController.yall);
+				ImGui::InputFloat("Pitch", &m_CamController.pitch);
+				ImGui::Checkbox("Projection Info", &m_Camera.dynamicProjection);
+				if (m_Camera.dynamicProjection)
+				{
+					ImGui::DragFloat("FovY", &m_Camera.projectionParam.fovY, 0.01f, 0.01f, 3.0f);
+					ImGui::InputFloat("aspect", &m_Camera.projectionParam.aspect);
+					ImGui::InputFloat("zNear", &m_Camera.projectionParam.zNear);
+					ImGui::InputFloat("zFar", &m_Camera.projectionParam.zFar);
+				}
+				ImGui::End();
+			}
+		}
+
+		virtual void SetCameraStartupParam(CameraStartupParam& param) override
+		{
+			param.projection.fovY = 3.1415926 / 6;
+			param.projection.zFar = 2000;
+			param.projection.zNear = 1;
+
+			param.position = Vector3{ -169.257,34.701,-16.767 };
+			param.direction = Camera::GetDirectionFromYallPitch(Vector2{0, -0.1});
 		}
 	};
 }

@@ -8,6 +8,15 @@ enum CAMERA_PROJECTION
 	CAMPROJ_ORTHO = 1
 };
 
+struct CameraProjectionParam
+{
+	float fovY;
+	float aspect;
+	float zNear;
+	float zFar;
+};
+
+
 class Camera
 {
 	friend class CameraController;
@@ -16,11 +25,17 @@ class Camera
 	Matrix4x4 mat_cache;
 	Vector2 _clipRange;
 public:
+	bool dynamicProjection = true;
+	CameraProjectionParam projectionParam;
 	Vector2& ClipRange();
 	void SetProjectionMatrix(float fovY, float aspect, float zNear, float zFar);
+	void SetProjectionMatrix(CameraProjectionParam& param);
 	void SetShaderMat4(Shader& shader, const char* name = "_cam");
 	Matrix4x4& GetMatrix();
 	const Matrix4x4& GetProjectionMatrix();
+
+	static Vector2 GetYallPitchFromDirection(Vector3 direction);
+	static Vector3 GetDirectionFromYallPitch(Vector2 yallpitch);
 };
 
 class CameraController
@@ -41,13 +56,14 @@ class CameraFirstPersonController: public CameraController
 	int md = 0;
 	int mw = 0;
 	int ms = 0;
-	float yall = 0;
-	float pitch = 0;
 	Vector3 fw;
 	Vector3 rt;
 	virtual void FrameUpdate() override;
 	virtual void CalcViewMatrix(Matrix4x4& mat_proj) override;
 public:
+	bool enabled = true;
+	float yall = 0;
+	float pitch = 0;
 	Vector3 position;
 	const Vector3& GetForwardDirection();
 	float speed = 20.0f;

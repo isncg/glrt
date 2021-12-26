@@ -110,3 +110,24 @@ void Material::Use()
 	}
 	pShader->lastMaterial = this;
 }
+
+void MaterialLib::Add(Shader* pShader, std::string name, std::function<void(Material&)> op)
+{
+	Material* pmat = nullptr;
+	auto it = dict.find(name);
+	if (it == dict.end())
+	{
+		pmat = new Material(pShader);
+		pmat->name = name;
+		dict[name] = pmat;
+	}
+	else
+		pmat = it->second;
+	op(*pmat);
+}
+
+Material* MaterialLib::Get(std::string name) const
+{
+	auto it = dict.find(name);
+	return it == dict.end() ? nullptr : it->second;
+}

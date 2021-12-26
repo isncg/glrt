@@ -61,7 +61,7 @@ bool LoadBSPMap(Model& outputModel, std::map<std::string, Texture>* outputTextur
         {
             Mesh mr;
             outputModel.meshCollection.push_back(mr);
-            outputModel.matNames.push_back(tex->szName);
+            outputModel.matInfos.push_back(new MeshMaterialInfo{ (int)outputModel.matInfos.size(), tex->szName});
             pMesh = (outputModel.meshCollection.end() - 1)._Ptr;
             outputModel.meshDict[tex->szName] = outputModel.meshCollection.size() - 1;
         }

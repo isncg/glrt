@@ -27,10 +27,15 @@ enum VertexElement
     VE_COLOR32S = 4096
 };
 
+struct MeshMaterialInfo
+{
+    int materialid = 0;
+    std::string name;
+};
+
+
 struct Mesh
 {
-	//int vertexBufferCount;
-	//int blendShapeCount;
     std::vector<Vector3> vertices;
     std::vector<Vector3> normals;
     std::vector<Vector4> tangents;
@@ -46,7 +51,7 @@ struct Mesh
     std::vector<Color32> colors32;
     //int vertexAttributeCount;
     std::vector<unsigned int> triangles;
-    int materialid = 0;
+    MeshMaterialInfo* pMaterialInfo = nullptr;
     int GetBufferSize();
     void Clear();
     void Merge(Mesh& other);
@@ -62,7 +67,7 @@ struct Model
 {
     std::vector<Mesh> meshCollection;
     std::vector<Mesh> mergedMesh;
-    std::vector<std::string> matNames;
+    std::vector<MeshMaterialInfo*> matInfos;
     std::map<std::string, int> meshDict;
     ModelTreeNode root;
     void Clear();
@@ -97,6 +102,8 @@ class MeshRenderer: public Renderer
 public:
     void Set(Mesh* pMesh);
     virtual void Draw() override;
+
+    static std::vector<MeshRenderer*> CreateRenderers(std::vector<Mesh> meshset, const MaterialLib* materialLibrary);
 };
 
 

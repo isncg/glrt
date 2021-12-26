@@ -6,7 +6,7 @@
 #include <framework.h>
 #include "Texture.h"
 #include "Shader.h"
-
+#include <functional>
 class IMaterialParam;
 class Material
 {
@@ -95,3 +95,13 @@ inline void Material::Set(std::string name, T& value)
 {
 	Set(name, std::move(value));
 }
+
+
+class MaterialLib
+{
+private:
+	std::map<std::string, Material*> dict;
+public:
+	void Add(Shader* pShader, std::string name, std::function<void(Material&)> op);
+	Material* Get(std::string name) const;
+};

@@ -1,7 +1,7 @@
 #include "../include/Application.h"
 #include "../include/Renderer.h"
 #include "../utils/utils.h"
-
+#include <algorithm>
 bool MeshRenderer::ValidateMesh(Mesh* pMesh)
 {
 	int vertexCount = 0;
@@ -98,6 +98,44 @@ Specifies the number of indices to be rendered.
 	//UseMaterial();
 	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
 	//GLASSERT(glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3));
+}
+
+std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshset, const MaterialLib* materialLibrary)
+{
+	std::vector<MeshRenderer*> result;
+	if (nullptr != materialLibrary) 
+	{
+		for (auto& mesh : meshset)
+		{
+			if (mesh.vertices.size() <= 0 || nullptr == mesh.pMaterialInfo)
+				continue;
+			auto pmat = materialLibrary->Get(mesh.pMaterialInfo->name);
+			if (nullptr == pmat)
+				continue;
+			MeshRenderer* pmr = new MeshRenderer();
+			pmr->material = pmat;
+			pmr->Set(&mesh);
+			result.push_back(pmr);
+		}
+		std::sort(result.begin(), result.end(),
+			[](const MeshRenderer* a, const MeshRenderer* b)
+			{
+				return a->material->renderingOrder < b->material->renderingOrder;
+			});
+	}
+	else
+	{
+		for (auto& mesh : meshset)
+		{
+			if (mesh.vertices.size() <= 0 || nullptr == mesh.pMaterialInfo)
+				continue;
+			MeshRenderer* pmr = new MeshRenderer();
+			pmr->Set(&mesh);
+			result.push_back(pmr);
+		}
+	}
+
+	return result;
 }
 
 int Mesh::GetBufferSize()
@@ -275,7 +313,7 @@ void Model::Clear()
 	for (auto& i : meshCollection)
 		i.Clear();
 	meshCollection.clear();
-	matNames.clear();
+	matInfos.clear();
 	meshDict.clear();
 }
 

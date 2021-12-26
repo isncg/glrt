@@ -75,7 +75,7 @@ namespace example
 		SetCameraStartupParam(camparam);
 		m_Camera.SetProjectionMatrix(camparam.projection.fovY, GetClientAspect(), camparam.projection.zNear, camparam.projection.zFar);
 		m_CamController.camera = &m_Camera;
-		m_CamController.speed = 0.2f;
+		m_CamController.speed = camparam.moveSpeed;
 		Vector3 initCamPos = camparam.position;
 		Vector2 initCamYallPitch = Camera::GetYallPitchFromDirection(camparam.direction);
 	/*	Vector3 initCamDir = camparam.direction;
@@ -147,7 +147,7 @@ namespace example
 
 		param.position = Vector3{ 4,3,4 };
 		param.direction = -param.position;
-
+		param.moveSpeed = 0.2f;
 	}
 	void Empty3D::OnKeyboard(KEYS key, KEYACTION action) 
 	{

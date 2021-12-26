@@ -3,8 +3,10 @@ in vec2 frag_uv;
 in vec3 frag_pos;
 in vec3 frag_norm;
 out vec4 color;
-
+uniform sampler2D tex;
+uniform vec4 diffuse;
 void main()
 {
-    color = vec4(frag_pos * (0.5f + 0.5f * dot(frag_norm, vec3(1.0, 0.0, 0.0))), 1.0);
+    color = vec4(texture(tex, frag_uv).rgb, 1.0)*diffuse;
+    //color = vec4(frag_pos * (0.5f + 0.5f * dot(frag_norm, vec3(1.0, 0.0, 0.0))), 1.0);
 }

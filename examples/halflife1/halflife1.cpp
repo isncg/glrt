@@ -6,6 +6,7 @@ namespace example
 {
 	class HalfLife1 :public Window
 	{
+		ASSETDIR("examples/halflife1/assets/");
 		Camera						m_Camera;
 		CameraFirstPersonController m_CamController;
 		Model						m_LevelModel;
@@ -33,17 +34,17 @@ namespace example
 			std::map<std::string, Texture> textureDict;
 			float lightRange = 4096;
 
-			HLMapLoad(GetAssetPath("de_dust2.bsp"), GetAssetPath("cs_dust.wad"), m_LevelModel, &textureDict);
-			LoadTexture(&m_LevelPlaceHolderTexture, GetAssetPath("256.bmp"));
+			HLMapLoad(ASSETPATH("de_dust2.bsp"), ASSETPATH("cs_dust.wad"), m_LevelModel, &textureDict);
+			m_LevelPlaceHolderTexture.Load(ASSETPATH("256.bmp"));
 
 			m_ShadowMappingLight.InitLightMap(8192, 8192);
 			m_ShadowMappingLight.SetLight(lightPos, lightDir, lightRange);
-			m_ShadowMappingShader.Load(GetAssetPath("glsl/shadowmapping.vert"), GetAssetPath("glsl/shadowmapping.frag"));
+			m_ShadowMappingShader.Load(ASSETPATH("glsl/shadowmapping.vert"), ASSETPATH("glsl/shadowmapping.frag"));
 			m_ShadowMappingShader.Set("lightmat", m_ShadowMappingLight.matrix);
 
 			m_Camera.SetProjectionMatrix(3.1415926 / 3, (float)w / (float)h, 1, 5000);
 			m_CamController.camera = &m_Camera;
-			m_LevelShader.Load(GetAssetPath("glsl/bsplevel.vert"), GetAssetPath("glsl/bsplevel.frag"));
+			m_LevelShader.Load(ASSETPATH("glsl/bsplevel.vert"), ASSETPATH("glsl/bsplevel.frag"));
 			m_LevelShader.Set("shadowmap", m_ShadowMappingLight.m_ShadowMappingPass.depthBuffer);
 			m_LevelShader.Set("lightmat", m_ShadowMappingLight.matrix);
 			m_LevelPass.Init(4096, 2048, 1, true);
@@ -58,15 +59,15 @@ namespace example
 				m_LevelSubmeshMaterials.push_back(mt);
 				m_LevelSubmeshMaterials[i].Set(&m_LevelShader);
 
-				auto texi = textureDict.find(m_LevelModel.matNames[i]);
+				auto texi = textureDict.find(m_LevelModel.matInfos[i]->name);
 				if (texi != textureDict.end())
 					m_LevelSubmeshMaterials[i].Set("tex", texi->second);
 				else
 				{
 					m_LevelSubmeshMaterials[i].Set("tex", m_LevelPlaceHolderTexture);
-					std::cout << "Missing texture: " << m_LevelModel.matNames[i] << std::endl;
+					std::cout << "Missing texture: " << m_LevelModel.matInfos[i]->name << std::endl;
 				}
-				m_LevelSubmeshMaterials[i].name = m_LevelModel.matNames[i];
+				m_LevelSubmeshMaterials[i].name = m_LevelModel.matInfos[i]->name;
 			}
 
 			for (int i = 0; i < m_LevelModel.meshCollection.size(); i++)
@@ -75,8 +76,8 @@ namespace example
 			m_LevelModel.Clear();
 
 			m_PostEffectRenderer.SetFullScreen();
-			m_PostEffectShader.Load(GetAssetPath("glsl/posteffect.vert"), GetAssetPath("glsl/posteffect.frag"));
-			m_PostEffectShader.Set("tex", m_LevelPass.colorBuffers[0]);
+			m_PostEffectShader.Load(ASSETPATH("glsl/posteffect.vert"), ASSETPATH("glsl/posteffect.frag"));
+			m_PostEffectShader.Set("tex", *m_LevelPass.colorBuffers[0]);
 			glEnable(GL_DEPTH_TEST);
 		}
 
@@ -97,4 +98,4 @@ namespace example
 	};
 }
 
-RUN_WINDOWEX(example::HalfLife1, "examples/halflife1/assets/")
+//RUN_WINDOW(example::HalfLife1)

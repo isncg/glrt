@@ -100,6 +100,15 @@ Specifies the number of indices to be rendered.
 	//GLASSERT(glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3));
 }
 
+void MeshRenderer::Draw(Shader& shader)
+{
+	if (vao <= 0 || indices.size() < 3)
+		return;
+	Renderer::Draw(shader);
+	GLASSERT(glBindVertexArray(vao));	
+	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
+}
+
 std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshset, const MaterialLib* materialLibrary)
 {
 	std::vector<MeshRenderer*> result;
@@ -353,4 +362,9 @@ void Renderer::Draw()
 {
 	if (nullptr != material)
 		material->Use();
+}
+
+void Renderer::Draw(Shader& shader)
+{
+	shader.Use();
 }

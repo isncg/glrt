@@ -157,6 +157,7 @@
     <ClCompile Include="3rdparty\wad\src\*.cpp" />
     <ClCompile Include="examples\empty3d\empty3d.cpp" />
     <ClCompile Include="examples\flightsimulator\flightsimulator.cpp" />
+    <ClCompile Include="examples\halflife1\halflife1.cpp" />
     <ClCompile Include="examples\teapot\teapot.cpp" />
     <ClCompile Include="examples\terrain\Terrain.cpp" />
     <ClCompile Include="examples\ui\ui.cpp" />

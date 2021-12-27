@@ -89,6 +89,7 @@ public:
     Material* material;
     //void UseMaterial();
     virtual void Draw();
+    virtual void Draw(Shader& shader);
 };
 
 class MeshRenderer: public Renderer
@@ -102,7 +103,7 @@ class MeshRenderer: public Renderer
 public:
     void Set(Mesh* pMesh);
     virtual void Draw() override;
-
+    virtual void Draw(Shader& shader) override;
     static std::vector<MeshRenderer*> CreateRenderers(std::vector<Mesh> meshset, const MaterialLib* materialLibrary);
 };
 

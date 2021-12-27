@@ -14,7 +14,6 @@ layout (location = 11) in vec4 color;
 layout (location = 12) in ivec4 color32;
 
 uniform mat4 _mvp;
-
 out vec2 frag_uv;
 out vec3 frag_pos;
 out vec3 frag_norm;
@@ -23,6 +22,6 @@ void main()
 {
     gl_Position = _mvp*vec4(vertex, 1.0);
     frag_uv = uv;
-    frag_pos = vertex;
+    frag_pos =vertex;
     frag_norm = normal;
 }

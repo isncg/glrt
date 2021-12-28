@@ -29,7 +29,7 @@ namespace example
 		float planeScale = 0.05f;
 		Vector3 planePos{ -169.24,34.067,-21 };
 		float planeYall = glm::pi<float>()/2;
-		Color weaponcolor{ 0.5882, 0.5882, 0.5882,1.0 };
+		ColorRGB weaponcolor{ 0.5882, 0.5882, 0.5882 };
 		bool viewFromLight = false;
 		void OnCreate() override
 		{
@@ -82,7 +82,7 @@ namespace example
 			mtl.Add(&m_AirportShader, "whiteline",  [](auto& m) {m.Set("diffuse", Color{ 1.000000, 1.000000, 1.000000,1.0 }); });
 			mtl.Add(&m_AirportShader, "taxiline",   [](auto& m) {m.Set("diffuse", Color{ 1.000000, 0.972549, 0.486275,1.0 }); });
 
-			mtl.Add(&m_planeShader, "01___Default", [&](auto& m) {m.Set("tex", m_planeTexture); m.Set("diffuse", Color{ 1.000000, 1.000000, 1.000000,1.0 }); });
+			mtl.Add(&m_planeShader, "01___Default", [&](auto& m) {m.Set("tex", m_planeTexture); m.Set("diffuse", ColorRGB{ 1.000000, 1.000000, 1.000000 }); });
 			mtl.Add(&m_planeShader, "02___Default", [&](auto& m) {m.Set("tex", m_white);        m.Set("diffuse", weaponcolor); });
 			m_airportMeshRenderers = MeshRenderer::CreateRenderers(m_airportModel.mergedMesh, &mtl);
 			m_planeRenderers = MeshRenderer::CreateRenderers(m_planeModel.mergedMesh, &mtl);
@@ -102,7 +102,8 @@ namespace example
 			planeWorld = glm::rotate(planeWorld, planeYall, Vector3{ 0,-1,0 });
 			planeWorld = glm::scale(planeWorld, Vector3{ planeScale, planeScale, planeScale });
 
-			m_light.SetLight(m_CamController.position + Vector3{ 0,10,0 }, Vector3{ -0.2,-1,-1 }, 10);	  
+			Vector3 lightdir{ -1,-5,-2 };
+			m_light.SetLight(m_CamController.position - (lightdir * 10.0f), lightdir, 2);
 			m_light.m_ShadowMappingPass.Bind();
 
 			m_sm.Set("lightmat", m_light.matrix);
@@ -116,12 +117,16 @@ namespace example
 			GetClientRect(hWnd, &rt);
 			glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top);
 
+			Matrix4x4 viewMat = viewFromLight ? m_light.matrix : m_Camera.GetMatrix();
 
 			m_TerrainShader.Use();
-			m_TerrainShader.Set("cam", m_Camera.GetMatrix());
+			m_TerrainShader.Set("cameraview", viewMat);
 			m_TerrainShader.Set("hightmap", m_HeightMap);
 			m_TerrainShader.Set("flatenmap", m_Flat);
 			m_TerrainShader.Set("rgbmap", m_RGBMap);
+			m_TerrainShader.Set("world", Matrix4x4(1));
+			m_TerrainShader.Set("shadowmap", m_light.m_ShadowMappingPass.depthBuffer);
+			m_TerrainShader.Set("lightview", m_light.matrix);
 			m_TerrainMeshRenderer.Draw();
 
 			m_AirportShader.Use();
@@ -129,10 +134,10 @@ namespace example
 			glPolygonOffset(0.0f, -100.0f);
 			glDepthMask(false);
 
-			m_AirportShader.Set("_mvp", m_Camera.GetMatrix()* airpotrWorld);
-			m_AirportShader.Set("_mv", airpotrWorld);
+			m_AirportShader.Set("cameraview", viewMat);
+			m_AirportShader.Set("world", airpotrWorld);
 			m_AirportShader.Set("shadowmap", m_light.m_ShadowMappingPass.depthBuffer);
-			m_AirportShader.Set("lightmat", m_light.matrix);
+			m_AirportShader.Set("lightview", m_light.matrix);
 			for (auto& r : m_airportMeshRenderers)
 			{
 				r->Draw();
@@ -142,7 +147,11 @@ namespace example
 			glDepthMask(true);
 
 			m_planeShader.Use();
-			m_planeShader.Set("_mvp", m_Camera.GetMatrix()*planeWorld);
+			m_planeShader.Set("cameraview", viewMat);
+			m_planeShader.Set("bias", 0.0000001);
+			m_planeShader.Set("world", planeWorld);
+			m_planeShader.Set("shadowmap", m_light.m_ShadowMappingPass.depthBuffer);
+			m_planeShader.Set("lightview", m_light.matrix);
 			auto m = mtl.Get("02___Default");
 			if (nullptr != m)
 				m->Set("diffuse", weaponcolor);
@@ -160,6 +169,7 @@ namespace example
 				ImGui::InputFloat("Yall", &m_CamController.yall);
 				ImGui::InputFloat("Pitch", &m_CamController.pitch);
 				ImGui::InputFloat("Speed", &m_CamController.speed);
+				ImGui::Checkbox("Light view", &viewFromLight);
 				ImGui::Checkbox("Projection Info", &m_Camera.dynamicProjection);
 				if (m_Camera.dynamicProjection)
 				{

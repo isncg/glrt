@@ -4,7 +4,7 @@ uniform sampler2D hightmap;
 uniform sampler2D flatenmap;
 uniform vec3 flatenPos = vec3(-100.0, 0.17, -200.0);
 uniform vec2 flatenSize = vec2(100.0, 100.0);
-uniform mat4 cam;
+//uniform mat4 cam;
 uniform float heightScale = 200.0;
 uniform float meshScale = 1000.0;
 out float height;
@@ -12,7 +12,10 @@ out vec3 norm;
 out float flaten;
 out vec2 uv;
 out vec2 flatenuv;
+out vec3 frag_pos;
 uniform float d = 0.002;
+uniform mat4 cameraview;
+uniform mat4 world;
 
 float getHeight(vec2 zx) {
     vec2 uv = zx * 0.5 + vec2(0.5, 0.5);
@@ -36,6 +39,7 @@ void main() {
     flaten = texture(flatenmap, flatenuv).r;
     float heightdz = getHeight(vec2(zx.x + d, zx.y)) - getHeight(vec2(zx.x - d, zx.y));
     float heightdx = getHeight(vec2(zx.x, zx.y + d)) - getHeight(vec2(zx.x, zx.y - d));
-    gl_Position = cam * vec4(worldZX.y, getHeight(zx), worldZX.x, 1.0);
+    frag_pos = vec3(worldZX.y, getHeight(zx), worldZX.x);
+    gl_Position = cameraview * world * vec4(frag_pos, 1.0);
     norm = normalize(vec3(-heightdx, d * meshScale, -heightdz));
 }

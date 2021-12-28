@@ -143,6 +143,7 @@ typedef glm::vec2 Vector2;
 typedef glm::vec4 Vector4;
 typedef glm::mat4 Matrix4x4;
 typedef glm::vec4 Color;
+typedef glm::vec3 ColorRGB;
 typedef glm::lowp_i8vec4 Color32;
 typedef glm::ivec2 Vector2i;
 

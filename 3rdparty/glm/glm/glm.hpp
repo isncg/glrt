@@ -142,17 +142,44 @@ typedef glm::vec3 Vector3;
 typedef glm::vec2 Vector2;
 typedef glm::vec4 Vector4;
 typedef glm::mat4 Matrix4x4;
-typedef glm::vec4 Color;
-typedef glm::vec3 ColorRGB;
-typedef glm::lowp_i8vec4 Color32;
+//typedef glm::vec4 Color;
+//typedef glm::vec3 ColorRGB;
+//typedef glm::lowp_i8vec4 Color32;
 typedef glm::ivec2 Vector2i;
+
+struct Color
+{
+    float r;
+    float g;
+    float b;
+    float a;
+};
+
+struct ColorRGB
+{
+    float r;
+    float g;
+    float b;
+};
+
+struct Color32
+{
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
+    unsigned char a;
+};
 
 GLenum GetVectorComponentType(const Vector3& tag);
 GLenum GetVectorComponentType(const Vector2& tag);
+GLenum GetVectorComponentType(const Color& tag);
+GLenum GetVectorComponentType(const ColorRGB& tag);
 GLenum GetVectorComponentType(const Vector4& tag);
 GLenum GetVectorComponentType(const Color32& tag);
 
 GLint GetVectorComponentCount(const Color32& tag);
+GLint GetVectorComponentCount(const Color& tag);
+GLint GetVectorComponentCount(const ColorRGB& tag);
 
 template<typename T>
 inline GLint GetVectorComponentCount(const T& tag)

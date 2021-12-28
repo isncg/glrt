@@ -97,8 +97,12 @@ int Application::Run(Window* pMainWindow, bool allocConsole)
 
 #include <glm/glm.hpp>
 GLint GetVectorComponentCount(const Color32& tag) { return 4; }
+GLint GetVectorComponentCount(const Color& tag) { return 4; }
+GLint GetVectorComponentCount(const ColorRGB& tag) { return 3; }
 
 GLenum GetVectorComponentType(const Vector3& tag) { return GL_FLOAT; }
 GLenum GetVectorComponentType(const Vector4& tag) { return GL_FLOAT; }
 GLenum GetVectorComponentType(const Vector2& tag) { return GL_FLOAT; }
+GLenum GetVectorComponentType(const Color&   tag)   { return GL_FLOAT; }
+GLenum GetVectorComponentType(const ColorRGB& tag){ return GL_FLOAT; }
 GLenum GetVectorComponentType(const Color32& tag) { return GL_UNSIGNED_BYTE; }

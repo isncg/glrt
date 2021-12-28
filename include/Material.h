@@ -26,6 +26,7 @@ public:
 	void Set(std::string name, T& value);
 	void Set(std::string name, float value);
 	void Use();
+	void OnInspector();
 };
 
 
@@ -37,13 +38,24 @@ protected:
 public:
 	std::string name;
 	virtual void SetUniform(GLuint program, GLint location) = 0;
-
+	virtual void OnInspector() = 0;
 	static void _SetUniform(float value, GLuint program, GLint location);
 	static void _SetUniform(Vector3& value, GLuint program, GLint location);
 	static void _SetUniform(Vector2& value, GLuint program, GLint location);
 	static void _SetUniform(Vector4& value, GLuint program, GLint location);
+	static void _SetUniform(Color& value, GLuint program, GLint location);
+	static void _SetUniform(ColorRGB& value, GLuint program, GLint location);
 	static void _SetUniform(Texture& value, GLuint program, GLint location);
 	static void _SetUniform(Matrix4x4& value, GLuint program, GLint location);
+
+	static void _OnInspector(std::string name, float& value);
+	static void _OnInspector(std::string name, Vector3& value);
+	static void _OnInspector(std::string name, Vector2& value);
+	static void _OnInspector(std::string name, Vector4& value);
+	static void _OnInspector(std::string name, Color& value);
+	static void _OnInspector(std::string name, ColorRGB& value);
+	static void _OnInspector(std::string name, Texture& value);
+	static void _OnInspector(std::string name, Matrix4x4& value);
 };
 
 
@@ -54,6 +66,7 @@ public:
 	T value;
 	MaterialParam(std::string& name, T&& value);
 	void SetUniform(GLuint program, GLint location) override;
+	void OnInspector() override;
 };
 
 
@@ -71,6 +84,12 @@ inline void MaterialParam<T>::SetUniform(GLuint program, GLint location)
 {
 	_SetUniform(value, program, location);
 	isDirty = false;
+}
+
+template<typename T>
+inline void MaterialParam<T>::OnInspector()
+{
+	_OnInspector(this->name, this->value);
 }
 
 

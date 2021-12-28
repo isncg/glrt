@@ -1,6 +1,6 @@
 #include "../include/Material.h"
 #include "../utils/utils.h"
-
+#include <imgui/imgui.h>
 void IMaterialParam::_SetUniform(float value, GLuint program, GLint location)
 {
 	glProgramUniform1f(program, location, value);
@@ -20,6 +20,16 @@ void IMaterialParam::_SetUniform(Vector4& value, GLuint program, GLint location)
 	glProgramUniform4fv(program, location, 1, (const GLfloat*)&value);
 }
 
+void IMaterialParam::_SetUniform(Color& value, GLuint program, GLint location)
+{
+	glProgramUniform4fv(program, location, 1, (const GLfloat*)&value);
+}
+
+void IMaterialParam::_SetUniform(ColorRGB& value, GLuint program, GLint location)
+{
+	glProgramUniform3fv(program, location, 1, (const GLfloat*)&value);
+}
+
 void IMaterialParam::_SetUniform(Texture& value, GLuint program, GLint location)
 {
 	if (value.handle == 0)
@@ -34,6 +44,47 @@ void IMaterialParam::_SetUniform(Texture& value, GLuint program, GLint location)
 void IMaterialParam::_SetUniform(Matrix4x4& value, GLuint program, GLint location)
 {
 	GLASSERT(glProgramUniformMatrix4fv(program, location, 1, false, (const GLfloat*)&value));
+}
+
+void IMaterialParam::_OnInspector(std::string name, float& value)
+{
+	ImGui::InputFloat(name.c_str(), &value);
+}
+
+void IMaterialParam::_OnInspector(std::string name, Vector3& value)
+{
+	ImGui::InputFloat3(name.c_str(), &value.x);
+}
+
+void IMaterialParam::_OnInspector(std::string name, Vector2& value)
+{
+	ImGui::InputFloat2(name.c_str(), &value.x);
+}
+
+void IMaterialParam::_OnInspector(std::string name, Vector4& value)
+{
+	ImGui::InputFloat4(name.c_str(), &value.x);
+}
+
+void IMaterialParam::_OnInspector(std::string name, Color& value)
+{
+	ImGui::ColorEdit4(name.c_str(), &value.r);
+}
+
+void IMaterialParam::_OnInspector(std::string name, ColorRGB& value)
+{
+	ImGui::ColorEdit3(name.c_str(), &value.r);
+}
+
+void IMaterialParam::_OnInspector(std::string name, Texture& value)
+{
+	ImGui::Text(name.c_str());
+	ImGui::Image((ImTextureID)value.id, ImVec2{ 256,256 });
+}
+
+void IMaterialParam::_OnInspector(std::string name, Matrix4x4& value)
+{
+	//TODO
 }
 
 
@@ -109,6 +160,15 @@ void Material::Use()
 			it.second->SetUniform(pShader->program, it.first);
 	}
 	pShader->lastMaterial = this;
+}
+
+void Material::OnInspector()
+{
+	ImGui::LabelText("Material", this->name.c_str());
+	for (auto& it : params)
+		it.second->OnInspector();
+	for (auto& it : managedParams)
+		it.second->OnInspector();
 }
 
 void MaterialLib::Add(Shader* pShader, std::string name, std::function<void(Material&)> op)

@@ -10,6 +10,7 @@ uniform sampler2D shadowmap;
 uniform mat4 lightview;
 uniform mat4 world;
 uniform float bias = 0.0;
+uniform vec3 lightcastcolor = vec3(1);
 float getCast(vec3 pos)
 {
     vec4 p = lightview * world * vec4(pos, 1.0);
@@ -36,7 +37,7 @@ vec3 getShadowColor(vec3 originalcolor) {
     float shadow = getShadow(frag_pos);
     float underlight = getCast(frag_pos);
     float luminance = max(0.2, (1.0 - shadow));
-    vec3 shadowColor = originalcolor * (1.0 - underlight) + underlight * originalcolor * vec3(0.9, 1.1, 1.1);
+    vec3 shadowColor = originalcolor * (1.0 - underlight) + underlight * originalcolor * lightcastcolor;
     return shadowColor * luminance;
 }
 

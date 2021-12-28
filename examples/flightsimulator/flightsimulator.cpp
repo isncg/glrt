@@ -31,6 +31,7 @@ namespace example
 		float planeYall = glm::pi<float>()/2;
 		ColorRGB weaponcolor{ 0.5882, 0.5882, 0.5882 };
 		bool viewFromLight = false;
+		char matnamebuffer[128]{0};
 		void OnCreate() override
 		{
 			Empty3D::OnCreate();
@@ -152,9 +153,7 @@ namespace example
 			m_planeShader.Set("world", planeWorld);
 			m_planeShader.Set("shadowmap", m_light.m_ShadowMappingPass.depthBuffer);
 			m_planeShader.Set("lightview", m_light.matrix);
-			auto m = mtl.Get("02___Default");
-			if (nullptr != m)
-				m->Set("diffuse", weaponcolor);
+
 			for (auto& r : m_planeRenderers)
 				r->Draw();
 
@@ -189,6 +188,15 @@ namespace example
 
 				ImGui::Begin("Shadow mapping");
 				ImGui::Image((ImTextureID)m_light.m_ShadowMappingPass.depthBuffer.id, ImVec2{ 512,512 });
+				ImGui::End();
+
+				ImGui::Begin("Material");
+				ImGui::InputText("material name", matnamebuffer, 128);
+				Material*inspectedMat = mtl.Get(matnamebuffer);
+				if (nullptr != inspectedMat)
+				{
+					inspectedMat->OnInspector();
+				}
 				ImGui::End();
 			}
 		}

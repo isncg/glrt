@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include "ResourceMonitor.h"
-struct Texture;
+class Texture;
 class Shader: public IResourceUpdateNotify
 {
 	friend class Material;
@@ -12,6 +12,7 @@ class Shader: public IResourceUpdateNotify
 	std::string frag;
 	
 public:
+	Material* materialTemplate = NULL;
 	~Shader();
 	//void Load(std::string vert, std::string frag);
 	void Load(std::string&& vert, std::string&& frag);

@@ -108,6 +108,21 @@ void Material::Set(Shader* shader)
 	{
 		it.second->isDirty = true;
 	}
+	if (shader->materialTemplate != this && shader->materialTemplate != nullptr)
+	{
+		for (auto& it : shader->materialTemplate->managedParams)
+		{
+			int location = glGetUniformLocation(pShader->program, it.second->name.c_str());
+			if (location < 0)
+				continue;
+			auto it2 = managedParams.find(location);
+			if (it2 != managedParams.end())
+				delete it2->second;
+			IMaterialParam* clone = it.second->Clone();
+			clone->isDirty = true;
+			managedParams[location] = clone;
+		}
+	}
 }
 
 void Material::Set(IMaterialParam* param)
@@ -190,4 +205,34 @@ Material* MaterialLib::Get(std::string name) const
 {
 	auto it = dict.find(name);
 	return it == dict.end() ? nullptr : it->second;
+}
+
+void MaterialLibInspector::OnInspector()
+{
+	ImGui::Begin("Material Lib");
+	if (nullptr != target)
+	{
+		for (auto& it : target->dict)
+		{
+			if (ImGui::Button(it.first.c_str()))
+			{
+				curmat = it.second;
+				showMatInfo = true;
+			}
+		}
+	}
+	ImGui::End();
+	if (nullptr != curmat && showMatInfo)
+	{
+		ImGui::Begin("Material Info", &showMatInfo);
+		curmat->OnInspector();
+		ImGui::End();
+	}
+}
+
+void MaterialLibInspector::Set(MaterialLib* target)
+{
+	this->target = target;
+	this->showMatInfo = false;
+	this->curmat = nullptr;
 }

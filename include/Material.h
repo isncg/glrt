@@ -38,6 +38,7 @@ protected:
 public:
 	std::string name;
 	virtual void SetUniform(GLuint program, GLint location) = 0;
+	virtual IMaterialParam* Clone() = 0;
 	virtual void OnInspector() = 0;
 	static void _SetUniform(float value, GLuint program, GLint location);
 	static void _SetUniform(Vector3& value, GLuint program, GLint location);
@@ -67,6 +68,7 @@ public:
 	MaterialParam(std::string& name, T&& value);
 	void SetUniform(GLuint program, GLint location) override;
 	void OnInspector() override;
+	IMaterialParam* Clone() override;
 };
 
 
@@ -90,6 +92,12 @@ template<typename T>
 inline void MaterialParam<T>::OnInspector()
 {
 	_OnInspector(this->name, this->value);
+}
+
+template<typename T>
+inline IMaterialParam* MaterialParam<T>::Clone()
+{
+	return new MaterialParam<T>(*this);
 }
 
 
@@ -118,9 +126,21 @@ inline void Material::Set(std::string name, T& value)
 
 class MaterialLib
 {
+	friend class MaterialLibInspector;
 private:
 	std::map<std::string, Material*> dict;
 public:
 	void Add(Shader* pShader, std::string name, std::function<void(Material&)> op);
 	Material* Get(std::string name) const;
+};
+
+
+class MaterialLibInspector
+{
+	MaterialLib* target = nullptr;
+	Material* curmat = nullptr;
+	bool showMatInfo = false;
+public:
+	void OnInspector();
+	void Set(MaterialLib* target);
 };

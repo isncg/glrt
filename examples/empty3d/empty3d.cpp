@@ -22,7 +22,7 @@ namespace example
 		GLuint vbo;
 		GLASSERT(glGenBuffers(1, &vbo));
 		GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, vbo));
-		int bufsize = buffer.size() * sizeof(Vector2);
+		signed   long long int bufsize = buffer.size() * sizeof(Vector2);
 		GLASSERT(glBufferData(GL_ARRAY_BUFFER, bufsize, &buffer[0], GL_STATIC_DRAW));
 		GLASSERT(glEnableVertexAttribArray(0));
 		GLASSERT(glVertexAttribPointer(0,
@@ -141,7 +141,7 @@ namespace example
 	}
 	void Empty3D::SetCameraStartupParam(CameraStartupParam& param)
 	{
-		param.projection.fovY = 3.1415926 / 3;
+		param.projection.fovY = 3.1415926f / 3;
 		param.projection.zFar = 5000;
 		param.projection.zNear = 1;
 
@@ -155,7 +155,7 @@ namespace example
 	}
 	void Empty3D::Render()
 	{
-		glClearColor(0.2, 0.2, 0.2, 1);
+		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		

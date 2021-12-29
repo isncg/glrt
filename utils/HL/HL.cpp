@@ -99,17 +99,17 @@ bool LoadBSPMap(Model& outputModel, std::map<std::string, Texture>* outputTextur
 
                 Vector3 normal = glm::normalize(glm::cross(p0 - p_, p0 - p1));
                 float uvscale = 1.0;
-                pMesh->triangles.push_back(pMesh->vertices.size());
+                pMesh->triangles.push_back((unsigned int)pMesh->vertices.size());
                 pMesh->vertices.push_back(p_);
                 pMesh->normals.push_back(normal);
                 pMesh->uv.push_back({ glm::dot(uvscale * p_ , texVS) + texInfo.fSShift, glm::dot(uvscale * p_ , texVT) + texInfo.fTShift });
 
-                pMesh->triangles.push_back(pMesh->vertices.size());
+                pMesh->triangles.push_back((unsigned int)pMesh->vertices.size());
                 pMesh->vertices.push_back(p0);
                 pMesh->normals.push_back(normal);
                 pMesh->uv.push_back({ glm::dot(uvscale * p0 , texVS) + texInfo.fSShift, glm::dot(uvscale * p0 , texVT) + texInfo.fTShift });
 
-                pMesh->triangles.push_back(pMesh->vertices.size());
+                pMesh->triangles.push_back((unsigned int)pMesh->vertices.size());
                 pMesh->vertices.push_back(p1);
                 pMesh->normals.push_back(normal);
                 pMesh->uv.push_back({ glm::dot(uvscale * p1 , texVS) + texInfo.fSShift, glm::dot(uvscale * p1 , texVT) + texInfo.fTShift });

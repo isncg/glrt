@@ -1,5 +1,6 @@
 #include "../include/Application.h"
 #include "../include/Shader.h"
+#include "../include/Material.h"
 #include "../utils/utils.h"
 GLuint loadShader(std::string& filename, GLenum shaderType)
 {
@@ -77,6 +78,8 @@ void Shader::Load(std::string&& vert, std::string&& frag)
 	ResourceMonitor::Instance().StopWatch(this);
 	ResourceMonitor::Instance().Watch(vert, this);
 	ResourceMonitor::Instance().Watch(frag, this);
+	materialTemplate = new Material;
+	materialTemplate->Set(this);
 }
 
 void Shader::Use()

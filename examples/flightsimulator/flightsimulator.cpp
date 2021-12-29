@@ -12,6 +12,7 @@ namespace example
 		Model m_airportModel;
 		Model m_planeModel;
 		MaterialLib mtl;
+		MaterialLibInspector mtlinspector;
 		std::vector<Material*> m_airportMaterials;
 		MeshRenderer m_TerrainMeshRenderer;
 		std::vector<MeshRenderer*> m_airportMeshRenderers;
@@ -27,9 +28,9 @@ namespace example
 		Texture m_white;
 		DirectionalLight m_light;
 		float planeScale = 0.05f;
-		Vector3 planePos{ -169.24,34.067,-21 };
+		Vector3 planePos{ -169.24f,34.067f,-21.0f };
 		float planeYall = glm::pi<float>()/2;
-		ColorRGB weaponcolor{ 0.5882, 0.5882, 0.5882 };
+		//ColorRGB weaponcolor{ 0.5882f, 0.5882f, 0.5882f };
 		bool viewFromLight = false;
 		char matnamebuffer[128]{0};
 		void OnCreate() override
@@ -66,6 +67,7 @@ namespace example
 			m_TerrainShader.Load(ASSETPATH("glsl/terrain.vert"), ASSETPATH("glsl/terrain.frag"));
 			m_AirportShader.Load(ASSETPATH("glsl/airport.vert"), ASSETPATH("glsl/airport.frag"));
 			m_planeShader.Load(ASSETPATH("glsl/plane.vert"), ASSETPATH("glsl/plane.frag"));
+			m_planeShader.materialTemplate->Set("diffuse", ColorRGB{ 1.000000, 1.000000, 1.000000 });
 			m_sm.Load(ASSETPATH("glsl/shadowmapping.vert"), ASSETPATH("glsl/shadowmapping.frag"));
 			m_planeTexture.Load(ASSETPATH("su.dds"));
 			m_HeightMap.Load(ASSETPATH("terrain_height.png"));
@@ -76,15 +78,16 @@ namespace example
 			LoadModel(&m_planeModel, ASSETPATH("su.obj"));
 
 		
-			mtl.Add(&m_AirportShader, "ground",     [](auto& m) {m.Set("diffuse", Color{ 0.674510, 0.674510, 0.674510,1.0 }); m.renderingOrder = -1; });
-			mtl.Add(&m_AirportShader, "runwayext",  [](auto& m) {m.Set("diffuse", Color{ 0.400000, 0.400000, 0.400000,1.0 }); m.renderingOrder = -1; });
-			mtl.Add(&m_AirportShader, "orangeline", [](auto& m) {m.Set("diffuse", Color{ 0.800000, 0.439216, 0.203922,1.0 }); });
-			mtl.Add(&m_AirportShader, "runway",     [](auto& m) {m.Set("diffuse", Color{ 0.556863, 0.556863, 0.556863,1.0 }); m.renderingOrder = -1; });
-			mtl.Add(&m_AirportShader, "whiteline",  [](auto& m) {m.Set("diffuse", Color{ 1.000000, 1.000000, 1.000000,1.0 }); });
-			mtl.Add(&m_AirportShader, "taxiline",   [](auto& m) {m.Set("diffuse", Color{ 1.000000, 0.972549, 0.486275,1.0 }); });
+			mtl.Add(&m_AirportShader, "ground",     [](auto& m) {m.Set("diffuse", Color{ 0.674510f, 0.674510f, 0.674510f,1.0f }); m.renderingOrder = -1; });
+			mtl.Add(&m_AirportShader, "runwayext",  [](auto& m) {m.Set("diffuse", Color{ 0.400000f, 0.400000f, 0.400000f,1.0f }); m.renderingOrder = -1; });
+			mtl.Add(&m_AirportShader, "orangeline", [](auto& m) {m.Set("diffuse", Color{ 0.800000f, 0.439216f, 0.203922f,1.0f }); });
+			mtl.Add(&m_AirportShader, "runway",     [](auto& m) {m.Set("diffuse", Color{ 0.556863f, 0.556863f, 0.556863f,1.0f }); m.renderingOrder = -1; });
+			mtl.Add(&m_AirportShader, "whiteline",  [](auto& m) {m.Set("diffuse", Color{ 1.000000f, 1.000000f, 1.000000f,1.0f }); });
+			mtl.Add(&m_AirportShader, "taxiline",   [](auto& m) {m.Set("diffuse", Color{ 1.000000f, 0.972549f, 0.486275f,1.0f }); });
 
-			mtl.Add(&m_planeShader, "01___Default", [&](auto& m) {m.Set("tex", m_planeTexture); m.Set("diffuse", ColorRGB{ 1.000000, 1.000000, 1.000000 }); });
-			mtl.Add(&m_planeShader, "02___Default", [&](auto& m) {m.Set("tex", m_white);        m.Set("diffuse", weaponcolor); });
+			mtl.Add(&m_planeShader, "01___Default", [&](auto& m) {m.Set("tex", m_planeTexture); });
+			mtl.Add(&m_planeShader, "02___Default", [&](auto& m) {m.Set("tex", m_white);        });
+			mtlinspector.Set(&mtl);
 			m_airportMeshRenderers = MeshRenderer::CreateRenderers(m_airportModel.mergedMesh, &mtl);
 			m_planeRenderers = MeshRenderer::CreateRenderers(m_planeModel.mergedMesh, &mtl);
 
@@ -183,21 +186,21 @@ namespace example
 				ImGui::DragFloat3("Position", &planePos.x, 0.01f);
 				ImGui::DragFloat("Scale", &planeScale, 0.01f);
 				ImGui::DragFloat("Yall", &planeYall, 0.01f);
-				ImGui::ColorEdit4("Weapon Color", &weaponcolor.r);
 				ImGui::End();
 
 				ImGui::Begin("Shadow mapping");
 				ImGui::Image((ImTextureID)m_light.m_ShadowMappingPass.depthBuffer.id, ImVec2{ 512,512 });
 				ImGui::End();
 
-				ImGui::Begin("Material");
+				/*ImGui::Begin("Material");
 				ImGui::InputText("material name", matnamebuffer, 128);
 				Material*inspectedMat = mtl.Get(matnamebuffer);
 				if (nullptr != inspectedMat)
 				{
 					inspectedMat->OnInspector();
 				}
-				ImGui::End();
+				ImGui::End();*/
+				mtlinspector.OnInspector();
 			}
 		}
 

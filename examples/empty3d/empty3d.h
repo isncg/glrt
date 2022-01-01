@@ -14,9 +14,9 @@ namespace example
 	class Empty3D : public Window
 	{
 		ASSETDIR("examples/empty3d/assets/");
-		Shader gridShader;
+		Shader* m_pGridShader;
+		Shader* m_pAxisShader;
 		GLuint gridVAO = 0;
-		Shader axisShader;
 		GLuint axis = 0;
 		GLuint skybox = 0;
 		long w = 1280, h = 720;

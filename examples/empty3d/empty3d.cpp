@@ -8,7 +8,8 @@ namespace example
 {
 	void Empty3D::InitHorizonGrid()
 	{
-		gridShader.Load(ASSETPATH("glsl/grid.vert"), ASSETPATH("glsl/grid.frag"));
+		m_pGridShader = ShaderLib::Instance().Load(ASSETPATH("glsl/grid"));
+		//gridShader.Load(ASSETPATH("glsl/grid.vert"), ASSETPATH("glsl/grid.frag"));
 		std::vector<Vector2> buffer;
 		for (int i = -50; i <= 50; i++)
 		{
@@ -36,7 +37,8 @@ namespace example
 
 	void Empty3D::InitAxis()
 	{
-		axisShader.Load(ASSETPATH("glsl/axis.vert"), ASSETPATH("glsl/axis.frag"));
+		m_pAxisShader = ShaderLib::Instance().Load(ASSETPATH("glsl/axis"));
+		//axisShader.Load(ASSETPATH("glsl/axis.vert"), ASSETPATH("glsl/axis.frag"));
 		std::vector<Vector3> buffer;
 		buffer.push_back(Vector3{ 0,0,0 }); buffer.push_back(Vector3{ 1,0,0 });
 		buffer.push_back(Vector3{ 1,0,0 }); buffer.push_back(Vector3{ 1,0,0 });
@@ -52,14 +54,14 @@ namespace example
 		GLuint vbo;
 		GLASSERT(glGenBuffers(1, &vbo));
 		GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, vbo));
-		int bufsize = buffer.size() * sizeof(Vector3);
+		auto bufsize = buffer.size() * sizeof(Vector3);
 		GLASSERT(glBufferData(GL_ARRAY_BUFFER, bufsize, &buffer[0], GL_STATIC_DRAW));
 		GLASSERT(glEnableVertexAttribArray(0));
 		GLASSERT(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), 0));
 		GLASSERT(glEnableVertexAttribArray(1));
 		GLASSERT(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)sizeof(Vector3)));
 		GLASSERT(glBindVertexArray(0));
-		GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, 0));
+		GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, 0));		
 	}
 
 	LRESULT Empty3D::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -114,12 +116,12 @@ namespace example
 		Vector2 offset;
 		offset.x = (long)(pos.x / size) * size;
 		offset.y = (long)(pos.z / size) * size;
-		gridShader.Use();
-		gridShader.Set("cam", m_Camera.GetMatrix());
-		gridShader.Set("size", size);
-		gridShader.Set("viewpos", m_CamController.position);
-		gridShader.Set("gridcolor", Vector3{ 1,1,1 });
-		gridShader.Set("offset", offset);
+		m_pGridShader->Use();
+		m_pGridShader->Set("cam", m_Camera.GetMatrix());
+		m_pGridShader->Set("size", size);
+		m_pGridShader->Set("viewpos", m_CamController.position);
+		m_pGridShader->Set("gridcolor", Vector3{ 1,1,1 });
+		m_pGridShader->Set("offset", offset);
 		GLASSERT(glBindVertexArray(gridVAO));
 		GLASSERT(glDrawArrays(GL_LINES, 0, 404));
 		GLASSERT(glEnable(GL_DEPTH_TEST));
@@ -127,10 +129,10 @@ namespace example
 	void Empty3D::DrawAxis()
 	{
 		GLASSERT(glDisable(GL_DEPTH_TEST));
-		axisShader.Use();
-		axisShader.Set("_mvp", 
+		m_pAxisShader->Use();
+		m_pAxisShader->Set("_mvp", 
 			m_Camera.GetProjectionMatrix()*
-			Matrix4x4::LookAt(-m_CamController.GetForwardDirection()*5.0f, Vector3{ 0,0,0 }, Vector3{0,1,0}));
+			Matrix4x4::LookAt(-m_CamController.GetForwardDirection()*5.0f* m_Camera.projectionParam.zNear, Vector3{ 0,0,0 }, Vector3{0,1,0}));
 		GLASSERT(glBindVertexArray(axis));
 		GLASSERT(glDrawArrays(GL_LINES, 0, 12));
 		GLASSERT(glEnable(GL_DEPTH_TEST));
@@ -138,6 +140,7 @@ namespace example
 	void Empty3D::AfterRender()
 	{
 		m_CamController.Update();
+		GlobalMaterial::Instance().SetMainCamera(&m_Camera);
 	}
 	void Empty3D::SetCameraStartupParam(CameraStartupParam& param)
 	{

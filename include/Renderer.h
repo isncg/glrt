@@ -52,7 +52,7 @@ struct Mesh
     //int vertexAttributeCount;
     std::vector<unsigned int> triangles;
     MeshMaterialInfo* pMaterialInfo = nullptr;
-    int GetBufferSize();
+    size_t GetBufferSize();
     void Clear();
     void Merge(Mesh& other);
 };
@@ -99,17 +99,17 @@ class MeshRenderer: public Renderer
     GLuint ibo;
     bool ValidateMesh(Mesh* pMesh);
     std::vector<unsigned int> indices;
-    int triangleCount;
+    size_t triangleCount;
 public:
     void Set(Mesh* pMesh);
     virtual void Draw() override;
     virtual void Draw(Shader& shader) override;
-    static std::vector<MeshRenderer*> CreateRenderers(std::vector<Mesh> meshset, const MaterialLib* materialLibrary);
+    static std::vector<MeshRenderer*> CreateRenderers(std::vector<Mesh> meshset);
 };
 
 
 
-typedef struct CanvasRect
+struct CanvasRect
 {
     Vector2 pos;
     float xMin;
@@ -126,17 +126,17 @@ typedef struct CanvasRect
     void SetRect(Vector2 pos, Vector2 size, Vector2 pivot);
 };
 
-typedef struct tagCanvasMesh
+struct CanvasMesh
 {
     std::vector<Vector2> vertices;
     std::vector<Vector2> uv;
     std::vector<Vector2> uv2;
 
     void Set(CanvasRect&& rect, Vector2 halfsize);
-    int GetBufferSize();
-    void MergeBatch(tagCanvasMesh& mesh);
+    size_t GetBufferSize();
+    void MergeBatch(CanvasMesh& mesh);
     void MergeBatch(CanvasRect&& rect, Vector2 halfsize);
-}CanvasMesh;
+};
 
 class CanvasRenderer: public Renderer
 {
@@ -144,7 +144,7 @@ class CanvasRenderer: public Renderer
     GLuint vbo;
     GLuint ibo;
     std::vector<unsigned int> indices;
-    int triangleCount;
+    size_t triangleCount;
 public:
     void Set(CanvasMesh* pMesh);
     void SetFullScreen();

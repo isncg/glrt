@@ -20,7 +20,7 @@ namespace bsp30
 		printf("BSP file: %s opened successfully!\n", fileName);
 
 		m_FileStream.seekg(0, std::ios_base::end);
-		unsigned long fsize = m_FileStream.tellg();
+		auto fsize = m_FileStream.tellg();
 		m_FileStream.seekg(0, std::ios_base::beg);
 		buffer = new uint8_t[fsize];
 		m_FileStream.read((char*)buffer, fsize);
@@ -109,22 +109,22 @@ namespace bsp30
 				child1_index = ~child1_index;
 			}
 
-			float bboxLengthX = node.nMaxs[0] - node.nMins[0];
+			auto bboxLengthX = node.nMaxs[0] - node.nMins[0];
 			if (bboxLengthX < 0) {
 				printf("[WARNING] Xmin: %d, Xmax: %d\n", node.nMins[0], node.nMaxs[0]);
 			}
 
-			float bboxLengthY = node.nMaxs[1] - node.nMins[1];
+			auto bboxLengthY = node.nMaxs[1] - node.nMins[1];
 			if (bboxLengthY < 0) {
 				printf("[WARNING] Ymin: %d, Ymax: %d\n", node.nMins[1], node.nMaxs[1]);
 			}
 
-			float bboxLengthZ = node.nMaxs[2] - node.nMins[2];
+			auto bboxLengthZ = node.nMaxs[2] - node.nMins[2];
 			if (bboxLengthZ < 0) {
 				printf("[WARNING] Zmin: %d, Zmax: %d\n", node.nMins[2], node.nMaxs[2]);
 			}
 
-			float bboxVolume = bboxLengthX * bboxLengthY * bboxLengthZ;
+			float bboxVolume = (float)(bboxLengthX * bboxLengthY * bboxLengthZ);
 
 			printf("node: %d\tleft: %s(%d)\t\t\tright: %s(%d)\t\t\tvolume: %f\n", i, child0_type, child0_index, child1_type, child1_index, bboxVolume);
 		}

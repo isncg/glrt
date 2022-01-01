@@ -82,6 +82,7 @@ int Application::Run(Window* pMainWindow, bool allocConsole)
         {
             pMainWindow->OnIdle();
             ResourceMonitor::Instance().NotifyAll();
+            GlobalMaterial::Instance().Use();
         }
     }
 

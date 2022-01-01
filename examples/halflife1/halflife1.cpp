@@ -42,7 +42,7 @@ namespace example
 			m_ShadowMappingShader.Load(ASSETPATH("glsl/shadowmapping.vert"), ASSETPATH("glsl/shadowmapping.frag"));
 			m_ShadowMappingShader.Set("lightmat", m_ShadowMappingLight.matrix);
 
-			m_Camera.SetProjectionMatrix(3.1415926 / 3, (float)w / (float)h, 1, 5000);
+			m_Camera.SetProjectionMatrix(3.1415926f / 3, (float)w / (float)h, 1, 5000);
 			m_CamController.camera = &m_Camera;
 			m_LevelShader.Load(ASSETPATH("glsl/bsplevel.vert"), ASSETPATH("glsl/bsplevel.frag"));
 			m_LevelShader.Set("shadowmap", m_ShadowMappingLight.m_ShadowMappingPass.depthBuffer);

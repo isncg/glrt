@@ -50,7 +50,7 @@ namespace example
 		{
 			Empty3D::Render();
 			m_TerrainShader.Use();
-			m_TerrainShader.Set("cam", m_Camera.GetMatrix());
+			//m_TerrainShader.Set("cam", m_Camera.GetMatrix());
 			m_TerrainShader.Set("hightmap", m_HeightMap);
 			m_TerrainMeshRenderer.Draw();
 		}

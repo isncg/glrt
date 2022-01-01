@@ -31,7 +31,7 @@ int ResourceMonitor::Watch(std::string path, IResourceUpdateNotify* notify)
 	listener->notify = notify;
 	if (emptyIndices.size() <= 0)
 	{
-		int id = listeners.size();
+		int id = (int)listeners.size();
 		listeners.push_back(listener);
 		return id;
 	}
@@ -45,7 +45,7 @@ void ResourceMonitor::StopWatch(IResourceUpdateNotify* notify)
 {
 	for (int i = 0; i < listeners.size(); i++)
 	{
-		if (listeners[i] != nullptr && listeners[i]->notify == notify);
+		if (listeners[i] != nullptr && listeners[i]->notify == notify)
 		{
 			delete listeners[i];
 			listeners[i] = nullptr;

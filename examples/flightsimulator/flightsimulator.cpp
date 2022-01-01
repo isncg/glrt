@@ -11,16 +11,16 @@ namespace example
 		Mesh m_TerrainMesh;
 		Model m_airportModel;
 		Model m_planeModel;
-		MaterialLib mtl;
+		MaterialLib& mtl = MaterialLib::Instance();
 		MaterialLibInspector mtlinspector;
 		std::vector<Material*> m_airportMaterials;
 		MeshRenderer m_TerrainMeshRenderer;
 		std::vector<MeshRenderer*> m_airportMeshRenderers;
 		std::vector<MeshRenderer*> m_planeRenderers;
-		Shader m_TerrainShader;
-		Shader m_AirportShader;
-		Shader m_planeShader;
-		Shader m_sm;
+		Shader* m_pTerrainShader;
+		Shader* m_pAirportShader;
+		Shader* m_pplaneShader;
+		Shader* m_psm;
 		Texture m_planeTexture;
 		Texture m_HeightMap;
 		Texture m_RGBMap;
@@ -64,11 +64,11 @@ namespace example
 			}
 
 			m_TerrainMeshRenderer.Set(&m_TerrainMesh);
-			m_TerrainShader.Load(ASSETPATH("glsl/terrain.vert"), ASSETPATH("glsl/terrain.frag"));
-			m_AirportShader.Load(ASSETPATH("glsl/airport.vert"), ASSETPATH("glsl/airport.frag"));
-			m_planeShader.Load(ASSETPATH("glsl/plane.vert"), ASSETPATH("glsl/plane.frag"));
-			m_planeShader.materialTemplate->Set("diffuse", ColorRGB{ 1.000000, 1.000000, 1.000000 });
-			m_sm.Load(ASSETPATH("glsl/shadowmapping.vert"), ASSETPATH("glsl/shadowmapping.frag"));
+			m_pTerrainShader = ShaderLib::Instance().Load(ASSETPATH("glsl/terrain"));
+			m_pAirportShader = ShaderLib::Instance().Load(ASSETPATH("glsl/airport"));
+			m_pplaneShader = ShaderLib::Instance().Load(ASSETPATH("glsl/plane"));
+			m_pplaneShader->materialTemplate->Set("diffuse", ColorRGB{ 1.000000, 1.000000, 1.000000 });
+			m_psm = ShaderLib::Instance().Load(ASSETPATH("glsl/shadowmapping"));
 			m_planeTexture.Load(ASSETPATH("su.dds"));
 			m_HeightMap.Load(ASSETPATH("terrain_height.png"));
 			m_RGBMap.Load(ASSETPATH("terrain_rgb.png"));
@@ -78,21 +78,20 @@ namespace example
 			LoadModel(&m_planeModel, ASSETPATH("su.obj"));
 
 		
-			mtl.Add(&m_AirportShader, "ground",     [](auto& m) {m.Set("diffuse", Color{ 0.674510f, 0.674510f, 0.674510f,1.0f }); m.renderingOrder = -1; });
-			mtl.Add(&m_AirportShader, "runwayext",  [](auto& m) {m.Set("diffuse", Color{ 0.400000f, 0.400000f, 0.400000f,1.0f }); m.renderingOrder = -1; });
-			mtl.Add(&m_AirportShader, "orangeline", [](auto& m) {m.Set("diffuse", Color{ 0.800000f, 0.439216f, 0.203922f,1.0f }); });
-			mtl.Add(&m_AirportShader, "runway",     [](auto& m) {m.Set("diffuse", Color{ 0.556863f, 0.556863f, 0.556863f,1.0f }); m.renderingOrder = -1; });
-			mtl.Add(&m_AirportShader, "whiteline",  [](auto& m) {m.Set("diffuse", Color{ 1.000000f, 1.000000f, 1.000000f,1.0f }); });
-			mtl.Add(&m_AirportShader, "taxiline",   [](auto& m) {m.Set("diffuse", Color{ 1.000000f, 0.972549f, 0.486275f,1.0f }); });
+			mtl.Add(m_pAirportShader, "ground",     [](auto& m) {m.Set("diffuse", Color{ 0.674510f, 0.674510f, 0.674510f,1.0f }); m.renderingOrder = -1; });
+			mtl.Add(m_pAirportShader, "runwayext",  [](auto& m) {m.Set("diffuse", Color{ 0.400000f, 0.400000f, 0.400000f,1.0f }); m.renderingOrder = -1; });
+			mtl.Add(m_pAirportShader, "orangeline", [](auto& m) {m.Set("diffuse", Color{ 0.800000f, 0.439216f, 0.203922f,1.0f }); });
+			mtl.Add(m_pAirportShader, "runway",     [](auto& m) {m.Set("diffuse", Color{ 0.556863f, 0.556863f, 0.556863f,1.0f }); m.renderingOrder = -1; });
+			mtl.Add(m_pAirportShader, "whiteline",  [](auto& m) {m.Set("diffuse", Color{ 1.000000f, 1.000000f, 1.000000f,1.0f }); });
+			mtl.Add(m_pAirportShader, "taxiline",   [](auto& m) {m.Set("diffuse", Color{ 1.000000f, 0.972549f, 0.486275f,1.0f }); });
 
-			mtl.Add(&m_planeShader, "01___Default", [&](auto& m) {m.Set("tex", m_planeTexture); });
-			mtl.Add(&m_planeShader, "02___Default", [&](auto& m) {m.Set("tex", m_white);        });
-			mtlinspector.Set(&mtl);
-			m_airportMeshRenderers = MeshRenderer::CreateRenderers(m_airportModel.mergedMesh, &mtl);
-			m_planeRenderers = MeshRenderer::CreateRenderers(m_planeModel.mergedMesh, &mtl);
+			mtl.Add(m_pplaneShader, "01___Default", [&](auto& m) {m.Set("tex", m_planeTexture); });
+			mtl.Add(m_pplaneShader, "02___Default", [&](auto& m) {m.Set("tex", m_white);        });
+			m_airportMeshRenderers = MeshRenderer::CreateRenderers(m_airportModel.mergedMesh);
+			m_planeRenderers = MeshRenderer::CreateRenderers(m_planeModel.mergedMesh);
 
 			m_light.InitLightMap(8192, 8192);
-			
+			GlobalMaterial::Instance().Set("g_shadowbias", 0.0000001f);
 		}
 
 
@@ -106,42 +105,33 @@ namespace example
 			planeWorld = glm::rotate(planeWorld, planeYall, Vector3{ 0,-1,0 });
 			planeWorld = glm::scale(planeWorld, Vector3{ planeScale, planeScale, planeScale });
 
-			Vector3 lightdir{ -1,-5,-2 };
-			m_light.SetLight(m_CamController.position - (lightdir * 10.0f), lightdir, 2);
+
 			m_light.m_ShadowMappingPass.Bind();
 
-			m_sm.Set("lightmat", m_light.matrix);
-			m_sm.Set("_mv", planeWorld);
+			m_psm->Set("lightmat", m_light.matrix);
+			m_psm->Set("_mv", planeWorld);
 
 			for (auto& r : m_planeRenderers)
-				r->Draw(m_sm);
+				r->Draw(*m_psm);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			RECT rt;
 			GetClientRect(hWnd, &rt);
 			glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top);
 
-			Matrix4x4 viewMat = viewFromLight ? m_light.matrix : m_Camera.GetMatrix();
-
-			m_TerrainShader.Use();
-			m_TerrainShader.Set("cameraview", viewMat);
-			m_TerrainShader.Set("hightmap", m_HeightMap);
-			m_TerrainShader.Set("flatenmap", m_Flat);
-			m_TerrainShader.Set("rgbmap", m_RGBMap);
-			m_TerrainShader.Set("world", Matrix4x4(1));
-			m_TerrainShader.Set("shadowmap", m_light.m_ShadowMappingPass.depthBuffer);
-			m_TerrainShader.Set("lightview", m_light.matrix);
+			m_pTerrainShader->Use();
+			m_pTerrainShader->Set("hightmap", m_HeightMap);
+			m_pTerrainShader->Set("flatenmap", m_Flat);
+			m_pTerrainShader->Set("rgbmap", m_RGBMap);
+			m_pTerrainShader->Set("world", Matrix4x4(1));
 			m_TerrainMeshRenderer.Draw();
 
-			m_AirportShader.Use();
+			m_pAirportShader->Use();
 			glEnable(GL_POLYGON_OFFSET_FILL);
 			glPolygonOffset(0.0f, -100.0f);
 			glDepthMask(false);
 
-			m_AirportShader.Set("cameraview", viewMat);
-			m_AirportShader.Set("world", airpotrWorld);
-			m_AirportShader.Set("shadowmap", m_light.m_ShadowMappingPass.depthBuffer);
-			m_AirportShader.Set("lightview", m_light.matrix);
+			m_pAirportShader->Set("world", airpotrWorld);
 			for (auto& r : m_airportMeshRenderers)
 			{
 				r->Draw();
@@ -150,15 +140,22 @@ namespace example
 			glDisable(GL_POLYGON_OFFSET_FILL);
 			glDepthMask(true);
 
-			m_planeShader.Use();
-			m_planeShader.Set("cameraview", viewMat);
-			m_planeShader.Set("bias", 0.0000001);
-			m_planeShader.Set("world", planeWorld);
-			m_planeShader.Set("shadowmap", m_light.m_ShadowMappingPass.depthBuffer);
-			m_planeShader.Set("lightview", m_light.matrix);
+			m_pplaneShader->Use();
+			m_pplaneShader->Set("world", planeWorld);
 
 			for (auto& r : m_planeRenderers)
 				r->Draw();
+
+		}
+
+		virtual void AfterRender() override
+		{
+			Empty3D::AfterRender();
+			Vector3 lightdir{ -1,-5,-2 };
+			m_light.SetLight(m_CamController.position - (lightdir * 10.0f), lightdir, 2);
+			//GlobalMaterial::Instance().Set("cameraview", viewFromLight ? m_light.matrix : m_Camera.GetMatrix());
+			GlobalMaterial::Instance().Set("g_light", m_light.matrix);
+			GlobalMaterial::Instance().Set("g_shadow", m_light.m_ShadowMappingPass.depthBuffer);
 
 		}
 
@@ -192,24 +189,17 @@ namespace example
 				ImGui::Image((ImTextureID)m_light.m_ShadowMappingPass.depthBuffer.id, ImVec2{ 512,512 });
 				ImGui::End();
 
-				/*ImGui::Begin("Material");
-				ImGui::InputText("material name", matnamebuffer, 128);
-				Material*inspectedMat = mtl.Get(matnamebuffer);
-				if (nullptr != inspectedMat)
-				{
-					inspectedMat->OnInspector();
-				}
-				ImGui::End();*/
 				mtlinspector.OnInspector();
+				GlobalMaterial::Instance().OnInspector();
 			}
 		}
 
 		virtual void SetCameraStartupParam(CameraStartupParam& param) override
 		{
 			Empty3D::SetCameraStartupParam(param);
-			param.projection.fovY = 3.1415926 / 6;
-			param.projection.zFar = 2000;
-			param.projection.zNear = 0.01;
+			param.projection.fovY = 3.1415926f / 6;
+			param.projection.zFar = 2000.0f;
+			param.projection.zNear = 0.01f;
 
 			param.position = Vector3{ -169.257,34.701,-16.767 };
 			param.direction = Camera::GetDirectionFromYallPitch(Vector2{0, -0.1});

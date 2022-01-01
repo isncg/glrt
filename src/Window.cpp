@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include <glad/glad.h>
 #include <iostream>
 #include <sstream>
@@ -91,8 +92,8 @@ LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_INPUT:
 	{
 		UINT dwSize;
-		HRESULT hResult;
-		TCHAR szTempOutput[1024];
+		//HRESULT hResult;
+		//TCHAR szTempOutput[1024];
 		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
 		if (dwSize == 0)
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -217,7 +218,7 @@ void Window::OnIdle()
 	BeforeRender();
 	wglMakeCurrent(GetDC(hWnd), hGLRC);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	GLASSERT(glClearColor(0.2, 0.2, 0.2, 1));
+	GLASSERT(glClearColor(0.2f, 0.2f, 0.2f, 1.0f));
 	GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	RECT rt;
 	GetClientRect(hWnd, &rt);

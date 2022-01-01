@@ -11,7 +11,7 @@ class IMaterialParam;
 class Material
 {
 	Shader* pShader;
-	std::map<GLint, IMaterialParam*> params;
+	//std::map<GLint, IMaterialParam*> params;
 	std::map<GLint, IMaterialParam*> managedParams;
 public:
 	std::string name;
@@ -19,7 +19,7 @@ public:
 	Material();
 	Material(Shader* shader);
 	void Set(Shader* shader);
-	void Set(IMaterialParam* param);
+	//void Set(IMaterialParam* param);
 	template <typename T>
 	void Set(std::string name, T&& value);
 	template <typename T>
@@ -29,6 +29,20 @@ public:
 	void OnInspector();
 };
 
+class Camera;
+class GlobalMaterial: public Singleton<GlobalMaterial>
+{
+	SINGLETON_CTOR(GlobalMaterial)
+	std::map<std::string, IMaterialParam*> paramDict;
+public:
+	template <typename T>
+	void Set(std::string name, T&& value);
+	template <typename T>
+	void Set(std::string name, T& value);
+	void SetMainCamera(Camera* cam);
+	void Use();
+	void OnInspector();
+};
 
 class IMaterialParam
 {
@@ -107,7 +121,7 @@ inline void Material::Set(std::string name, T&& value)
 	int location = glGetUniformLocation(pShader->program, name.c_str());
 	if (location < 0)
 		return;
-	params.erase(location);
+	//params.erase(location);
 	auto it = managedParams.find(location);
 	if (it != managedParams.end())
 		delete it->second;
@@ -124,8 +138,9 @@ inline void Material::Set(std::string name, T& value)
 }
 
 
-class MaterialLib
+class MaterialLib: public Singleton<MaterialLib>
 {
+	SINGLETON_CTOR(MaterialLib)
 	friend class MaterialLibInspector;
 private:
 	std::map<std::string, Material*> dict;
@@ -137,10 +152,31 @@ public:
 
 class MaterialLibInspector
 {
-	MaterialLib* target = nullptr;
 	Material* curmat = nullptr;
 	bool showMatInfo = false;
 public:
 	void OnInspector();
-	void Set(MaterialLib* target);
 };
+
+template<typename T>
+inline void GlobalMaterial::Set(std::string name, T&& value)
+{	
+	auto it = paramDict.find(name);
+	if (it != paramDict.end())
+	{
+		MaterialParam<T>* ptr = (MaterialParam<T>*)it->second;
+		ptr->value = value;
+		//it->second = value;
+	}
+	else
+	{
+		MaterialParam<T>* pParam = new MaterialParam<T>(name, std::move(value));
+		paramDict[name] = pParam;
+	}
+}
+
+template<typename T>
+inline void GlobalMaterial::Set(std::string name, T& value)
+{
+	Set(name, std::move(value));
+}

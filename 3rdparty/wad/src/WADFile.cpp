@@ -48,7 +48,7 @@ void WadTexture_C::Init(uint8_t* buffer)
 	mipmaps[1] = new stWadBGRA[mipsize1];
 	mipmaps[2] = new stWadBGRA[mipsize2];
 	mipmaps[3] = new stWadBGRA[mipsize3];
-	int mipsize[4]{ mipsize0 ,mipsize1 ,mipsize2 ,mipsize3 };
+	unsigned int mipsize[4]{ mipsize0 ,mipsize1 ,mipsize2 ,mipsize3 };
 
 	uint8_t* unknown = buffer + meta->mipOffsets[3] + mipsize3;
 	if (unknown[0] != 0x00 && unknown[1] != 0x01)
@@ -59,7 +59,7 @@ void WadTexture_C::Init(uint8_t* buffer)
 	while (miplevel<4)
 	{
 		uint8_t* origin = buffer + meta->mipOffsets[miplevel];
-		for (int i = 0; i < mipsize[miplevel]; i++)
+		for (unsigned int i = 0; i < mipsize[miplevel]; i++)
 		{
 			uint8_t index = origin[i];
 			stWadRGB color = palette[index];

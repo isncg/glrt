@@ -20,6 +20,7 @@ struct CameraProjectionParam
 class Camera
 {
 	friend class CameraController;
+	friend class GlobalMaterial;
 	Matrix4x4 mat_view;
 	Matrix4x4 mat_proj;
 	Matrix4x4 mat_cache;
@@ -30,7 +31,7 @@ public:
 	Vector2& ClipRange();
 	void SetProjectionMatrix(float fovY, float aspect, float zNear, float zFar);
 	void SetProjectionMatrix(CameraProjectionParam& param);
-	void SetShaderMat4(Shader& shader, const char* name = "_cam");
+	//void SetShaderMat4(Shader& shader, const char* name = "_cam");
 	Matrix4x4& GetMatrix();
 	const Matrix4x4& GetProjectionMatrix();
 

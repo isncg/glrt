@@ -1,5 +1,6 @@
 #include "../include/Material.h"
 #include "../utils/utils.h"
+#include "../include/Camera.h"
 #include <imgui/imgui.h>
 void IMaterialParam::_SetUniform(float value, GLuint program, GLint location)
 {
@@ -100,10 +101,10 @@ Material::Material(Shader* shader)
 void Material::Set(Shader* shader)
 {
 	pShader = shader;
-	for (auto& it : params)
+	/*for (auto& it : params)
 	{
 		it.second->isDirty = true;
-	}
+	}*/
 	for (auto& it : managedParams)
 	{
 		it.second->isDirty = true;
@@ -125,25 +126,25 @@ void Material::Set(Shader* shader)
 	}
 }
 
-void Material::Set(IMaterialParam* param)
-{
-	int location = glGetUniformLocation(pShader->program, param->name.c_str());
-	if (location < 0)
-		return;
-	auto it = managedParams.find(location);
-	if (it != managedParams.end())
-		delete it->second;
-	managedParams.erase(location);
-	params[location] = param;
-	param->isDirty = true;
-}
+//void Material::Set(IMaterialParam* param)
+//{
+//	int location = glGetUniformLocation(pShader->program, param->name.c_str());
+//	if (location < 0)
+//		return;
+//	auto it = managedParams.find(location);
+//	if (it != managedParams.end())
+//		delete it->second;
+//	managedParams.erase(location);
+//	params[location] = param;
+//	param->isDirty = true;
+//}
 
 void Material::Set(std::string name, float value)
 {
 	int location = glGetUniformLocation(pShader->program, name.c_str());
 	if (location < 0)
 		return;
-	params.erase(location);
+	//params.erase(location);
 	auto it = managedParams.find(location);
 	if (it != managedParams.end())
 		delete it->second;
@@ -160,17 +161,17 @@ void Material::Use()
 	glUseProgram(pShader->program);
 	if (pShader->lastMaterial == this)
 	{
-		for (auto& it : params)
+		/*for (auto& it : params)
 			if (it.second->isDirty)
-				it.second->SetUniform(pShader->program, it.first);
+				it.second->SetUniform(pShader->program, it.first);*/
 		for (auto& it : managedParams)
 			if (it.second->isDirty)
 				it.second->SetUniform(pShader->program, it.first);
 	}
 	else
 	{
-		for (auto& it : params)
-			it.second->SetUniform(pShader->program, it.first);
+		/*for (auto& it : params)
+			it.second->SetUniform(pShader->program, it.first);*/
 		for (auto& it : managedParams)
 			it.second->SetUniform(pShader->program, it.first);
 	}
@@ -180,8 +181,8 @@ void Material::Use()
 void Material::OnInspector()
 {
 	ImGui::LabelText("Material", this->name.c_str());
-	for (auto& it : params)
-		it.second->OnInspector();
+	/*for (auto& it : params)
+		it.second->OnInspector();*/
 	for (auto& it : managedParams)
 		it.second->OnInspector();
 }
@@ -210,17 +211,16 @@ Material* MaterialLib::Get(std::string name) const
 void MaterialLibInspector::OnInspector()
 {
 	ImGui::Begin("Material Lib");
-	if (nullptr != target)
+
+	for (auto& it : MaterialLib::Instance().dict)
 	{
-		for (auto& it : target->dict)
+		if (ImGui::Button(it.first.c_str()))
 		{
-			if (ImGui::Button(it.first.c_str()))
-			{
-				curmat = it.second;
-				showMatInfo = true;
-			}
+			curmat = it.second;
+			showMatInfo = true;
 		}
 	}
+
 	ImGui::End();
 	if (nullptr != curmat && showMatInfo)
 	{
@@ -230,9 +230,34 @@ void MaterialLibInspector::OnInspector()
 	}
 }
 
-void MaterialLibInspector::Set(MaterialLib* target)
+void GlobalMaterial::SetMainCamera(Camera* cam)
 {
-	this->target = target;
-	this->showMatInfo = false;
-	this->curmat = nullptr;
+	auto mat = cam->GetMatrix();
+	Set("g_cam", mat);
+	Set("g_camview", cam->mat_view);
+	Set("g_camproj", cam->mat_proj);
+}
+
+void GlobalMaterial::Use()
+{
+	for (auto& shaderDictKV : ShaderLib::Instance().shaders)
+	{
+		auto program = shaderDictKV.second->program;
+		for (auto& paramKV : paramDict)
+		{
+			GLuint location = glGetUniformLocation(program, paramKV.first.c_str());
+			paramKV.second->SetUniform(program, location);
+		}
+	}
+}
+
+void GlobalMaterial::OnInspector()
+{
+	ImGui::Begin("Global Material");
+
+	for (auto& it : paramDict)
+	{
+		it.second->OnInspector();
+	}
+	ImGui::End();
 }

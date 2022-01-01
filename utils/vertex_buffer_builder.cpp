@@ -1,6 +1,6 @@
 #include "vertex_buffer_builder.h"
 
-vertex_buffer_builder::vertex_buffer_builder(int8_t* buffer, int size) :
+vertex_buffer_builder::vertex_buffer_builder(int8_t* buffer, size_t size) :
     attr_index(0), offset(0), bb(buffer, size)
 {
 }

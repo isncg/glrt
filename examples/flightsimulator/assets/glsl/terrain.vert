@@ -14,7 +14,7 @@ out vec2 uv;
 out vec2 flatenuv;
 out vec3 frag_pos;
 uniform float d = 0.002;
-uniform mat4 cameraview;
+uniform mat4 g_cam;
 uniform mat4 world;
 
 float getHeight(vec2 zx) {
@@ -40,6 +40,6 @@ void main() {
     float heightdz = getHeight(vec2(zx.x + d, zx.y)) - getHeight(vec2(zx.x - d, zx.y));
     float heightdx = getHeight(vec2(zx.x, zx.y + d)) - getHeight(vec2(zx.x, zx.y - d));
     frag_pos = vec3(worldZX.y, getHeight(zx), worldZX.x);
-    gl_Position = cameraview * world * vec4(frag_pos, 1.0);
+    gl_Position = g_cam * world * vec4(frag_pos, 1.0);
     norm = normalize(vec3(-heightdx, d * meshScale, -heightdz));
 }

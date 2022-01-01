@@ -5,13 +5,13 @@ in vec3 frag_norm;
 out vec4 color;
 uniform vec4 diffuse;
 
-uniform sampler2D shadowmap;
-uniform mat4 lightview;
+uniform sampler2D g_shadow;
+uniform mat4 g_light;
 uniform mat4 world;
 
 float getCast(vec3 pos)
 {
-    vec4 p = lightview * world * vec4(pos, 1.0);
+    vec4 p = g_light * world * vec4(pos, 1.0);
     p.xyz /= p.w;
     p.xyz = p.xyz * 0.5 + 0.5;
     float d = max(sign(p.x), 0.0)*max(sign(1.0-p.x), 0.0)*max(sign(p.y), 0.0)*max(sign(1.0-p.y), 0.0);
@@ -20,14 +20,14 @@ float getCast(vec3 pos)
 
 float getShadow(vec3 pos)
 {
-    vec4 p = lightview * world * vec4(pos, 1.0);
+    vec4 p = g_light * world * vec4(pos, 1.0);
     p.xyz /= p.w;
     p.xyz = p.xyz * 0.5 + 0.5;
     //float castmask = max(sign(p.x), 0.0)*max(sign(1.0-p.x), 0.0)*max(sign(p.y), 0.0)*max(sign(1.0-p.y), 0.0);
     float f = 3.0;
     float castmask = max(f*(p.x), 0.0)*max(f*(1.0-p.x), 0.0)*max(f*(p.y), 0.0)*max(f*(1.0-p.y), 0.0);
     castmask = min(castmask, 1.0);
-    float d = texture(shadowmap, p.xy).r;
+    float d = texture(g_shadow, p.xy).r;
     return castmask*max(sign(p.z - d - 0.00001), 0.0);
 }
 

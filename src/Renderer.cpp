@@ -4,11 +4,11 @@
 #include <algorithm>
 bool MeshRenderer::ValidateMesh(Mesh* pMesh)
 {
-	int vertexCount = 0;
+	size_t vertexCount = 0;
 	if (nullptr == pMesh)
 		return false;
 	vertexCount = pMesh->vertices.size();
-	if (vertexCount <= 0)
+	if (vertexCount == 0)
 		return false;
 	if (pMesh->normals.size() > 0 && pMesh->normals.size() != vertexCount) return false;
 	if (pMesh->tangents.size() > 0 && pMesh->tangents.size() != vertexCount) return false;
@@ -28,7 +28,7 @@ void MeshRenderer::Set(Mesh* pMesh)
 
 	GLASSERT(glBindVertexArray(vao));
 	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, vbo));
-	int bufsize = pMesh->GetBufferSize();
+	auto bufsize = pMesh->GetBufferSize();
 	indices.assign(pMesh->triangles.begin(), pMesh->triangles.end());
 	triangleCount = indices.size() / 3;
 	int8_t* buffer = new int8_t[bufsize];
@@ -96,7 +96,7 @@ count
 Specifies the number of indices to be rendered.
 ********************************************************************** glDrawArrays ********************************************************************/
 	//UseMaterial();
-	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
+	GLASSERT(glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, NULL));
 	//GLASSERT(glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3));
 }
 
@@ -106,19 +106,19 @@ void MeshRenderer::Draw(Shader& shader)
 		return;
 	Renderer::Draw(shader);
 	GLASSERT(glBindVertexArray(vao));	
-	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
+	GLASSERT(glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, NULL));
 }
 
-std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshset, const MaterialLib* materialLibrary)
+std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshset)
 {
 	std::vector<MeshRenderer*> result;
-	if (nullptr != materialLibrary) 
-	{
+	//if (nullptr != materialLibrary) 
+	//{
 		for (auto& mesh : meshset)
 		{
 			if (mesh.vertices.size() <= 0 || nullptr == mesh.pMaterialInfo)
 				continue;
-			auto pmat = materialLibrary->Get(mesh.pMaterialInfo->name);
+			auto pmat = MaterialLib::Instance().Get(mesh.pMaterialInfo->name);
 			if (nullptr == pmat)
 				continue;
 			MeshRenderer* pmr = new MeshRenderer();
@@ -131,8 +131,8 @@ std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshs
 			{
 				return a->material->renderingOrder < b->material->renderingOrder;
 			});
-	}
-	else
+	//}
+	/*else
 	{
 		for (auto& mesh : meshset)
 		{
@@ -142,12 +142,12 @@ std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshs
 			pmr->Set(&mesh);
 			result.push_back(pmr);
 		}
-	}
+	}*/
 
 	return result;
 }
 
-int Mesh::GetBufferSize()
+size_t Mesh::GetBufferSize()
 {
 	return
 		vectorsizeof(vertices) +
@@ -187,7 +187,7 @@ void Mesh::Clear()
 
 void Mesh::Merge(Mesh& other)
 {
-	int indicesoffset = this->vertices.size();
+	auto indicesoffset = this->vertices.size();
 	MERGE_COMPONENT(vertices);
 	MERGE_COMPONENT(normals);
 	MERGE_COMPONENT(tangents);
@@ -204,7 +204,7 @@ void Mesh::Merge(Mesh& other)
 
 	for (auto i : other.triangles)
 	{
-		this->triangles.push_back(indicesoffset + i);
+		this->triangles.push_back((unsigned int)(indicesoffset + i));
 	}
 }
 
@@ -218,8 +218,8 @@ void CanvasRenderer::Set(CanvasMesh* pMesh)
 
 	GLASSERT(glBindVertexArray(vao));
 	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, vbo));
-	int bufsize = pMesh->GetBufferSize();
-	for (int i = 0; i < pMesh->vertices.size() - 3; i += 4)
+	auto bufsize = pMesh->GetBufferSize();
+	for (auto i = 0; i < pMesh->vertices.size() - 3; i += 4)
 	{
 		indices.push_back(i); indices.push_back(i + 1); indices.push_back(i + 2);
 		indices.push_back(i); indices.push_back(i + 2); indices.push_back(i + 3);
@@ -269,7 +269,7 @@ void CanvasRenderer::Draw()
 	Renderer::Draw();
 	//UseMaterial();
 	GLASSERT(glBindVertexArray(vao));
-	GLASSERT(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL));
+	GLASSERT(glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, NULL));
 }
 
 void CanvasMesh::Set(CanvasRect&& rect, Vector2 halfsize)
@@ -293,7 +293,7 @@ void CanvasMesh::Set(CanvasRect&& rect, Vector2 halfsize)
 	uv2.push_back(Vector2{ 0,1 });
 }
 
-int CanvasMesh::GetBufferSize()
+size_t CanvasMesh::GetBufferSize()
 {
 	return
 		vectorsizeof(vertices) +
@@ -344,14 +344,14 @@ CanvasRect::CanvasRect(Vector2 pos, Vector2 size, Vector2 pivot)
 	SetRect(pos, size, pivot);
 }
 
-void tagCanvasMesh::MergeBatch(tagCanvasMesh& mesh)
+void CanvasMesh::MergeBatch(CanvasMesh& mesh)
 {
 	vertices.insert(vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
 	uv.insert(uv.end(), mesh.uv.begin(), mesh.uv.end());
 	uv2.insert(uv2.end(), mesh.uv2.begin(), mesh.uv2.end());
 }
 
-void tagCanvasMesh::MergeBatch(CanvasRect&& rect, Vector2 halfsize)
+void CanvasMesh::MergeBatch(CanvasRect&& rect, Vector2 halfsize)
 {
 	CanvasMesh mesh;
 	mesh.Set(std::move(rect), halfsize);

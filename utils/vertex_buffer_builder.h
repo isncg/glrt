@@ -10,15 +10,15 @@ struct vertex_attribute_info
 	GLenum type;
 	GLboolean normalized;
 	GLsizei stride;
-	int offset;
+	__int64 offset;
 };
 
 class vertex_buffer_builder
 {
 public:
-	vertex_buffer_builder(int8_t* buffer, int size);
+	vertex_buffer_builder(int8_t* buffer, size_t size);
 	GLuint attr_index;
-	int offset;
+	__int64 offset;
 	std::vector<vertex_attribute_info> attr_info;
 	buffer_builder bb;
 	template<typename T>

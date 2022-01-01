@@ -8,7 +8,6 @@ public:
     Singleton& operator= (const Singleton) = delete;
 
 protected:
-    struct token {};
     Singleton() {}
 };
 

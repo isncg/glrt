@@ -13,7 +13,7 @@ bool LoadMesh(Mesh* output, aiMesh* input)
 {
 	output->pMaterialInfo = new MeshMaterialInfo();
 	output->pMaterialInfo->materialid = input->mMaterialIndex;
-    for (int i = 0; i < input->mNumVertices; i++)
+    for (int i = 0; i < (int)input->mNumVertices; i++)
     {
         if (input->mVertices != NULL)
             output->vertices.push_back(Vector3{ input->mVertices[i].x, input->mVertices[i].y, input->mVertices[i].z });
@@ -56,10 +56,10 @@ bool LoadMesh(Mesh* output, aiMesh* input)
             }
         }
     }
-    for (int f = 0; f < input->mNumFaces; f++)
+    for (unsigned int f = 0; f < input->mNumFaces; f++)
     {
         aiFace& face = input->mFaces[f];
-        for (int i = 0; i < face.mNumIndices - 2; i++)
+        for (unsigned int i = 0; i < face.mNumIndices - 2; i++)
         {
 			output->triangles.push_back(face.mIndices[i]);
 			output->triangles.push_back(face.mIndices[i + 1]);
@@ -180,15 +180,15 @@ bool LoadModel(Model* output, std::string file)
     }
     // Now we can access the file's contents. 
 
-    for (int i = 0; i < scene->mNumMaterials; i++)
+    for (unsigned int i = 0; i < scene->mNumMaterials; i++)
     {
         Mesh mesh;
-		mesh.pMaterialInfo = new MeshMaterialInfo{ i, std::string(scene->mMaterials[i]->GetName().C_Str()) };
+		mesh.pMaterialInfo = new MeshMaterialInfo{ (int)i, std::string(scene->mMaterials[i]->GetName().C_Str()) };
 		output->mergedMesh.push_back(mesh);
 		output->matInfos.push_back(mesh.pMaterialInfo);
     }
 
-	for (int i = 0; i < scene->mNumMeshes; i++)
+	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
 		Mesh mesh;
 		LoadMesh(&mesh, scene->mMeshes[i]);

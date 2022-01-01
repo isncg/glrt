@@ -21,10 +21,10 @@ void Camera::SetProjectionMatrix(CameraProjectionParam& param)
 	SetProjectionMatrix(param.fovY, param.aspect, param.zNear, param.zFar);
 }
 
-void Camera::SetShaderMat4(Shader& shader, const char* name)
-{
-	shader.Set(name, mat_proj * mat_view);
-}
+//void Camera::SetShaderMat4(Shader& shader, const char* name)
+//{
+//	shader.Set(name, mat_proj * mat_view);
+//}
 
 Matrix4x4& Camera::GetMatrix()
 {
@@ -84,10 +84,10 @@ void CameraFirstPersonController::OnMouseMove(long dx, long dy, long x, long y)
 {
 	if (!enabled)
 		return;
-#define M_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846f
 	float hp = M_PI / 2.0f - 0.000001f;
 	yall += dx * 0.005f;
-	pitch -= dy * 0.005;
+	pitch -= dy * 0.005f;
 	if (pitch > hp)
 		pitch = hp;
 	if (pitch < -hp)

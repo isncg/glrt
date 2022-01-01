@@ -22,7 +22,7 @@ bool LoadBSPMap(Model& outputModel, std::map<std::string, Texture>* outputTextur
     //Mesh mesh;
 
     // Go through all the faces of BSPMODEL
-    for (unsigned faceId = model->iFirstFace; faceId < (model->iFirstFace + model->nFaces); faceId++)
+    for (int faceId = model->iFirstFace; faceId < (model->iFirstFace + model->nFaces); faceId++)
     {
         // A face is a n-sided-polygon defined by a series of "SurfEdges"
         // It's basically a closed loop of edges like this:
@@ -63,7 +63,7 @@ bool LoadBSPMap(Model& outputModel, std::map<std::string, Texture>* outputTextur
             outputModel.meshCollection.push_back(mr);
             outputModel.matInfos.push_back(new MeshMaterialInfo{ (int)outputModel.matInfos.size(), tex->szName});
             pMesh = (outputModel.meshCollection.end() - 1)._Ptr;
-            outputModel.meshDict[tex->szName] = outputModel.meshCollection.size() - 1;
+            outputModel.meshDict[tex->szName] = (int)outputModel.meshCollection.size() - 1;
         }
         else
         {

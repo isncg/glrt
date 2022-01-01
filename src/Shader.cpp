@@ -7,7 +7,7 @@ GLuint loadShader(std::string& filename, GLenum shaderType)
 	auto glsl = string_readf(filename);
 	GLuint shader = glCreateShader(shaderType);
 	const GLchar* string = glsl.c_str();
-	GLint length = glsl.length();
+	GLint length = (GLint)glsl.length();
 	glAssert("before_loadShader");
 	GLASSERT(glShaderSource(shader, 1, &string, &length));
 	log(string_format("Compile shader %s %d", filename.c_str(), shaderType).c_str());
@@ -47,31 +47,52 @@ GLuint loadShader(std::string& filename, GLenum shaderType)
 //	GLASSERT(glLinkProgram(program));*/
 //}
 
-GLuint ComplieAndLink(std::string& vert, std::string& frag)
+GLuint ComplieAndLink(std::string& vert, std::string& frag, std::string& geom)
 {
-	GLuint vertexShader = loadShader(vert, GL_VERTEX_SHADER);
-	GLuint fragmentShader = loadShader(frag, GL_FRAGMENT_SHADER);
-
+	GLuint vertexShader = 0;
+	GLuint fragmentShader = 0;
+	GLuint geometryShader = 0;
 	GLASSERT(GLuint program = glCreateProgram());
-	GLASSERT(glAttachShader(program, vertexShader));
-	GLASSERT(glAttachShader(program, fragmentShader));
+	if (vert.size() > 0)
+	{
+		vertexShader = loadShader(vert, GL_VERTEX_SHADER);
+		GLASSERT(glAttachShader(program, vertexShader));
+	}
+	if (frag.size() > 0)
+	{
+		fragmentShader = loadShader(frag, GL_FRAGMENT_SHADER);
+		GLASSERT(glAttachShader(program, fragmentShader));
+	}
+	if (geom.size() > 0)
+	{
+		geometryShader = loadShader(frag, GL_GEOMETRY_SHADER);
+		GLASSERT(glAttachShader(program, geometryShader));
+	}
+
 	GLASSERT(glLinkProgram(program));
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	glDeleteShader(geometryShader);
 	return program;
 }
 
 void Shader::Load(std::string&& vert, std::string&& frag)
 {
-	/*GLuint vertexShader = loadShader(vert, GL_VERTEX_SHADER);
-	GLuint fragmentShader = loadShader(frag, GL_FRAGMENT_SHADER);
+	std::string empty;
+	program = ComplieAndLink(vert, frag, empty);
 
-	GLASSERT(program = glCreateProgram());
-	GLASSERT(glAttachShader(program, vertexShader));
-	GLASSERT(glAttachShader(program, fragmentShader));
+	this->vert = vert;
+	this->frag = frag;
+	ResourceMonitor::Instance().StopWatch(this);
+	ResourceMonitor::Instance().Watch(vert, this);
+	ResourceMonitor::Instance().Watch(frag, this);
+	materialTemplate = new Material;
+	materialTemplate->Set(this);
+}
 
-	GLASSERT(glLinkProgram(program));*/
-	program = ComplieAndLink(vert, frag);
+void Shader::Load(std::string&& vert, std::string&& frag, std::string&& geom)
+{
+	program = ComplieAndLink(vert, frag, geom);
 
 	this->vert = vert;
 	this->frag = frag;
@@ -165,7 +186,7 @@ void Shader::Set(const char* name, Texture& texture)
 
 void Shader::OnResourceUpdated()
 {
-	GLuint newProgram = ComplieAndLink(vert, frag);
+	GLuint newProgram = ComplieAndLink(vert, frag, geom);
 	if (newProgram != 0)
 	{
 		glDeleteProgram(program);
@@ -181,4 +202,22 @@ void Shader::OnResourceUpdated()
 Shader::~Shader()
 {
 	ResourceMonitor::Instance().StopWatch(this);
+}
+
+Shader* ShaderLib::Get(std::string& name)
+{
+	auto findresult = shaders.find(name);
+	return findresult == shaders.end() ? nullptr : findresult->second;
+}
+
+Shader* ShaderLib::Load(std::string&& name, unsigned int type)
+{
+	std::string vert = (type & ShaderFileType::Vert) ? string_format("%s.vert", name.c_str()) : "";
+	std::string frag = (type & ShaderFileType::Frag) ? string_format("%s.frag", name.c_str()) : "";
+	std::string geom = (type & ShaderFileType::Geom) ? string_format("%s.geom", name.c_str()) : "";
+	Shader* pshader = new Shader();
+	pshader->Load(std::move(vert), std::move(frag), std::move(geom));
+
+	shaders[name] = pshader;
+	return pshader;
 }

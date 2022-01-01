@@ -4,10 +4,10 @@
 class buffer_builder
 {
 public:
-	int size;
+	size_t size;
 	int8_t* buffer;
 	int8_t* pointer;
-	buffer_builder(int8_t* buffer, int size);
+	buffer_builder(int8_t* buffer, size_t size);
 	template<typename T>
 	int8_t* append(const typename std::vector<T>& vec);
 };
@@ -16,7 +16,7 @@ public:
 template<typename T>
 inline int8_t* buffer_builder::append(const typename std::vector<T>& vec)
 {
-	int datasize = vectorsizeof(vec);
+	auto datasize = vectorsizeof(vec);
 	if ((pointer - buffer) + datasize > size)
 		return nullptr;
 	memcpy_s(pointer, size - (pointer - buffer), &vec.front(), datasize);

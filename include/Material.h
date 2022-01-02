@@ -10,10 +10,12 @@
 class IMaterialParam;
 class Material
 {
+	friend class MaterialLib;
 	Shader* pShader;
 	//std::map<GLint, IMaterialParam*> params;
 	std::map<GLint, IMaterialParam*> managedParams;
 public:
+	bool isUniformLocated = false;
 	std::string name;
 	int renderingOrder = 0;
 	Material();
@@ -63,14 +65,14 @@ public:
 	static void _SetUniform(Texture& value, GLuint program, GLint location);
 	static void _SetUniform(Matrix4x4& value, GLuint program, GLint location);
 
-	static void _OnInspector(std::string name, float& value);
-	static void _OnInspector(std::string name, Vector3& value);
-	static void _OnInspector(std::string name, Vector2& value);
-	static void _OnInspector(std::string name, Vector4& value);
-	static void _OnInspector(std::string name, Color& value);
-	static void _OnInspector(std::string name, ColorRGB& value);
-	static void _OnInspector(std::string name, Texture& value);
-	static void _OnInspector(std::string name, Matrix4x4& value);
+	static bool _OnInspector(std::string name, float& value);
+	static bool _OnInspector(std::string name, Vector3& value);
+	static bool _OnInspector(std::string name, Vector2& value);
+	static bool _OnInspector(std::string name, Vector4& value);
+	static bool _OnInspector(std::string name, Color& value);
+	static bool _OnInspector(std::string name, ColorRGB& value);
+	static bool _OnInspector(std::string name, Texture& value);
+	static bool _OnInspector(std::string name, Matrix4x4& value);
 };
 
 
@@ -105,7 +107,7 @@ inline void MaterialParam<T>::SetUniform(GLuint program, GLint location)
 template<typename T>
 inline void MaterialParam<T>::OnInspector()
 {
-	_OnInspector(this->name, this->value);
+	isDirty = _OnInspector(this->name, this->value);
 }
 
 template<typename T>
@@ -146,6 +148,7 @@ private:
 	std::map<std::string, Material*> dict;
 public:
 	void Add(Shader* pShader, std::string name, std::function<void(Material&)> op);
+	void OnShaderUpdated(Shader* pShader);
 	Material* Get(std::string name) const;
 };
 
@@ -156,6 +159,7 @@ class MaterialLibInspector
 	bool showMatInfo = false;
 public:
 	void OnInspector();
+	static MaterialLibInspector& Default();
 };
 
 template<typename T>

@@ -80,7 +80,7 @@ void Shader::Load(std::string&& vert, std::string&& frag)
 {
 	std::string empty;
 	program = ComplieAndLink(vert, frag, empty);
-
+	this->lastMaterial = nullptr;
 	this->vert = vert;
 	this->frag = frag;
 	ResourceMonitor::Instance().StopWatch(this);
@@ -93,7 +93,7 @@ void Shader::Load(std::string&& vert, std::string&& frag)
 void Shader::Load(std::string&& vert, std::string&& frag, std::string&& geom)
 {
 	program = ComplieAndLink(vert, frag, geom);
-
+	this->lastMaterial = nullptr;
 	this->vert = vert;
 	this->frag = frag;
 	ResourceMonitor::Instance().StopWatch(this);
@@ -191,6 +191,7 @@ void Shader::OnResourceUpdated()
 	{
 		glDeleteProgram(program);
 		program = newProgram;
+		MaterialLib::Instance().OnShaderUpdated(this);
 		log(string_format("Shader reload finished %s,%s", vert.c_str(), frag.c_str()).c_str());
 	}
 	else

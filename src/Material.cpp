@@ -47,45 +47,49 @@ void IMaterialParam::_SetUniform(Matrix4x4& value, GLuint program, GLint locatio
 	GLASSERT(glProgramUniformMatrix4fv(program, location, 1, false, (const GLfloat*)&value));
 }
 
-void IMaterialParam::_OnInspector(std::string name, float& value)
+bool IMaterialParam::_OnInspector(std::string name, float& value)
 {
-	ImGui::InputFloat(name.c_str(), &value);
+	return ImGui::InputFloat(name.c_str(), &value);
 }
 
-void IMaterialParam::_OnInspector(std::string name, Vector3& value)
+bool IMaterialParam::_OnInspector(std::string name, Vector3& value)
 {
-	ImGui::InputFloat3(name.c_str(), &value.x);
+	return ImGui::InputFloat3(name.c_str(), &value.x);
 }
 
-void IMaterialParam::_OnInspector(std::string name, Vector2& value)
+bool IMaterialParam::_OnInspector(std::string name, Vector2& value)
 {
-	ImGui::InputFloat2(name.c_str(), &value.x);
+	return ImGui::InputFloat2(name.c_str(), &value.x);
 }
 
-void IMaterialParam::_OnInspector(std::string name, Vector4& value)
+bool IMaterialParam::_OnInspector(std::string name, Vector4& value)
 {
-	ImGui::InputFloat4(name.c_str(), &value.x);
+	return ImGui::InputFloat4(name.c_str(), &value.x);
 }
 
-void IMaterialParam::_OnInspector(std::string name, Color& value)
+bool IMaterialParam::_OnInspector(std::string name, Color& value)
 {
-	ImGui::ColorEdit4(name.c_str(), &value.r);
+	return ImGui::ColorEdit4(name.c_str(), &value.r);
 }
 
-void IMaterialParam::_OnInspector(std::string name, ColorRGB& value)
+bool IMaterialParam::_OnInspector(std::string name, ColorRGB& value)
 {
-	ImGui::ColorEdit3(name.c_str(), &value.r);
+	return ImGui::ColorEdit3(name.c_str(), &value.r);
 }
 
-void IMaterialParam::_OnInspector(std::string name, Texture& value)
+bool IMaterialParam::_OnInspector(std::string name, Texture& value)
 {
-	ImGui::Text(name.c_str());
-	ImGui::Image((ImTextureID)value.id, ImVec2{ 256,256 });
+	if (value.target != GL_TEXTURE_2D)
+		return false;
+	GLASSERT(ImGui::Text(name.c_str()));
+	GLASSERT(ImGui::Image((ImTextureID)value.id, ImVec2{ 256,256 }));
+	return false;
 }
 
-void IMaterialParam::_OnInspector(std::string name, Matrix4x4& value)
+bool IMaterialParam::_OnInspector(std::string name, Matrix4x4& value)
 {
 	//TODO
+	return false;
 }
 
 
@@ -124,6 +128,7 @@ void Material::Set(Shader* shader)
 			managedParams[location] = clone;
 		}
 	}
+	isUniformLocated = true;
 }
 
 //void Material::Set(IMaterialParam* param)
@@ -159,6 +164,17 @@ void Material::Set(std::string name, float value)
 void Material::Use()
 {
 	glUseProgram(pShader->program);
+	//if (!isUniformLocated)
+	//{
+	//	std::map<GLint, IMaterialParam*> newmap;
+	//	for (auto& it : managedParams)
+	//	{
+	//		auto newlocation = glGetUniformLocation(pShader->program, it.second->name.c_str());
+	//		newmap[newlocation] = it.second;
+	//	}
+	//	managedParams = newmap;
+	//	isUniformLocated = true;
+	//}
 	if (pShader->lastMaterial == this)
 	{
 		/*for (auto& it : params)
@@ -199,7 +215,17 @@ void MaterialLib::Add(Shader* pShader, std::string name, std::function<void(Mate
 	}
 	else
 		pmat = it->second;
-	op(*pmat);
+	if(op)
+		op(*pmat);
+}
+
+void MaterialLib::OnShaderUpdated(Shader* pShader)
+{
+	for (auto& it : dict)
+	{
+		if (it.second->pShader == pShader)
+			it.second->isUniformLocated = false;
+	}
 }
 
 Material* MaterialLib::Get(std::string name) const
@@ -230,6 +256,12 @@ void MaterialLibInspector::OnInspector()
 	}
 }
 
+MaterialLibInspector& MaterialLibInspector::Default()
+{
+	static MaterialLibInspector obj;
+	return obj;
+}
+
 void GlobalMaterial::SetMainCamera(Camera* cam)
 {
 	auto mat = cam->GetMatrix();
@@ -240,13 +272,17 @@ void GlobalMaterial::SetMainCamera(Camera* cam)
 
 void GlobalMaterial::Use()
 {
-	for (auto& shaderDictKV : ShaderLib::Instance().shaders)
+	auto& shaders = ShaderLib::Instance().shaders;
+	for (auto& shaderDictKV : shaders)
 	{
 		auto program = shaderDictKV.second->program;
 		for (auto& paramKV : paramDict)
 		{
-			GLuint location = glGetUniformLocation(program, paramKV.first.c_str());
-			paramKV.second->SetUniform(program, location);
+			glAssert("for (auto& paramKV : paramDict) begin");
+			GLASSERT(GLint location = glGetUniformLocation(program, paramKV.first.c_str()));
+			if (location < 0)
+				continue;
+			GLASSERT(paramKV.second->SetUniform(program, location));
 		}
 	}
 }

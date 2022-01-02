@@ -209,4 +209,4 @@ namespace example
 }
 
 
-RUN_WINDOW(example::FlightSimulator)
+//RUN_WINDOW(example::FlightSimulator)

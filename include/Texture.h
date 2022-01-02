@@ -9,7 +9,9 @@ public:
     std::string name;
     GLuint id = 0;
     GLuint64 handle = 0;
-    void Load(std::string&& filepath);
+    GLuint target = 0;
+	void Load(std::string&& filepath);
+	void LoadCube(std::vector<std::string> filepath);
     virtual void OnResourceUpdated() override;
 };
 #endif

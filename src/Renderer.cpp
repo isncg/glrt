@@ -118,7 +118,13 @@ std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshs
 		{
 			if (mesh.vertices.size() <= 0 || nullptr == mesh.pMaterialInfo)
 				continue;
-			auto pmat = MaterialLib::Instance().Get(mesh.pMaterialInfo->name);
+			auto& matlib = MaterialLib::Instance();
+			auto pmat = matlib.Get(mesh.pMaterialInfo->name);
+			
+			if (nullptr == pmat)
+				pmat = matlib.Get("default");
+			if (nullptr == pmat)
+				pmat = matlib.Get("DefaultMaterial");
 			if (nullptr == pmat)
 				continue;
 			MeshRenderer* pmr = new MeshRenderer();

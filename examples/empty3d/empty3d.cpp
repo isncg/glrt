@@ -171,16 +171,16 @@ namespace example
 
 	void Empty3D::RenderPipline()
 	{
-		Render();
-		PostRender();
-		DrawAxis();
+		GLASSERT(Render());
+		GLASSERT(PostRender());
+		GLASSERT(DrawAxis());
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-		OnGUI();
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		GLASSERT(ImGui_ImplOpenGL3_NewFrame());
+		GLASSERT(ImGui_ImplWin32_NewFrame());
+		GLASSERT(ImGui::NewFrame());
+		GLASSERT(OnGUI());
+		GLASSERT(ImGui::Render());
+		GLASSERT(ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()));
 	}
 }
 

@@ -80,9 +80,9 @@ int Application::Run(Window* pMainWindow, bool allocConsole)
         }
         else
         {
-            pMainWindow->OnIdle();
-            ResourceMonitor::Instance().NotifyAll();
-            GlobalMaterial::Instance().Use();
+            GLASSERT(pMainWindow->OnIdle());
+            GLASSERT(ResourceMonitor::Instance().NotifyAll());
+            GLASSERT(GlobalMaterial::Instance().Use());
         }
     }
 

@@ -217,13 +217,13 @@ void Window::OnIdle()
 	//HDC hdc = GetDC(hWnd);
 	BeforeRender();
 	wglMakeCurrent(GetDC(hWnd), hGLRC);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	GLASSERT(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 	GLASSERT(glClearColor(0.2f, 0.2f, 0.2f, 1.0f));
 	GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	RECT rt;
 	GetClientRect(hWnd, &rt);
-	glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top);
-	RenderPipline();
+	GLASSERT(glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top));
+	GLASSERT(RenderPipline());
 	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
 	AfterRender();
 }

@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <list>
 #include <framework.h>
 #include "Texture.h"
 #include "Shader.h"
@@ -12,16 +13,15 @@ class Material
 {
 	friend class MaterialLib;
 	Shader* pShader;
-	//std::map<GLint, IMaterialParam*> params;
-	std::map<GLint, IMaterialParam*> managedParams;
+	std::list<IMaterialParam*> params;
+	std::map<std::string, IMaterialParam*> lookup;
 public:
-	bool isUniformLocated = false;
+	void OnValidate();
 	std::string name;
 	int renderingOrder = 0;
 	Material();
 	Material(Shader* shader);
 	void Set(Shader* shader);
-	//void Set(IMaterialParam* param);
 	template <typename T>
 	void Set(std::string name, T&& value);
 	template <typename T>
@@ -49,10 +49,10 @@ public:
 class IMaterialParam
 {
 	friend class Material;
-protected:
-	bool isDirty = true;
 public:
+	int locationCache = -1;
 	std::string name;
+	void SetUniform(GLuint program);
 	virtual void SetUniform(GLuint program, GLint location) = 0;
 	virtual IMaterialParam* Clone() = 0;
 	virtual void OnInspector() = 0;
@@ -93,7 +93,7 @@ inline MaterialParam<T>::MaterialParam(std::string& name, T&& value)
 {
 	this->name = name;
 	this->value = value;
-	this->isDirty = true;
+	this->locationCache = -2;
 }
 
 
@@ -101,13 +101,12 @@ template<typename T>
 inline void MaterialParam<T>::SetUniform(GLuint program, GLint location)
 {
 	_SetUniform(value, program, location);
-	isDirty = false;
 }
 
 template<typename T>
 inline void MaterialParam<T>::OnInspector()
 {
-	isDirty = _OnInspector(this->name, this->value);
+	_OnInspector(this->name, this->value);
 }
 
 template<typename T>
@@ -120,16 +119,26 @@ inline IMaterialParam* MaterialParam<T>::Clone()
 template<typename T>
 inline void Material::Set(std::string name, T&& value)
 {
-	int location = glGetUniformLocation(pShader->program, name.c_str());
-	if (location < 0)
-		return;
-	//params.erase(location);
-	auto it = managedParams.find(location);
-	if (it != managedParams.end())
-		delete it->second;
-	MaterialParam<T>* pParam = new MaterialParam<T>(name, std::move(value));
-	managedParams[location] = pParam;
-	pParam->isDirty = true;
+	auto it = lookup.find(name);
+	if (it != lookup.end())
+	{
+		((MaterialParam<T>*)(it->second))->value = value;
+	}
+	else
+	{
+		for (auto& i : params)
+		{
+			if (i->name == name)
+			{
+				((MaterialParam<T>*)i)->value = value;
+				lookup[name] = i;
+				return;
+			}
+		}
+		MaterialParam<T>* pParam = new MaterialParam<T>(name, std::move(value));
+		lookup[name] = pParam;
+		params.push_back(pParam);
+	}
 }
 
 

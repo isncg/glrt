@@ -2,6 +2,12 @@
 #include "../utils/utils.h"
 #include "../include/Camera.h"
 #include <imgui/imgui.h>
+void IMaterialParam::SetUniform(GLuint program)
+{
+	if (locationCache == -2)
+		locationCache = glGetUniformLocation(program, name.c_str());
+	SetUniform(program, locationCache);
+}
 void IMaterialParam::_SetUniform(float value, GLuint program, GLint location)
 {
 	glProgramUniform1f(program, location, value);
@@ -93,6 +99,16 @@ bool IMaterialParam::_OnInspector(std::string name, Matrix4x4& value)
 }
 
 
+void Material::OnValidate()
+{
+	if (nullptr == pShader)
+		return;
+	for (auto it : params)
+	{
+		it->locationCache = glGetUniformLocation(pShader->program, it->name.c_str());
+	}
+}
+
 Material::Material()
 {
 }
@@ -109,7 +125,7 @@ void Material::Set(Shader* shader)
 	{
 		it.second->isDirty = true;
 	}*/
-	for (auto& it : managedParams)
+	/*for (auto& it : managedParams)
 	{
 		it.second->isDirty = true;
 	}
@@ -128,7 +144,7 @@ void Material::Set(Shader* shader)
 			managedParams[location] = clone;
 		}
 	}
-	isUniformLocated = true;
+	isUniformLocated = true;*/
 }
 
 //void Material::Set(IMaterialParam* param)
@@ -146,15 +162,27 @@ void Material::Set(Shader* shader)
 
 void Material::Set(std::string name, float value)
 {
-	int location = glGetUniformLocation(pShader->program, name.c_str());
-	if (location < 0)
-		return;
-	//params.erase(location);
-	auto it = managedParams.find(location);
-	if (it != managedParams.end())
-		delete it->second;
-	MaterialParam<float>* pParam = new MaterialParam<float>(name, std::move(value));
-	managedParams[location] = pParam;
+	auto it = lookup.find(name);
+	if (it != lookup.end())
+	{
+		((MaterialParam<float>*)(it->second))->value = value;
+	}
+	else
+	{
+		for (auto& i : params)
+		{
+			if (i->name == name)
+			{
+				auto ptr = ((MaterialParam<float>*)i);
+				ptr->value = value;
+				lookup[name] = i;
+				return;
+			}
+		}
+		MaterialParam<float>* pParam = new MaterialParam<float>(name, std::move(value));
+		lookup[name] = pParam;
+		params.push_back(pParam);
+	}
 }
 
 //void Material::Set(std::string name, int value)
@@ -164,34 +192,10 @@ void Material::Set(std::string name, float value)
 void Material::Use()
 {
 	glUseProgram(pShader->program);
-	//if (!isUniformLocated)
-	//{
-	//	std::map<GLint, IMaterialParam*> newmap;
-	//	for (auto& it : managedParams)
-	//	{
-	//		auto newlocation = glGetUniformLocation(pShader->program, it.second->name.c_str());
-	//		newmap[newlocation] = it.second;
-	//	}
-	//	managedParams = newmap;
-	//	isUniformLocated = true;
-	//}
-	if (pShader->lastMaterial == this)
+	for (auto& it : params)
 	{
-		/*for (auto& it : params)
-			if (it.second->isDirty)
-				it.second->SetUniform(pShader->program, it.first);*/
-		for (auto& it : managedParams)
-			if (it.second->isDirty)
-				it.second->SetUniform(pShader->program, it.first);
+		it->SetUniform(pShader->program);
 	}
-	else
-	{
-		/*for (auto& it : params)
-			it.second->SetUniform(pShader->program, it.first);*/
-		for (auto& it : managedParams)
-			it.second->SetUniform(pShader->program, it.first);
-	}
-	pShader->lastMaterial = this;
 }
 
 void Material::OnInspector()
@@ -199,8 +203,8 @@ void Material::OnInspector()
 	ImGui::LabelText("Material", this->name.c_str());
 	/*for (auto& it : params)
 		it.second->OnInspector();*/
-	for (auto& it : managedParams)
-		it.second->OnInspector();
+	for (auto& it : params)
+		it->OnInspector();
 }
 
 void MaterialLib::Add(Shader* pShader, std::string name, std::function<void(Material&)> op)
@@ -224,7 +228,7 @@ void MaterialLib::OnShaderUpdated(Shader* pShader)
 	for (auto& it : dict)
 	{
 		if (it.second->pShader == pShader)
-			it.second->isUniformLocated = false;
+			it.second->OnValidate();
 	}
 }
 

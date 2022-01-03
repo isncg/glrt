@@ -487,9 +487,6 @@
     <ClCompile Include="utils\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="utils\HL\*.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\*.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

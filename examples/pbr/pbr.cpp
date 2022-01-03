@@ -66,4 +66,4 @@ namespace example
 	};
 }
 
-RUN_WINDOW(example::PBR);
+//RUN_WINDOW(example::PBR);

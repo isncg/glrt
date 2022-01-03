@@ -14,7 +14,7 @@ class Shader: public IResourceUpdateNotify
 	std::string geom;
 	
 public:
-	Material* materialTemplate = NULL;
+	//Material* materialTemplate = NULL;
 	~Shader();
 	//void Load(std::string vert, std::string frag);
 	void Load(std::string&& vert, std::string&& frag);

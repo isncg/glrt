@@ -8,13 +8,24 @@
 #include "Texture.h"
 #include "Shader.h"
 #include <functional>
+
 class IMaterialParam;
-class Material
+class MaterialParamCollection
+{
+public:
+	std::list<IMaterialParam*> params;
+	std::map<std::string, IMaterialParam*> lookup;
+	template <typename T>
+	void Set(std::string name, T&& value);
+	template <typename T>
+	void Set(std::string name, T& value);
+};
+
+
+class Material: public MaterialParamCollection
 {
 	friend class MaterialLib;
 	Shader* pShader;
-	std::list<IMaterialParam*> params;
-	std::map<std::string, IMaterialParam*> lookup;
 public:
 	void OnValidate();
 	std::string name;
@@ -22,25 +33,21 @@ public:
 	Material();
 	Material(Shader* shader);
 	void Set(Shader* shader);
-	template <typename T>
-	void Set(std::string name, T&& value);
-	template <typename T>
-	void Set(std::string name, T& value);
 	void Set(std::string name, float value);
 	void Use();
 	void OnInspector();
-};
 
-class Camera;
-class GlobalMaterial: public Singleton<GlobalMaterial>
-{
-	SINGLETON_CTOR(GlobalMaterial)
-	std::map<std::string, IMaterialParam*> paramDict;
-public:
 	template <typename T>
 	void Set(std::string name, T&& value);
 	template <typename T>
 	void Set(std::string name, T& value);
+};
+
+class Camera;
+class GlobalMaterial: public MaterialParamCollection, public Singleton<GlobalMaterial>
+{
+	SINGLETON_CTOR(GlobalMaterial)
+public:
 	void SetMainCamera(Camera* cam);
 	void Use();
 	void OnInspector();
@@ -117,7 +124,7 @@ inline IMaterialParam* MaterialParam<T>::Clone()
 
 
 template<typename T>
-inline void Material::Set(std::string name, T&& value)
+inline void MaterialParamCollection::Set(std::string name, T&& value)
 {
 	auto it = lookup.find(name);
 	if (it != lookup.end())
@@ -143,7 +150,7 @@ inline void Material::Set(std::string name, T&& value)
 
 
 template<typename T>
-inline void Material::Set(std::string name, T& value)
+inline void MaterialParamCollection::Set(std::string name, T& value)
 {
 	Set(name, std::move(value));
 }
@@ -172,24 +179,13 @@ public:
 };
 
 template<typename T>
-inline void GlobalMaterial::Set(std::string name, T&& value)
-{	
-	auto it = paramDict.find(name);
-	if (it != paramDict.end())
-	{
-		MaterialParam<T>* ptr = (MaterialParam<T>*)it->second;
-		ptr->value = value;
-		//it->second = value;
-	}
-	else
-	{
-		MaterialParam<T>* pParam = new MaterialParam<T>(name, std::move(value));
-		paramDict[name] = pParam;
-	}
+inline void Material::Set(std::string name, T&& value)
+{
+	MaterialParamCollection::Set(name, value);
 }
 
 template<typename T>
-inline void GlobalMaterial::Set(std::string name, T& value)
+inline void Material::Set(std::string name, T& value)
 {
-	Set(name, std::move(value));
+	MaterialParamCollection::Set(name, value);
 }

@@ -67,7 +67,7 @@ namespace example
 			m_pTerrainShader = ShaderLib::Instance().Load(ASSETPATH("glsl/terrain"));
 			m_pAirportShader = ShaderLib::Instance().Load(ASSETPATH("glsl/airport"));
 			m_pplaneShader = ShaderLib::Instance().Load(ASSETPATH("glsl/plane"));
-			m_pplaneShader->materialTemplate->Set("diffuse", ColorRGB{ 1.000000, 1.000000, 1.000000 });
+			//m_pplaneShader->materialTemplate->Set("diffuse", ColorRGB{ 1.000000, 1.000000, 1.000000 });
 			m_psm = ShaderLib::Instance().Load(ASSETPATH("glsl/shadowmapping"));
 			m_planeTexture.Load(ASSETPATH("su.dds"));
 			m_HeightMap.Load(ASSETPATH("terrain_height.png"));

@@ -276,17 +276,16 @@ void GlobalMaterial::SetMainCamera(Camera* cam)
 
 void GlobalMaterial::Use()
 {
-	auto& shaders = ShaderLib::Instance().shaders;
-	for (auto& shaderDictKV : shaders)
+	for (auto& shaderDictKV : ShaderLib::Instance().shaders)
 	{
 		auto program = shaderDictKV.second->program;
-		for (auto& paramKV : paramDict)
+		for (auto& param : params)
 		{
 			glAssert("for (auto& paramKV : paramDict) begin");
-			GLASSERT(GLint location = glGetUniformLocation(program, paramKV.first.c_str()));
+			GLASSERT(GLint location = glGetUniformLocation(program, param->name.c_str()));
 			if (location < 0)
 				continue;
-			GLASSERT(paramKV.second->SetUniform(program, location));
+			GLASSERT(param->SetUniform(program, location));
 		}
 	}
 }
@@ -295,9 +294,9 @@ void GlobalMaterial::OnInspector()
 {
 	ImGui::Begin("Global Material");
 
-	for (auto& it : paramDict)
+	for (auto& it : params)
 	{
-		it.second->OnInspector();
+		it->OnInspector();
 	}
 	ImGui::End();
 }

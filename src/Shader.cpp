@@ -86,8 +86,8 @@ void Shader::Load(std::string&& vert, std::string&& frag)
 	ResourceMonitor::Instance().StopWatch(this);
 	ResourceMonitor::Instance().Watch(vert, this);
 	ResourceMonitor::Instance().Watch(frag, this);
-	materialTemplate = new Material;
-	materialTemplate->Set(this);
+	//materialTemplate = new Material;
+	//materialTemplate->Set(this);
 }
 
 void Shader::Load(std::string&& vert, std::string&& frag, std::string&& geom)
@@ -99,8 +99,8 @@ void Shader::Load(std::string&& vert, std::string&& frag, std::string&& geom)
 	ResourceMonitor::Instance().StopWatch(this);
 	ResourceMonitor::Instance().Watch(vert, this);
 	ResourceMonitor::Instance().Watch(frag, this);
-	materialTemplate = new Material;
-	materialTemplate->Set(this);
+	//materialTemplate = new Material;
+	//materialTemplate->Set(this);
 }
 
 void Shader::Use()

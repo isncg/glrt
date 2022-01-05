@@ -71,6 +71,7 @@ struct Model
     std::map<std::string, int> meshDict;
     ModelTreeNode root;
     void Clear();
+    bool Load(std::string filename);
 };
 
 struct Sampler

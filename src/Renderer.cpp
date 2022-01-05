@@ -2,6 +2,12 @@
 #include "../include/Renderer.h"
 #include "../utils/utils.h"
 #include <algorithm>
+
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
+#pragma comment(lib, "assimp-vc142-mt.lib")
+
 bool MeshRenderer::ValidateMesh(Mesh* pMesh)
 {
 	size_t vertexCount = 0;
@@ -330,6 +336,118 @@ void Model::Clear()
 	meshCollection.clear();
 	matInfos.clear();
 	meshDict.clear();
+}
+
+bool LoadMesh(Mesh* output, aiMesh* input)
+{
+	output->pMaterialInfo = new MeshMaterialInfo();
+	output->pMaterialInfo->materialid = input->mMaterialIndex;
+	for (int i = 0; i < (int)input->mNumVertices; i++)
+	{
+		if (input->mVertices != NULL)
+			output->vertices.push_back(Vector3{ input->mVertices[i].x, input->mVertices[i].y, input->mVertices[i].z });
+
+		if (input->mNormals != NULL)
+			output->normals.push_back(Vector3{ input->mNormals[i].x, input->mNormals[i].y, input->mNormals[i].z });
+
+		if (input->mTangents != NULL)
+			output->tangents.push_back(Vector4{ input->mTangents[i].x, input->mTangents[i].y, input->mTangents[i].z, 1.0f });
+
+		std::vector<Vector2>* uvset[8]{
+			&output->uv,
+			&output->uv2,
+			&output->uv3,
+			&output->uv4,
+			&output->uv5,
+			&output->uv6,
+			&output->uv7,
+			&output->uv8,
+		};
+		for (int j = 0; j < AI_MAX_NUMBER_OF_TEXTURECOORDS && j < std::end(uvset) - std::begin(uvset); j++)
+		{
+			if (input->mTextureCoords[j] != NULL)
+			{
+				auto& uv = input->mTextureCoords[j][i];
+				uvset[j]->push_back(Vector2{ uv.x, uv.y });
+			}
+		}
+
+		std::vector<std::vector<Color>*> colorset
+		{
+			&output->colors
+		};
+		for (int j = 0; j < AI_MAX_NUMBER_OF_COLOR_SETS && j < colorset.size(); j++)
+		{
+			if (input->mColors[j] != NULL)
+			{
+				auto& color = input->mColors[j][i];
+				colorset[j]->push_back(Color{ color.r, color.g, color.b, color.a });
+			}
+		}
+	}
+	for (unsigned int f = 0; f < input->mNumFaces; f++)
+	{
+		aiFace& face = input->mFaces[f];
+		for (unsigned int i = 0; i < face.mNumIndices - 2; i++)
+		{
+			output->triangles.push_back(face.mIndices[i]);
+			output->triangles.push_back(face.mIndices[i + 1]);
+			output->triangles.push_back(face.mIndices[i + 2]);
+		}
+	}
+	return true;
+}
+
+
+bool Model::Load(std::string filename)
+{
+	// Create an instance of the Importer class
+	Assimp::Importer importer;
+	// And have it read the given file with some example postprocessing
+	// Usually - if speed is not the most important aspect for you - you'll 
+	// propably to request more postprocessing than we do in this example.
+	const aiScene* scene = importer.ReadFile(filename,
+		aiProcess_CalcTangentSpace |
+		aiProcess_Triangulate |
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_SortByPType);
+
+	// If the import failed, report it
+	if (!scene)
+	{
+		log(importer.GetErrorString(), LogLevel::Error);
+		return false;
+	}
+	// Now we can access the file's contents. 
+
+	for (unsigned int i = 0; i < scene->mNumMaterials; i++)
+	{
+		Mesh mesh;
+		mesh.pMaterialInfo = new MeshMaterialInfo{ (int)i, std::string(scene->mMaterials[i]->GetName().C_Str()) };
+		mergedMesh.push_back(mesh);
+		matInfos.push_back(mesh.pMaterialInfo);
+	}
+
+	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+	{
+		Mesh mesh;
+		LoadMesh(&mesh, scene->mMeshes[i]);
+		std::cout << "Loaded mesh " << filename << "[" << i << "] vertices:" << mesh.vertices.size() << " indices:" << mesh.triangles.size() << std::endl;
+		if (mesh.vertices.size() > 0 && mesh.triangles.size() > 0)
+		{
+			//DumpMesh(&mesh);
+			meshCollection.push_back(mesh);
+			mergedMesh[mesh.pMaterialInfo->materialid].Merge(mesh);
+		}
+		else
+		{
+			std::cout << "Mesh invalid" << std::endl;
+		}
+	}
+
+	//DoTheSceneProcessing(scene);
+	// We're done. Everything will be cleaned up by the importer destructor
+	return true;
 }
 
 void CanvasRect::SetRect(Vector2 pos, Vector2 size, Vector2 pivot)

@@ -122,7 +122,7 @@ namespace example
 	};
 }
 
-RUN_WINDOW(example::HalfLife1)
+//RUN_WINDOW(example::HalfLife1)
 
 
 

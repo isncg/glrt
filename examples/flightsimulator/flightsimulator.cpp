@@ -74,8 +74,8 @@ namespace example
 			m_RGBMap.Load(ASSETPATH("terrain_rgb.png"));
 			m_Flat.Load(ASSETPATH("flat.png"));
 			m_white.Load(ASSETPATH("white.png"));
-			LoadModel(&m_airportModel, ASSETPATH("airport.obj"));
-			LoadModel(&m_planeModel, ASSETPATH("su.obj"));
+			m_airportModel.Load(ASSETPATH("airport.obj"));
+			m_planeModel.Load(ASSETPATH("su.obj"));
 
 		
 			mtl.Add(m_pAirportShader, "ground",     [](auto& m) {m.Set("diffuse", Color{ 0.674510f, 0.674510f, 0.674510f,1.0f }); m.renderingOrder = -1; });

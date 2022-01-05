@@ -1,7 +1,8 @@
 #include "../include/Application.h"
 #include "../resource.h"
 #include "../utils/utils.h"
-
+#include "../include/ResourceMonitor.h"
+#include "../include/Material.h"
 #pragma comment (lib, "opengl32.lib")
 
 void Application::Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)

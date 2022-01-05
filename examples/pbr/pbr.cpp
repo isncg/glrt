@@ -17,7 +17,7 @@ namespace example
 		Texture m_normal;
 
 		std::vector<MeshRenderer*> m_renderers;
-		void OnCreate() override
+		virtual void OnCreate() override
 		{
 			Empty3D::OnCreate();
 
@@ -29,7 +29,7 @@ namespace example
 
 			m_pshader = ShaderLib::Instance().Load(ASSETPATH("glsl/pbr"));
 			
-			LoadModel(&m_sphere, ASSETPATH("sphere.obj"));
+			m_sphere.Load(ASSETPATH("sphere.obj"));
 			MaterialLib::Instance().Add(m_pshader, "default", [&](Material& mat) 
 				{
 					mat.Set("albedoMap",			m_basecolor);
@@ -50,7 +50,7 @@ namespace example
 		}
 
 
-		void Render() override
+		virtual void Render() override
 		{
 			Empty3D::Render();
 			MaterialLib::Instance().Get("default")->Set("camPos", m_CamController.position);
@@ -59,10 +59,12 @@ namespace example
 				r->Draw();
 		}
 
-		void OnGUI() override
+		virtual void OnGUI() override
 		{
 			MaterialLibInspector::Default().OnInspector();
 		}
+
+
 	};
 }
 

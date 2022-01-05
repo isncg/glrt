@@ -1,0 +1,3 @@
+[submodule "3rdparty/imgui-glrt"]
+    path = 3rdparty/imgui-glrt
+    url = git@github.com:isncg/imgui-glrt.git

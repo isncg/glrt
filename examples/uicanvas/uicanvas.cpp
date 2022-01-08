@@ -5,6 +5,7 @@ namespace example
 {
 	class UICanvas :public Window
 	{
+		ASSETDIR("examples/uicanvas/assets/");
 		Shader shader;
 		CanvasMesh canvasMesh;
 		Texture texture;
@@ -12,8 +13,8 @@ namespace example
 		virtual void OnCreate() override
 		{
 			Window::OnCreate();
-			LoadTexture(&texture, GetAssetPath("lena.jpg"));
-			shader.Load(GetAssetPath("glsl/canvas.vert"), GetAssetPath("glsl/canvas.frag"));
+			texture.Load(ASSETPATH("lena.jpg"));
+			shader.Load(ASSETPATH("glsl/canvas.vert"), ASSETPATH("glsl/canvas.frag"));
 			shader.Set("tex", texture);
 			shader.Use();
 			auto hsize = GetClientSize()*0.5f;
@@ -35,4 +36,4 @@ namespace example
 	};
 }
 
-RUN_WINDOWEX(example::UICanvas, "examples/uicanvas/assets/")
+//RUN_WINDOW(example::UICanvas)

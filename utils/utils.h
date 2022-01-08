@@ -1,4 +1,3 @@
-#include "asset_loader.h"
 #include "buffer_builder.h"
 #include "vertex_buffer_builder.h"
 #include "glhelpers.h"

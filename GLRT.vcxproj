@@ -146,15 +146,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="examples\empty3d\empty3d.h" />
-    <ClInclude Include="include\*.h" />
-    <ClInclude Include="*.h" />
+    <ResourceCompile Include="GLRT.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="3rdparty\bsp30\src\*.cpp" />
-    <ClCompile Include="3rdparty\glad\src\*.c" />
-    <ClCompile Include="3rdparty\imgui-glrt\src\*.cpp" />
-    <ClCompile Include="3rdparty\wad\src\*.cpp" />
+    <ClCompile Include="3rdparty\bsp30\src\BSPLoader.cpp" />
+    <ClCompile Include="3rdparty\glad\src\glad.c" />
+    <ClCompile Include="3rdparty\imgui-glrt\src\imgui.cpp" />
+    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_demo.cpp" />
+    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_draw.cpp" />
+    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_impl_win32.cpp" />
+    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_tables.cpp" />
+    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_widgets.cpp" />
+    <ClCompile Include="3rdparty\wad\src\WADFile.cpp" />
     <ClCompile Include="examples\empty3d\empty3d.cpp" />
     <ClCompile Include="examples\flightsimulator\flightsimulator.cpp" />
     <ClCompile Include="examples\halflife1\halflife1.cpp" />
@@ -162,12 +166,47 @@
     <ClCompile Include="examples\pbr\pbr.cpp" />
     <ClCompile Include="examples\teapot\teapot.cpp" />
     <ClCompile Include="examples\terrain\Terrain.cpp" />
+    <ClCompile Include="examples\uicanvas\uicanvas.cpp" />
     <ClCompile Include="examples\ui\ui.cpp" />
-    <ClCompile Include="src\*.cpp" />
-    <ClCompile Include="utils\*.cpp" />
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Light.cpp" />
+    <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\RenderTarget.cpp" />
+    <ClCompile Include="src\ResourceMonitor.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="utils\buffer_builder.cpp" />
+    <ClCompile Include="utils\glhelpers.cpp" />
+    <ClCompile Include="utils\log.cpp" />
+    <ClCompile Include="utils\stdhelpers.cpp" />
+    <ClCompile Include="utils\vertex_buffer_builder.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="GLRT.rc" />
+    <ClInclude Include="examples\empty3d\empty3d.h" />
+    <ClInclude Include="include\Application.h" />
+    <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\framework.h" />
+    <ClInclude Include="include\GLRT.h" />
+    <ClInclude Include="include\Light.h" />
+    <ClInclude Include="include\Material.h" />
+    <ClInclude Include="include\Mesh.h" />
+    <ClInclude Include="include\Renderer.h" />
+    <ClInclude Include="include\RenderTarget.h" />
+    <ClInclude Include="include\ResourceMonitor.h" />
+    <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\Texture.h" />
+    <ClInclude Include="include\Window.h" />
+    <ClInclude Include="utils\buffer_builder.h" />
+    <ClInclude Include="utils\glhelpers.h" />
+    <ClInclude Include="utils\log.h" />
+    <ClInclude Include="utils\singleton.h" />
+    <ClInclude Include="utils\stdhelpers.h" />
+    <ClInclude Include="utils\utils.h" />
+    <ClInclude Include="utils\vertex_buffer_builder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

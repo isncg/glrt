@@ -17,9 +17,11 @@ class Renderer
 public:
     //std::map<int, Material*> materialPassDict;
     Material* material;
-    //void UseMaterial();
+    bool isDrawingWireframe = false;
     virtual void Draw();
     virtual void Draw(Shader& shader);
+    virtual void DrawWireframe();
+    virtual void DrawWireframe(Shader& shader);
 };
 
 class MeshRenderer: public Renderer
@@ -29,11 +31,15 @@ class MeshRenderer: public Renderer
     GLuint ibo;
     bool ValidateMesh(Mesh* pMesh);
     std::vector<unsigned int> indices;
+    std::vector<unsigned int> edges;
     size_t triangleCount;
 public:
     void Set(Mesh* pMesh);
     virtual void Draw() override;
     virtual void Draw(Shader& shader) override;
+    virtual void DrawWireframe() override;
+    virtual void DrawWireframe(Shader& shader) override;
+    
     static std::vector<MeshRenderer*> CreateRenderers(std::vector<Mesh> meshset);
 };
 

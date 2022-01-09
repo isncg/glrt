@@ -3,6 +3,7 @@
 #include "../include/Renderer.h"
 #include "../utils/utils.h"
 #include <algorithm>
+#include <set>
 
 bool MeshRenderer::ValidateMesh(Mesh* pMesh)
 {
@@ -18,6 +19,32 @@ bool MeshRenderer::ValidateMesh(Mesh* pMesh)
 	if (pMesh->normals.size() > 0 && pMesh->normals.size() != vertexCount) return false;
 	return true;
 }
+
+class UndirectionalGraph
+{
+	std::map<unsigned int, std::set<unsigned int>> data;
+public:
+	bool Add(unsigned int a, unsigned b)
+	{
+		auto connectionSetA = data.find(a);
+		auto connectionSetB = data.find(b);
+		if (connectionSetA != data.end() && connectionSetA->second.find(b) != connectionSetA->second.end())
+			return false;
+
+		if (connectionSetB != data.end() && connectionSetB->second.find(a) != connectionSetB->second.end())
+			return false;
+
+		if (connectionSetA == data.end())
+			data[a] = { b };
+		else
+			connectionSetA->second.insert(b);
+		if (connectionSetB == data.end())
+			data[b] = { a };
+		else
+			connectionSetB->second.insert(a);
+		return true;
+	}
+};
 
 void MeshRenderer::Set(Mesh* pMesh)
 {
@@ -57,6 +84,29 @@ void MeshRenderer::Set(Mesh* pMesh)
 	GLASSERT(glBindVertexArray(0));
 	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	UndirectionalGraph graph;
+	for (int ti = 0; ti + 2 < pMesh->triangles.size(); ti += 3)
+	{
+		auto a = pMesh->triangles[ti];
+		auto b = pMesh->triangles[ti+1];
+		auto c = pMesh->triangles[ti+2];
+		if (graph.Add(a, b))
+		{
+			edges.push_back(a);
+			edges.push_back(b);
+		}
+		if (graph.Add(a, c))
+		{
+			edges.push_back(a);
+			edges.push_back(c);
+		}
+		if (graph.Add(c, b))
+		{
+			edges.push_back(c);
+			edges.push_back(b);
+		}
+	}
 }
 
 void MeshRenderer::Draw()
@@ -65,6 +115,11 @@ void MeshRenderer::Draw()
 		return;
 	Renderer::Draw();
 	GLASSERT(glBindVertexArray(vao));
+	if (isDrawingWireframe)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		isDrawingWireframe = false;
+	}
 	/********************************************************************* glDrawElements *********************************************************************
 	https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glDrawElements.xhtml
 	mode
@@ -105,7 +160,40 @@ void MeshRenderer::Draw(Shader& shader)
 		return;
 	Renderer::Draw(shader);
 	GLASSERT(glBindVertexArray(vao));	
+	if (isDrawingWireframe)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		isDrawingWireframe = false;
+	}
 	GLASSERT(glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, NULL));
+}
+
+void MeshRenderer::DrawWireframe()
+{
+	if (vao <= 0 || edges.size() < 2)
+		return;
+	Renderer::Draw();
+	GLASSERT(glBindVertexArray(vao));
+	if (!isDrawingWireframe)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		isDrawingWireframe = true;
+	}
+	GLASSERT(glDrawElements(GL_LINES, (GLsizei)edges.size(), GL_UNSIGNED_INT, &edges.front()));
+}
+
+void MeshRenderer::DrawWireframe(Shader& shader)
+{
+	if (vao <= 0 || edges.size() < 2)
+		return;
+	Renderer::Draw(shader);
+	GLASSERT(glBindVertexArray(vao));
+	if (!isDrawingWireframe)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		isDrawingWireframe = true;
+	}
+	GLASSERT(glDrawElements(GL_LINES, (GLsizei)edges.size(), GL_UNSIGNED_INT, &edges.front()));
 }
 
 std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshset)
@@ -234,6 +322,17 @@ void Renderer::Draw()
 }
 
 void Renderer::Draw(Shader& shader)
+{
+	shader.Use();
+}
+
+void Renderer::DrawWireframe()
+{
+	if (nullptr != material)
+		material->Use();
+}
+
+void Renderer::DrawWireframe(Shader& shader)
 {
 	shader.Use();
 }

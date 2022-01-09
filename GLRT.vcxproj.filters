@@ -141,6 +141,9 @@
     <ClCompile Include="examples\hierarchy\hierarchy.cpp">
       <Filter>examples</Filter>
     </ClCompile>
+    <ClCompile Include="examples\wireframe\wireframe.cpp">
+      <Filter>examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils\buffer_builder.h">

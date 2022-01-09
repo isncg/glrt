@@ -25,4 +25,4 @@ namespace example
         }
     };
 }
-RUN_WINDOW(example::Teapot)
+//RUN_WINDOW(example::Teapot)

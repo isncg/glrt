@@ -25,6 +25,7 @@ public:
 class Material: public MaterialParamCollection
 {
 	friend class MaterialLib;
+	friend class MeshNode;
 	Shader* pShader;
 public:
 	void OnValidate();

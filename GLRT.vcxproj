@@ -163,6 +163,7 @@
     <ClCompile Include="examples\flightsimulator\flightsimulator.cpp" />
     <ClCompile Include="examples\halflife1\halflife1.cpp" />
     <ClCompile Include="examples\hellotriangle\hellotriangle.cpp" />
+    <ClCompile Include="examples\hierarchy\hierarchy.cpp" />
     <ClCompile Include="examples\pbr\pbr.cpp" />
     <ClCompile Include="examples\teapot\teapot.cpp" />
     <ClCompile Include="examples\terrain\Terrain.cpp" />
@@ -176,6 +177,8 @@
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\RenderTarget.cpp" />
     <ClCompile Include="src\ResourceMonitor.cpp" />
+    <ClCompile Include="src\scene\node.cpp" />
+    <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Window.cpp" />
@@ -197,6 +200,8 @@
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\RenderTarget.h" />
     <ClInclude Include="include\ResourceMonitor.h" />
+    <ClInclude Include="include\scene\node.h" />
+    <ClInclude Include="include\scene\scene.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\Texture.h" />
     <ClInclude Include="include\Window.h" />

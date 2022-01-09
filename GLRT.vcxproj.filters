@@ -4,9 +4,6 @@
     <ResourceCompile Include="GLRT.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="src">
-      <UniqueIdentifier>{1de7ee76-0e10-4cef-a0a2-f2bae4300a81}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3rdparty">
       <UniqueIdentifier>{a52bc356-5ac4-4d1b-b7e4-526cb52000f8}</UniqueIdentifier>
     </Filter>
@@ -19,41 +16,17 @@
     <Filter Include="3rdparty\imgui">
       <UniqueIdentifier>{3b9081de-328c-4fe8-a108-014508d80fe4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{1de7ee76-0e10-4cef-a0a2-f2bae4300a81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\core">
+      <UniqueIdentifier>{9ad40266-207e-4236-b91b-1c03bbbd3bd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\scene">
+      <UniqueIdentifier>{94cfd9de-7c0e-43ac-bb16-3811ef55c8f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Application.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Light.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Material.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Mesh.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RenderTarget.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ResourceMonitor.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Shader.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Texture.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Window.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="utils\buffer_builder.cpp">
       <Filter>utils</Filter>
     </ClCompile>
@@ -126,47 +99,50 @@
     <ClCompile Include="3rdparty\imgui-glrt\src\imgui_widgets.cpp">
       <Filter>3rdparty\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Application.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Light.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Material.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderTarget.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ResourceMonitor.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\scene.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\node.cpp">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\hierarchy\hierarchy.cpp">
+      <Filter>examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Application.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Camera.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\framework.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\GLRT.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Light.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Material.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Mesh.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Renderer.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RenderTarget.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ResourceMonitor.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Shader.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Texture.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Window.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="utils\buffer_builder.h">
       <Filter>utils</Filter>
     </ClInclude>
@@ -190,6 +166,51 @@
     </ClInclude>
     <ClInclude Include="examples\empty3d\empty3d.h">
       <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Application.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Camera.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\framework.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GLRT.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Light.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Material.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Mesh.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Renderer.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RenderTarget.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ResourceMonitor.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Shader.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Texture.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Window.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene\node.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene\scene.h">
+      <Filter>src\scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

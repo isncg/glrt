@@ -50,6 +50,7 @@ struct Mesh
     std::vector<Color32> colors32;
     //int vertexAttributeCount;
     std::vector<unsigned int> triangles;
+    std::vector<unsigned int> quads;
     MeshMaterialInfo* pMaterialInfo = nullptr;
     size_t GetBufferSize();
     void Clear();

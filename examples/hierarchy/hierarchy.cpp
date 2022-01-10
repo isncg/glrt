@@ -39,4 +39,4 @@ namespace example
         }
     };
 }
-RUN_WINDOW(example::Hierarchy)
+//RUN_WINDOW(example::Hierarchy)

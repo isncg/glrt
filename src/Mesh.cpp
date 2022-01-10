@@ -48,6 +48,7 @@ void Mesh::Clear()
 void Mesh::Merge(Mesh& other)
 {
 	auto indicesoffset = this->vertices.size();
+	auto quadsoffset = this->quads.size();
 	MERGE_COMPONENT(vertices);
 	MERGE_COMPONENT(normals);
 	MERGE_COMPONENT(tangents);
@@ -65,6 +66,10 @@ void Mesh::Merge(Mesh& other)
 	for (auto i : other.triangles)
 	{
 		this->triangles.push_back((unsigned int)(indicesoffset + i));
+	}
+	for (auto i : other.quads)
+	{
+		this->quads.push_back((unsigned int)(quadsoffset + i));
 	}
 }
 
@@ -148,11 +153,21 @@ bool LoadMesh(Mesh* output, aiMesh* input)
 	for (unsigned int f = 0; f < input->mNumFaces; f++)
 	{
 		aiFace& face = input->mFaces[f];
-		for (unsigned int i = 0; i < face.mNumIndices - 2; i++)
+		if (face.mNumIndices == 4)
 		{
-			output->triangles.push_back(face.mIndices[i]);
-			output->triangles.push_back(face.mIndices[i + 1]);
-			output->triangles.push_back(face.mIndices[i + 2]);
+			output->quads.push_back(face.mIndices[0]);
+			output->quads.push_back(face.mIndices[1]);
+			output->quads.push_back(face.mIndices[2]);
+			output->quads.push_back(face.mIndices[3]);
+		}
+		else
+		{
+			for (unsigned int i = 0; i < face.mNumIndices - 2; i++)
+			{
+				output->triangles.push_back(face.mIndices[i]);
+				output->triangles.push_back(face.mIndices[i + 1]);
+				output->triangles.push_back(face.mIndices[i + 2]);
+			}
 		}
 	}
 	return true;
@@ -168,7 +183,7 @@ bool Model::Load(std::string filename)
 	// propably to request more postprocessing than we do in this example.
 	const aiScene* scene = importer.ReadFile(filename,
 		aiProcess_CalcTangentSpace |
-		aiProcess_Triangulate |
+		//aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
 		aiProcess_SortByPType);
 
@@ -192,8 +207,8 @@ bool Model::Load(std::string filename)
 	{
 		Mesh mesh;
 		LoadMesh(&mesh, scene->mMeshes[i]);
-		std::cout << "Loaded mesh " << filename << "[" << i << "] vertices:" << mesh.vertices.size() << " indices:" << mesh.triangles.size() << std::endl;
-		if (mesh.vertices.size() > 0 && mesh.triangles.size() > 0)
+		std::cout << "Loaded mesh " << filename << "[" << i << "] vertices:" << mesh.vertices.size() << " indices:" << mesh.triangles.size()<< " quads:"<<mesh.quads.size() << std::endl;
+		if (mesh.vertices.size() > 0 && (mesh.triangles.size() > 0 || mesh.quads.size()>0))
 		{
 			//DumpMesh(&mesh);
 			meshCollection.push_back(mesh);

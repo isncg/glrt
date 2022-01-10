@@ -17,7 +17,6 @@ class Renderer
 public:
     //std::map<int, Material*> materialPassDict;
     Material* material;
-    bool isDrawingWireframe = false;
     virtual void Draw();
     virtual void Draw(Shader& shader);
     virtual void DrawWireframe();
@@ -31,6 +30,7 @@ class MeshRenderer: public Renderer
     GLuint ibo;
     bool ValidateMesh(Mesh* pMesh);
     std::vector<unsigned int> indices;
+    std::vector<unsigned int> quads;
     std::vector<unsigned int> edges;
     size_t triangleCount;
 public:

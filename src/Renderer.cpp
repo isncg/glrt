@@ -56,6 +56,7 @@ void MeshRenderer::Set(Mesh* pMesh)
 	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 	auto bufsize = pMesh->GetBufferSize();
 	indices.assign(pMesh->triangles.begin(), pMesh->triangles.end());
+	quads.assign(pMesh->quads.begin(), pMesh->quads.end());
 	triangleCount = indices.size() / 3;
 	int8_t* buffer = new int8_t[bufsize];
 
@@ -77,9 +78,11 @@ void MeshRenderer::Set(Mesh* pMesh)
 
 	vbb.build();
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vectorsizeof(pMesh->triangles), &pMesh->triangles.front(), GL_STATIC_DRAW);
-
+	if (pMesh->triangles.size() > 0)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vectorsizeof(pMesh->triangles), &pMesh->triangles.front(), GL_STATIC_DRAW);
+	}
 	delete[] buffer;
 	GLASSERT(glBindVertexArray(0));
 	GLASSERT(glBindBuffer(GL_ARRAY_BUFFER, 0));
@@ -89,8 +92,8 @@ void MeshRenderer::Set(Mesh* pMesh)
 	for (int ti = 0; ti + 2 < pMesh->triangles.size(); ti += 3)
 	{
 		auto a = pMesh->triangles[ti];
-		auto b = pMesh->triangles[ti+1];
-		auto c = pMesh->triangles[ti+2];
+		auto b = pMesh->triangles[ti + 1];
+		auto c = pMesh->triangles[ti + 2];
 		if (graph.Add(a, b))
 		{
 			edges.push_back(a);
@@ -107,19 +110,42 @@ void MeshRenderer::Set(Mesh* pMesh)
 			edges.push_back(b);
 		}
 	}
+
+	for (int qi = 0; qi + 3 < pMesh->quads.size(); qi += 4)
+	{
+		auto a = pMesh->quads[qi];
+		auto b = pMesh->quads[qi + 1];
+		auto c = pMesh->quads[qi + 2];
+		auto d = pMesh->quads[qi + 3];
+		if (graph.Add(a, b))
+		{
+			edges.push_back(a);
+			edges.push_back(b);
+		}
+		if (graph.Add(b, c))
+		{
+			edges.push_back(b);
+			edges.push_back(c);
+		}
+		if (graph.Add(c, d))
+		{
+			edges.push_back(c);
+			edges.push_back(d);
+		}
+		if (graph.Add(d, a))
+		{
+			edges.push_back(d);
+			edges.push_back(a);
+		}
+	}
 }
 
 void MeshRenderer::Draw()
 {
-	if (vao <= 0 || indices.size() < 3)
+	if (vao <= 0 || (indices.size() < 3 && quads.size()<4))
 		return;
 	Renderer::Draw();
 	GLASSERT(glBindVertexArray(vao));
-	if (isDrawingWireframe)
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		isDrawingWireframe = false;
-	}
 	/********************************************************************* glDrawElements *********************************************************************
 	https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glDrawElements.xhtml
 	mode
@@ -150,22 +176,31 @@ count
 Specifies the number of indices to be rendered.
 ********************************************************************** glDrawArrays ********************************************************************/
 	//UseMaterial();
-	GLASSERT(glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, NULL));
+	if (indices.size() >= 3)
+		GLASSERT(glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, NULL));
+	if (quads.size() >= 4)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLASSERT(glDrawElements(GL_QUADS, (GLsizei)quads.size(), GL_UNSIGNED_INT, &quads.front()));
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	}
 	//GLASSERT(glDrawArrays(GL_TRIANGLES, 0, triangleCount * 3));
 }
 
 void MeshRenderer::Draw(Shader& shader)
 {
-	if (vao <= 0 || indices.size() < 3)
+	if (vao <= 0 || (indices.size() < 3 && quads.size() < 4))
 		return;
 	Renderer::Draw(shader);
 	GLASSERT(glBindVertexArray(vao));	
-	if (isDrawingWireframe)
+	if (indices.size() >= 3)
+		GLASSERT(glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, NULL));
+	if (quads.size() >= 4)
 	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLASSERT(glDrawElements(GL_QUADS, (GLsizei)quads.size(), GL_UNSIGNED_INT, &quads.front()));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		isDrawingWireframe = false;
 	}
-	GLASSERT(glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, NULL));
 }
 
 void MeshRenderer::DrawWireframe()
@@ -174,12 +209,9 @@ void MeshRenderer::DrawWireframe()
 		return;
 	Renderer::Draw();
 	GLASSERT(glBindVertexArray(vao));
-	if (!isDrawingWireframe)
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		isDrawingWireframe = true;
-	}
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	GLASSERT(glDrawElements(GL_LINES, (GLsizei)edges.size(), GL_UNSIGNED_INT, &edges.front()));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 }
 
 void MeshRenderer::DrawWireframe(Shader& shader)
@@ -188,12 +220,9 @@ void MeshRenderer::DrawWireframe(Shader& shader)
 		return;
 	Renderer::Draw(shader);
 	GLASSERT(glBindVertexArray(vao));
-	if (!isDrawingWireframe)
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		isDrawingWireframe = true;
-	}
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	GLASSERT(glDrawElements(GL_LINES, (GLsizei)edges.size(), GL_UNSIGNED_INT, &edges.front()));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 }
 
 std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshset)
@@ -203,17 +232,19 @@ std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshs
 	//{
 		for (auto& mesh : meshset)
 		{
-			if (mesh.vertices.size() <= 0 || nullptr == mesh.pMaterialInfo)
+			if (mesh.vertices.size() <= 0)
 				continue;
 			auto& matlib = MaterialLib::Instance();
-			auto pmat = matlib.Get(mesh.pMaterialInfo->name);
-			
+			Material* pmat = nullptr;
+			if (nullptr != mesh.pMaterialInfo)
+				pmat = matlib.Get(mesh.pMaterialInfo->name);
+
 			if (nullptr == pmat)
 				pmat = matlib.Get("default");
 			if (nullptr == pmat)
 				pmat = matlib.Get("DefaultMaterial");
-			if (nullptr == pmat)
-				continue;
+			//if (nullptr == pmat)
+			//	continue;
 			MeshRenderer* pmr = new MeshRenderer();
 			pmr->material = pmat;
 			pmr->Set(&mesh);
@@ -222,6 +253,14 @@ std::vector<MeshRenderer*> MeshRenderer::CreateRenderers(std::vector<Mesh> meshs
 		std::sort(result.begin(), result.end(),
 			[](const MeshRenderer* a, const MeshRenderer* b)
 			{
+				if (nullptr == a->material)
+				{
+					return nullptr != b->material;
+				}
+				if (nullptr == b->material)
+				{
+					return nullptr == a->material;
+				}
 				return a->material->renderingOrder < b->material->renderingOrder;
 			});
 	//}

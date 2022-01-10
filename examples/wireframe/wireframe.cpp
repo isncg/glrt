@@ -6,31 +6,35 @@ namespace example
 {
     class Wireframe :public Empty3D
     {
-        ASSETDIR("examples/teapot/assets/");
+        ASSETDIR("examples/wireframe/assets/");
         Shader shader;
-        MeshRenderer renderer;
+        std::vector<MeshRenderer*> renderers;
         Model model;
         bool enableWireframe = true;
         virtual void OnCreate() override
         {
             Empty3D::OnCreate();
-            model.Load(ASSETPATH("teapot.obj"));
+            model.Load(ASSETPATH("cubes.obj"));
             shader.Load(ASSETPATH("glsl/mesh.vert"), ASSETPATH("glsl/mesh.frag"));
-            renderer.Set(&model.meshCollection.front());
+            renderers = MeshRenderer::CreateRenderers(model.meshCollection);
         }
 
         virtual void Render() override
         {
             Empty3D::Render();
+            glLineWidth(3.0f);
             shader.Set("camera", m_Camera.GetMatrix());
             if (enableWireframe)
             {
-                GLASSERT(renderer.DrawWireframe(shader));
+                for (auto r : renderers)
+                    r->DrawWireframe(shader);
             }
             else
             {
-                GLASSERT(renderer.Draw(shader));
+                for (auto r : renderers)
+                    r->Draw(shader);
             }
+            glLineWidth(1.0f);
         }
 
         virtual void OnGUI() override
@@ -39,6 +43,12 @@ namespace example
             ImGui::Checkbox("Enable", &enableWireframe);
             ImGui::End();
         }
+
+        virtual void SetCameraStartupParam(CameraStartupParam& param) override
+        {
+            Empty3D::SetCameraStartupParam(param);
+            param.moveSpeed = 0.01f;
+        }
     };
 }
-//RUN_WINDOW(example::Wireframe)
+RUN_WINDOW(example::Wireframe)

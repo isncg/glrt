@@ -114,10 +114,7 @@ namespace example
 			for (auto& r : m_planeRenderers)
 				r->Draw(*m_psm);
 
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			RECT rt;
-			GetClientRect(hWnd, &rt);
-			glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top);
+			RenderPass::BindDefault(this);
 
 			m_pTerrainShader->Use();
 			m_pTerrainShader->Set("hightmap", m_HeightMap);

@@ -76,10 +76,7 @@ namespace example
 			m_ShadowMappingLight.m_ShadowMappingPass.Bind();
             for (auto& r : m_LevelSubmeshRenderers)
                 r->Draw(*m_psm);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            RECT rt;
-            GetClientRect(hWnd, &rt);
-            glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top);
+            RenderPass::BindDefault(this);
             for (auto& r : m_LevelSubmeshRenderers)
                 r->Draw();
 		}

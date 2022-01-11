@@ -80,17 +80,24 @@ void RenderPass::Bind()
 	glClear(clearBit);
 }
 
-void RenderPass::Draw(Renderer& renderer)
+void RenderPass::BindDefault(Window* pWindow)
 {
-
-	renderer.Draw();
+	auto size = pWindow->GetClientSize();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, size.x, size.y);
 }
 
-void RenderPass::Draw(Renderer& renderer, Shader& shader)
-{
-	shader.Use();
-	renderer.Draw();
-}
+//void RenderPass::Draw(Renderer& renderer)
+//{
+//
+//	renderer.Draw();
+//}
+//
+//void RenderPass::Draw(Renderer& renderer, Shader& shader)
+//{
+//	shader.Use();
+//	renderer.Draw();
+//}
 
 
 

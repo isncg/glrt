@@ -34,10 +34,7 @@ namespace example
                 r->Draw(depthShader);
 
             // wireframe pass
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            RECT rt;
-            GetClientRect(hWnd, &rt);
-            glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top);
+            RenderPass::BindDefault(this);
             Empty3D::Render();
             glLineWidth(3.0f);
             if (enableWireframe)

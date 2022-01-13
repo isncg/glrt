@@ -26,12 +26,16 @@ public:
 class Scene;
 class Node
 {
+	std::string _name;
+	virtual void _getname(std::string& name);
+	NodeInspector* inspector = nullptr;
 public:
+	std::string& GetName();
 	Transform transform;
 	Node* parent = nullptr;
 	std::list<Node*> children;
 	void UpdateChildrenTransform(bool force);
-	NodeInspector* inspector;
+	NodeInspector* GetInspector();
 	virtual NodeInspector* CreateInspector();
 	virtual Scene* GetScene();
 	virtual void OnEnterTree();
@@ -40,6 +44,7 @@ public:
 
 class GraphicsNode : public Node
 {
+	virtual void _getname(std::string& name) override;
 public:
 	virtual void Render() = 0;
 	virtual void OnEnterTree() override;
@@ -47,6 +52,7 @@ public:
 
 class MeshNode :public GraphicsNode
 {
+	virtual void _getname(std::string& name) override;
 public:
 	Mesh* mesh;
 	MeshRenderer* renderer;
@@ -57,6 +63,7 @@ public:
 
 class CameraNode : public Node
 {
+	virtual void _getname(std::string& name) override;
 public:
 	Camera camera;
 };

@@ -37,6 +37,11 @@ namespace example
             scene.UpdateChildrenTransform(true);
             scene.Render();
         }
+
+        virtual void OnGUI() override
+        {
+            scene.GetInspector()->OnInspector(&scene);
+        }
     };
 }
 //RUN_WINDOW(example::Hierarchy)

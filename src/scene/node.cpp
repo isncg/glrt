@@ -1,6 +1,11 @@
 #include "../../include/scene/scene.h"
 #include <imgui/imgui.h>
 
+void MeshNode::_getname(std::string& name)
+{
+	name = "Mesh";
+}
+
 void MeshNode::Render()
 {
 	this->renderer->material->pShader->Set("world", transform.worldMatrix);
@@ -16,6 +21,18 @@ class MeshNodeInspector: public NodeInspector
 NodeInspector* MeshNode::CreateInspector()
 {
 	return new MeshNodeInspector;
+}
+
+void Node::_getname(std::string& name)
+{
+	name = "Node";
+}
+
+std::string& Node::GetName()
+{
+	if (_name.size() == 0)
+		_getname(_name);
+	return _name;
 }
 
 void Node::UpdateChildrenTransform(bool force)
@@ -35,6 +52,15 @@ void Node::UpdateChildrenTransform(bool force)
 		}
 		c->UpdateChildrenTransform(needUpdate);
 	}
+}
+
+NodeInspector* Node::GetInspector()
+{
+	if (nullptr == inspector)
+		inspector = CreateInspector();
+	if (nullptr == inspector)
+		inspector = new NodeInspector;
+	return inspector;
 }
 
 NodeInspector* Node::CreateInspector()
@@ -72,8 +98,18 @@ void NodeInspector::OnInspector(Node* pNode)
 		pNode->transform.isDirty = true;
 }
 
+void GraphicsNode::_getname(std::string& name)
+{
+	name = "Graphics";
+}
+
 void GraphicsNode::OnEnterTree()
 {
 	Node::OnEnterTree();
 	GetScene()->graphicsNodes.push_back(this);
+}
+
+void CameraNode::_getname(std::string& name)
+{
+	name = "Camera";
 }

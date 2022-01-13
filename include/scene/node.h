@@ -54,7 +54,7 @@ class MeshNode :public GraphicsNode
 {
 	virtual void _getname(std::string& name) override;
 public:
-	Mesh* mesh;
+	//Mesh* mesh;
 	MeshRenderer* renderer;
 	virtual void Render() override;
 	virtual NodeInspector* CreateInspector() override;

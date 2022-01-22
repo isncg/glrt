@@ -7,4 +7,5 @@ public:
 	void Render();
 	Scene* GetScene() override;
 	virtual NodeInspector* CreateInspector() override;
+	void Load(std::string filename);
 };

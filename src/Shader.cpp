@@ -103,10 +103,12 @@ void Shader::Load(std::string&& vert, std::string&& frag, std::string&& geom)
 	//materialTemplate->Set(this);
 }
 
+Shader* current;
 void Shader::Use()
 {
 	glAssert("before shader Use");
 	GLASSERT(glUseProgram(program));
+	current = this;
 }
 
 void Shader::Set(const char* name, Matrix4x4& value)
@@ -198,6 +200,11 @@ void Shader::OnResourceUpdated()
 	{
 		log(string_format("Shader reload fail %s,%s", vert.c_str(), frag.c_str()).c_str());
 	}
+}
+
+Shader* Shader::Current()
+{
+	return current;
 }
 
 Shader::~Shader()

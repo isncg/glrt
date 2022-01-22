@@ -1,6 +1,6 @@
 #include "../../include/scene/scene.h"
 #include <imgui/imgui.h>
-
+#include <glm/gtx/euler_angles.hpp>
 void MeshNode::_getname(std::string& name)
 {
 	name = "Mesh";
@@ -8,7 +8,10 @@ void MeshNode::_getname(std::string& name)
 
 void MeshNode::Render()
 {
-	this->renderer->material->pShader->Set("world", transform.worldMatrix);
+	auto shader = Shader::Current();
+	if (this->renderer != NULL && this->renderer->material != NULL && this->renderer->material->pShader != NULL)
+		shader = this->renderer->material->pShader;
+	shader->Set("world", transform.worldMatrix);
 	this->renderer->Draw();
 }
 
@@ -44,9 +47,7 @@ void Node::UpdateChildrenTransform(bool force)
 		{
 			c->transform.locatMatrix = Matrix4x4(1);
 			c->transform.locatMatrix = glm::translate(c->transform.locatMatrix, c->transform.position);
-			c->transform.locatMatrix = glm::rotate(c->transform.locatMatrix, c->transform.rotation.z, Vector3{ 0, 0, 1 });
-			c->transform.locatMatrix = glm::rotate(c->transform.locatMatrix, c->transform.rotation.y, Vector3{ 0, 1, 0 });
-			c->transform.locatMatrix = glm::rotate(c->transform.locatMatrix, c->transform.rotation.x, Vector3{ 1, 0, 0 });
+			c->transform.locatMatrix *= glm::eulerAngleYXZ(c->transform.rotation.y, c->transform.rotation.x, c->transform.rotation.z);
 			c->transform.locatMatrix = glm::scale(c->transform.locatMatrix, c->transform.scale);
 			c->transform.worldMatrix = transform.worldMatrix * c->transform.locatMatrix;
 		}

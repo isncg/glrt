@@ -21,13 +21,23 @@ namespace example
             Material* pmat = new Material(&shader);
             renderer.Set(&model.meshCollection.front());
             renderer.material = pmat;
-            node1.renderer = &renderer;
-            node1.transform.position = Vector3{ 0,0,0 };
-            node2.renderer = &renderer;
-            node2.transform.position = Vector3{ 4,0,0 };
-			node2.transform.scale = Vector3{ 0.2,0.2,0.2 };
-            scene.AddChild(&node1);
-            node1.AddChild(&node2);
+
+            MeshNode* pNode;
+            pNode = new MeshNode;
+            pNode->renderer = &renderer;
+            scene.AddChild(pNode);
+            for (int i = 0; i < 18; i++)
+            {
+                Node* pTransformNode = new Node;
+                pTransformNode->transform.rotation.y = glm::pi<float>() * i / 9;
+                scene.children.front()->AddChild(pTransformNode);
+
+                pNode = new MeshNode;
+                pNode->renderer = &renderer;
+                pNode->transform.position.x = 2;
+                pNode->transform.scale = Vector3{ 0.2,0.2,0.2 };
+                pTransformNode->AddChild(pNode);
+            }
         }
 
         virtual void Render() override

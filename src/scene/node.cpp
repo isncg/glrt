@@ -91,12 +91,15 @@ void Node::AddChild(Node* pNode)
 
 void NodeInspector::OnInspector(Node* pNode)
 {
-	if (ImGui::InputFloat3("position", &pNode->transform.position.x, "%.9f"))
-		pNode->transform.isDirty = true;
-	if (ImGui::InputFloat3("rotation", &pNode->transform.rotation.x, "%.9f"))
-		pNode->transform.isDirty = true;
-	if (ImGui::InputFloat3("scale", &pNode->transform.scale.x, "%.9f"))
-		pNode->transform.isDirty = true;
+	if (ImGui::CollapsingHeader("Transform"))
+	{
+		if (ImGui::InputFloat3("position", &pNode->transform.position.x, "%.6f"))
+			pNode->transform.isDirty = true;
+		if (ImGui::InputFloat3("rotation", &pNode->transform.rotation.x, "%.6f"))
+			pNode->transform.isDirty = true;
+		if (ImGui::InputFloat3("scale", &pNode->transform.scale.x, "%.6f"))
+			pNode->transform.isDirty = true;
+	}
 }
 
 void GraphicsNode::_getname(std::string& name)

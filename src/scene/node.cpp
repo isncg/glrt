@@ -64,6 +64,11 @@ NodeInspector* Node::GetInspector()
 	return inspector;
 }
 
+void Node::OnInspector()
+{
+	GetInspector()->OnInspector(this);
+}
+
 NodeInspector* Node::CreateInspector()
 {
 	return new NodeInspector();

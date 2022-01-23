@@ -36,6 +36,7 @@ public:
 	std::list<Node*> children;
 	void UpdateChildrenTransform(bool force);
 	NodeInspector* GetInspector();
+	void OnInspector();
 	virtual NodeInspector* CreateInspector();
 	virtual Scene* GetScene();
 	virtual void OnEnterTree();

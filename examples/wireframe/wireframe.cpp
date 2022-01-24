@@ -56,12 +56,6 @@ namespace example
             ImGui::Checkbox("Enable", &enableWireframe);
             ImGui::End();
         }
-
-        virtual void SetCameraStartupParam(CameraStartupParam& param) override
-        {
-            Empty3D::SetCameraStartupParam(param);
-            param.moveSpeed = 0.01f;
-        }
     };
 }
 RUN_WINDOW(example::Wireframe)

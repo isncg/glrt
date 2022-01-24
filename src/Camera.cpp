@@ -63,9 +63,9 @@ Vector3 Camera::GetDirectionFromYallPitch(Vector2 yallpitch)
 }
 
 
-CameraController& CameraController::Update()
+CameraController& CameraController::Update(double dt)
 {
-	FrameUpdate();
+	FrameUpdate(dt);
 	CalcViewMatrix(camera->mat_view);
 	return *this;
 }
@@ -136,7 +136,7 @@ void CameraFirstPersonController::Setup(Vector3& pos, float yall, float pitch)
 }
 
 
-void CameraFirstPersonController::FrameUpdate()
+void CameraFirstPersonController::FrameUpdate(double dt)
 {
 	if (!enabled)
 		return;
@@ -145,8 +145,9 @@ void CameraFirstPersonController::FrameUpdate()
 	fw.y = sin(pitch);
 	fw.z = -cos(yall) * cos(pitch);
 	Vector3 rt{ cos(yall), 0, sin(yall) };
-	position += (float)(md - ma) * rt * speed;
-	position += (float)(mw - ms) * fw * speed;
+	Vector3 velocity = ((float)(md - ma) * rt + (float)(mw - ms) * fw) * speed;
+	this->velocity = (float)(1.0-5*dt) * this->velocity + (float)(5*dt) * velocity;
+	position += this->velocity * (float)dt;
 }
 
 void CameraFirstPersonController::CalcViewMatrix(Matrix4x4& mat_proj)

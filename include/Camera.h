@@ -42,12 +42,12 @@ public:
 class CameraController
 {
 	virtual void CalcViewMatrix(Matrix4x4& mat_proj) = 0;
-	virtual void FrameUpdate() = 0;
+	virtual void FrameUpdate(double dt = 1.0) = 0;
 public:
 	virtual void OnMouseMove(long dx, long dy, long x, long y) = 0;
 	virtual void OnKeyboard(KEYS key, KEYACTION action) = 0;
 	Camera* camera;
-	CameraController& Update();
+	CameraController& Update(double dt = 1.0);
 	Matrix4x4& GetCameraMatrix();
 };
 
@@ -57,15 +57,18 @@ class CameraFirstPersonController: public CameraController
 	int md = 0;
 	int mw = 0;
 	int ms = 0;
+	float vx = 0;
+	float vy = 0;
 	Vector3 fw;
 	Vector3 rt;
-	virtual void FrameUpdate() override;
+	virtual void FrameUpdate(double dt = 1.0) override;
 	virtual void CalcViewMatrix(Matrix4x4& mat_proj) override;
 public:
 	bool enabled = true;
 	float yall = 0;
 	float pitch = 0;
 	Vector3 position;
+	Vector3 velocity;
 	const Vector3& GetForwardDirection();
 	float speed = 20.0f;
 	virtual void OnMouseMove(long dx, long dy, long x, long y) override;

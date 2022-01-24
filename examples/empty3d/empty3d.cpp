@@ -139,7 +139,7 @@ namespace example
 	}
 	void Empty3D::AfterRender()
 	{
-		m_CamController.Update();
+		m_CamController.Update(frameStatics.GetDelta());
 		GlobalMaterial::Instance().SetMainCamera(&m_Camera);
 	}
 	void Empty3D::SetCameraStartupParam(CameraStartupParam& param)
@@ -150,7 +150,7 @@ namespace example
 
 		param.position = Vector3{ 4,3,4 };
 		param.direction = -param.position;
-		param.moveSpeed = 0.2f;
+		param.moveSpeed = 10.0f;
 	}
 	void Empty3D::OnKeyboard(KEYS key, KEYACTION action) 
 	{

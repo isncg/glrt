@@ -202,6 +202,7 @@ void Window::OnCreate()
 	ss << "GL_VERSION: " << glGetString(GL_VERSION);
 	SetWindowTextA(hWnd, (LPCSTR)ss.str().c_str());
 	ready = true;
+	frameStatics.Init();
 }
 
 void Window::OnResize(long width, long height)
@@ -226,6 +227,7 @@ void Window::OnIdle()
 	GLASSERT(RenderPipline());
 	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
 	AfterRender();
+	frameStatics.FrameUpdate();
 }
 
 void Window::RenderPipline()
@@ -303,3 +305,34 @@ void Window::PopulateClassInfo(WNDCLASSEXW* pwcex)
 	pwcex->hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SMALL));
 }
 
+IFrameStatics* Window::GetFrameStatics()
+{
+	return &frameStatics;
+}
+
+void Win32FrameStatics::Init()
+{
+	QueryPerformanceFrequency(&frequency);
+	QueryPerformanceCounter(&count);
+	fps = 0;
+}
+
+double Win32FrameStatics::GetFPS()
+{
+	return fps;
+}
+
+double Win32FrameStatics::GetDelta()
+{
+	return deltaTime;
+}
+
+void Win32FrameStatics::FrameUpdate()
+{
+	LARGE_INTEGER current;
+	QueryPerformanceCounter(&current);
+	auto delta = current.QuadPart - count.QuadPart;
+	this->deltaTime = (double)(delta) / frequency.QuadPart;
+	this->fps = frequency.QuadPart / (double)(delta);
+	count = current;
+}

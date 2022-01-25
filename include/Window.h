@@ -97,30 +97,18 @@ public:
 	virtual void FrameUpdate() = 0;
 };
 
-class Win32FrameStatics: public IFrameStatics
-{
-	LARGE_INTEGER count{0};
-	LARGE_INTEGER frequency{0};
-	double fps;
-	double deltaTime;
-public:
-	void Init();
-	virtual double GetFPS() override;
-	virtual double GetDelta() override;
-	virtual void FrameUpdate() override;
-};
-
-
 class Window
 {
 	friend class Application;
 	friend LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	bool ready = false;
 	LONG mouseX,mouseY;
+	std::stringstream title;
+	void UpdateTitle();
 protected:
 	HDC hdc;
 	HGLRC hGLRC;
-	Win32FrameStatics frameStatics;
+	IFrameStatics* frameStatics;
 	virtual LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual void GetInitSize(long* width, long* height);
 	virtual bool IsEnableVsync();
@@ -146,5 +134,5 @@ public:
 	virtual void PopulateClassInfo(WNDCLASSEXW* pwcex);
 	HWND hWnd = NULL;
 	LPCWSTR szTitle = TEXT("GLRT");
-	virtual IFrameStatics* GetFrameStatics();
+	//virtual IFrameStatics* GetFrameStatics();
 };

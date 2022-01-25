@@ -50,6 +50,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return pWindow->WndProc(message, wParam, lParam);
 }
 
+class Win32FrameStatics : public IFrameStatics
+{
+	LARGE_INTEGER count{ 0 };
+	LARGE_INTEGER frequency{ 0 };
+	double fps;
+	double deltaTime;
+public:
+	double fpsCache;
+	void Init();
+	virtual double GetFPS() override;
+	virtual double GetDelta() override;
+	virtual void FrameUpdate() override;
+};
+
+
+
+void Window::UpdateTitle()
+{
+	title.str("");
+	title << "GL_VERSION: " << glGetString(GL_VERSION) << " FPS: " << ((Win32FrameStatics*)frameStatics)->fpsCache;
+	SetWindowTextA(hWnd, (LPCSTR)title.str().c_str());
+}
 
 LRESULT Window::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -198,11 +220,11 @@ void Window::OnCreate()
 	if (wglSwapIntervalEXT)
 		wglSwapIntervalEXT(IsEnableVsync() ? 1 : 0);
 
-	std::stringstream ss;
-	ss << "GL_VERSION: " << glGetString(GL_VERSION);
-	SetWindowTextA(hWnd, (LPCSTR)ss.str().c_str());
+
 	ready = true;
-	frameStatics.Init();
+	auto frameStatics = new Win32FrameStatics();
+	frameStatics->Init();
+	this->frameStatics = frameStatics;
 }
 
 void Window::OnResize(long width, long height)
@@ -215,19 +237,9 @@ void Window::OnIdle()
 {
 	if (!ready) return;
 	glAssert("before onidle");
-	//HDC hdc = GetDC(hWnd);
 	BeforeRender();
-	wglMakeCurrent(GetDC(hWnd), hGLRC);
-	GLASSERT(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-	GLASSERT(glClearColor(0.2f, 0.2f, 0.2f, 1.0f));
-	GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-	RECT rt;
-	GetClientRect(hWnd, &rt);
-	GLASSERT(glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top));
-	GLASSERT(RenderPipline());
-	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
+	GLASSERT(RenderPipline());	
 	AfterRender();
-	frameStatics.FrameUpdate();
 }
 
 void Window::RenderPipline()
@@ -239,6 +251,13 @@ void Window::RenderPipline()
 
 void Window::BeforeRender()
 {
+	wglMakeCurrent(GetDC(hWnd), hGLRC);
+	GLASSERT(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	GLASSERT(glClearColor(0.2f, 0.2f, 0.2f, 1.0f));
+	GLASSERT(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+	RECT rt;
+	GetClientRect(hWnd, &rt);
+	GLASSERT(glViewport(0, 0, rt.right - rt.left, rt.bottom - rt.top));
 }
 
 void Window::Render()
@@ -255,6 +274,9 @@ void Window::OnGUI()
 
 void Window::AfterRender()
 {
+	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
+	frameStatics->FrameUpdate();
+	UpdateTitle();
 }
 
 void Window::OnMouseMove(long dx, long dy, long x, long y)
@@ -305,10 +327,12 @@ void Window::PopulateClassInfo(WNDCLASSEXW* pwcex)
 	pwcex->hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SMALL));
 }
 
-IFrameStatics* Window::GetFrameStatics()
-{
-	return &frameStatics;
-}
+//IFrameStatics* Window::GetFrameStatics()
+//{
+//	return &frameStatics;
+//}
+
+
 
 void Win32FrameStatics::Init()
 {
@@ -335,4 +359,15 @@ void Win32FrameStatics::FrameUpdate()
 	this->deltaTime = (double)(delta) / frequency.QuadPart;
 	this->fps = frequency.QuadPart / (double)(delta);
 	count = current;
+
+	if (fpsCache == 0.0)
+		fpsCache = fps;
+	else
+	{
+		auto e = abs(fps - fpsCache) / fps;
+		e *= 0.001;
+		e = glm::max(e, 0.0);
+		e = glm::min(e, 1.0);
+		fpsCache = (1 - e) * fpsCache + e * fps;
+	}
 }

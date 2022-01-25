@@ -139,7 +139,8 @@ namespace example
 	}
 	void Empty3D::AfterRender()
 	{
-		m_CamController.Update(frameStatics.GetDelta());
+		Window::AfterRender();
+		m_CamController.Update(frameStatics->GetDelta());
 		GlobalMaterial::Instance().SetMainCamera(&m_Camera);
 	}
 	void Empty3D::SetCameraStartupParam(CameraStartupParam& param)

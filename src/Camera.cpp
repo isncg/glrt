@@ -146,7 +146,8 @@ void CameraFirstPersonController::FrameUpdate(double dt)
 	fw.z = -cos(yall) * cos(pitch);
 	Vector3 rt{ cos(yall), 0, sin(yall) };
 	Vector3 velocity = ((float)(md - ma) * rt + (float)(mw - ms) * fw) * speed;
-	this->velocity = (float)(1.0-5*dt) * this->velocity + (float)(5*dt) * velocity;
+	float w = pow(0.5, dt / 0.1);
+	this->velocity = w * this->velocity + (1.0f - w) * velocity;
 	position += this->velocity * (float)dt;
 }
 

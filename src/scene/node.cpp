@@ -83,15 +83,34 @@ Scene* Node::GetScene()
 
 void Node::OnEnterTree()
 {
-	for (auto c : children)
-		c->OnEnterTree();
 }
+
+void Node::Awake()
+{
+}
+
+void Node::Update()
+{
+}
+
+void NodeEnterTree(Node* pNode, bool needAwake)
+{
+	pNode->OnEnterTree();
+	for (auto c : pNode->children)
+	{
+		NodeEnterTree(c, needAwake);
+	}
+	if (needAwake)
+		pNode->Awake();
+}
+
 
 void Node::AddChild(Node* pNode)
 {
 	pNode->parent = this;
 	children.push_back(pNode);
-	pNode->OnEnterTree();
+	auto scene = GetScene();
+	NodeEnterTree(pNode, scene && scene->isActive);
 }
 
 void NodeInspector::OnInspector(Node* pNode)

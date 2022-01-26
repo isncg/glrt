@@ -14,5 +14,7 @@ public:
 	void Render();
 	Scene* GetScene() override;
 	virtual NodeInspector* CreateInspector() override;
+	virtual void Awake() override;
+	virtual void Update() override;
 	void Load(std::string filename, SceneAxisType axisType= SceneAxisType_Blender_ZupYforward);
 };

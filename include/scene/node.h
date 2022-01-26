@@ -30,6 +30,7 @@ class Node
 	virtual void _getname(std::string& name);
 	NodeInspector* inspector = nullptr;
 public:
+	bool isActive;
 	std::string& GetName();
 	Transform transform;
 	Node* parent = nullptr;
@@ -40,6 +41,8 @@ public:
 	virtual NodeInspector* CreateInspector();
 	virtual Scene* GetScene();
 	virtual void OnEnterTree();
+	virtual void Awake();
+	virtual void Update();
 	void AddChild(Node* pNode);
 };
 
@@ -67,4 +70,13 @@ class CameraNode : public Node
 	virtual void _getname(std::string& name) override;
 public:
 	Camera camera;
+};
+
+class ScriptNode : public Node
+{
+public:
+	virtual void OnEnterTree() = 0;
+	virtual void Awake() = 0;
+	virtual void Update() = 0;
+	static ScriptNode* CreateLuaScriptNode(std::string className);
 };

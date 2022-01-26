@@ -89,6 +89,36 @@ NodeInspector* Scene::CreateInspector()
 	return new SceneInspector;
 }
 
+void AwakeChildren(Node* pNode)
+{
+	for (auto pchild : pNode->children)
+	{
+		pchild->Awake();
+		AwakeChildren(pchild);
+	}
+}
+
+void Scene::Awake()
+{
+	isActive = true;
+	AwakeChildren(this);
+}
+
+void UpdateChildren(Node* pNode)
+{
+	for (auto pchild : pNode->children)
+	{
+		pchild->Update();
+		UpdateChildren(pchild);
+	}
+}
+
+
+void Scene::Update()
+{
+	UpdateChildren(this);
+}
+
 extern bool LoadMesh(Mesh* output, aiMesh* input);
 bool LoadSceneNode(Node* pOut, aiNode* pIn, const aiScene* pScene, SceneAxisType axisType)
 {
@@ -164,4 +194,6 @@ void Scene::Load(std::string filename, SceneAxisType axisType)
 	default:
 		break;
 	}
+
+	Awake();
 }

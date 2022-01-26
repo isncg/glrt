@@ -1,3 +1,6 @@
 [submodule "3rdparty/imgui-glrt"]
     path = 3rdparty/imgui-glrt
     url = git@github.com:isncg/imgui-glrt.git
+[submodule "3rdparty/lua/lua540"]
+	path = 3rdparty/lua/lua540
+	url = git@github.com:lua/lua.git

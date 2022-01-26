@@ -82,7 +82,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)3rdparty\imgui-glrt\include;$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(ProjectDir)3rdparty\glm;$(ProjectDir)3rdparty\FreeImage\include;$(ProjectDir)3rdparty\bsp30\include;$(ProjectDir)3rdparty\wad\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)3rdparty\imgui-glrt\include;$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(ProjectDir)3rdparty\glm;$(ProjectDir)3rdparty\FreeImage\include;$(ProjectDir)3rdparty\bsp30\include;$(ProjectDir)3rdparty\wad\include;$(ProjectDir);$(ProjectDir)3rdparty\lua;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)3rdparty\assimp;$(ProjectDir)3rdparty\FreeImage;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(ProjectDir)3rdparty\assimp;$(ProjectDir)3rdparty\FreeImage;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
@@ -158,6 +158,39 @@
     <ClCompile Include="3rdparty\imgui-glrt\src\imgui_impl_win32.cpp" />
     <ClCompile Include="3rdparty\imgui-glrt\src\imgui_tables.cpp" />
     <ClCompile Include="3rdparty\imgui-glrt\src\imgui_widgets.cpp" />
+    <ClCompile Include="3rdparty\lua\lua540\lapi.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lauxlib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lbaselib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lcode.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lcorolib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lctype.c" />
+    <ClCompile Include="3rdparty\lua\lua540\ldblib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\ldebug.c" />
+    <ClCompile Include="3rdparty\lua\lua540\ldo.c" />
+    <ClCompile Include="3rdparty\lua\lua540\ldump.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lfunc.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lgc.c" />
+    <ClCompile Include="3rdparty\lua\lua540\linit.c" />
+    <ClCompile Include="3rdparty\lua\lua540\liolib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\llex.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lmathlib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lmem.c" />
+    <ClCompile Include="3rdparty\lua\lua540\loadlib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lobject.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lopcodes.c" />
+    <ClCompile Include="3rdparty\lua\lua540\loslib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lparser.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lstate.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lstring.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lstrlib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\ltable.c" />
+    <ClCompile Include="3rdparty\lua\lua540\ltablib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\ltests.c" />
+    <ClCompile Include="3rdparty\lua\lua540\ltm.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lundump.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lutf8lib.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lvm.c" />
+    <ClCompile Include="3rdparty\lua\lua540\lzio.c" />
     <ClCompile Include="3rdparty\wad\src\WADFile.cpp" />
     <ClCompile Include="examples\empty3d\empty3d.cpp" />
     <ClCompile Include="examples\flightsimulator\flightsimulator.cpp" />
@@ -180,6 +213,7 @@
     <ClCompile Include="src\ResourceMonitor.cpp" />
     <ClCompile Include="src\scene\node.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
+    <ClCompile Include="src\Script.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Window.cpp" />

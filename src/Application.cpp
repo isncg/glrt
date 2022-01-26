@@ -5,6 +5,9 @@
 #include "../include/Material.h"
 #pragma comment (lib, "opengl32.lib")
 
+extern void InitScript();
+
+
 void Application::Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
     this->hInstance = hInstance;
@@ -21,6 +24,7 @@ int Application::Run(Window* pMainWindow, bool allocConsole)
         //std::cout << "Application::Run" << std::endl;
     }
     log("Application::Run");
+    InitScript();
     WNDCLASSEXW wcex;
     bool isRegistered = GetClassInfoEx(hInstance, pMainWindow->GetWindowClassName(), &wcex);
     if (!isRegistered)

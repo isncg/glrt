@@ -57,7 +57,14 @@ class Win32FrameStatics : public IFrameStatics
 	double fps;
 	double deltaTime;
 public:
-	double fpsCache;
+	std::function<void()> UpdateFpsCallback;
+	Win32FrameStatics(std::function<void()> updateFpsCallback)
+	{
+		this->UpdateFpsCallback = updateFpsCallback;
+	}
+	double fpsAveraged = 0;
+	double fpsAvgAcc = 0;
+	long long fpsAvgAccCount = 0;
 	void Init();
 	virtual double GetFPS() override;
 	virtual double GetDelta() override;
@@ -69,7 +76,7 @@ public:
 void Window::UpdateTitle()
 {
 	title.str("");
-	title << "GL_VERSION: " << glGetString(GL_VERSION) << " FPS: " << ((Win32FrameStatics*)frameStatics)->fpsCache;
+	title << "GL_VERSION: " << glGetString(GL_VERSION) << " FPS: " << ((Win32FrameStatics*)frameStatics)->fpsAveraged;
 	SetWindowTextA(hWnd, (LPCSTR)title.str().c_str());
 }
 
@@ -222,7 +229,10 @@ void Window::OnCreate()
 
 
 	ready = true;
-	auto frameStatics = new Win32FrameStatics();
+	auto frameStatics = new Win32FrameStatics([this]()
+		{
+			UpdateTitle();
+		});
 	frameStatics->Init();
 	this->frameStatics = frameStatics;
 }
@@ -276,7 +286,6 @@ void Window::AfterRender()
 {
 	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
 	frameStatics->FrameUpdate();
-	UpdateTitle();
 }
 
 void Window::OnMouseMove(long dx, long dy, long x, long y)
@@ -360,14 +369,14 @@ void Win32FrameStatics::FrameUpdate()
 	this->fps = frequency.QuadPart / (double)(delta);
 	count = current;
 
-	if (fpsCache == 0.0)
-		fpsCache = fps;
-	else
+	fpsAvgAccCount++;
+	fpsAvgAcc += fps;
+	if (fpsAvgAccCount / fps >= 0.5)
 	{
-		auto e = abs(fps - fpsCache) / fps;
-		e *= 0.001;
-		e = glm::max(e, 0.0);
-		e = glm::min(e, 1.0);
-		fpsCache = (1 - e) * fpsCache + e * fps;
+		fpsAveraged = fpsAvgAcc / fpsAvgAccCount;
+		fpsAvgAccCount = 0;
+		fpsAvgAcc = 0;
+		//if (UpdateFpsCallback != nullptr)
+			UpdateFpsCallback();
 	}
 }

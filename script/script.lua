@@ -67,15 +67,37 @@ function class(classname, super)
     return cls
 end
 
-LuaBehavior = class("LuaBehavior")
-function LuaBehavior.onEnterTree()
-	print("lua behavior object onEnterTree")
+
+ScriptableObject = {}
+
+LuaBehavior = class("LuaBehavior", ScriptableObject)
+function LuaBehavior.__init__(self)
 end
 
-function LuaBehavior.awake()
-	print("lua behavior object awake")
+-- Awake is called when the script instance is being loaded.
+function LuaBehavior.awake(self)
 end
 
-function LuaBehavior.update()
-	print("lua behavior object update")
+-- Update is called every frame, if the LuaBehavior is enabled.
+function LuaBehavior.update(self)
 end
+
+function LuaBehavior.on_enter_tree(self)
+end
+
+--[[
+Test case: frame counter
+c++:
+	Node* pNode = ...
+	IScriptContext::Alloc(pNode)->BindScript("FrameCounter");
+]]--
+FrameCounter = class("FrameCounter", LuaBehavior)
+function FrameCounter.awake(self)
+	self.frameCount = 0
+end
+
+function FrameCounter.update(self)
+	self.frameCount = self.frameCount + 1 
+	print("frame count", self.frameCount)
+end
+

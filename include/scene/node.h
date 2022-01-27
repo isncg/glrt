@@ -23,6 +23,17 @@ public:
 	virtual void OnInspector(Node* pNode);
 };
 
+class IScriptContext
+{
+public:
+	Node* pNode;
+	virtual void BindScript(const char* class_name) = 0;
+	virtual void Invoke(const char* method) = 0;
+
+	static IScriptContext* Alloc(Node* pNode);
+};
+
+
 class Scene;
 class Node
 {
@@ -44,6 +55,7 @@ public:
 	virtual void Awake();
 	virtual void Update();
 	void AddChild(Node* pNode);
+	IScriptContext* pScriptContext = NULL;
 };
 
 class GraphicsNode : public Node
@@ -70,13 +82,4 @@ class CameraNode : public Node
 	virtual void _getname(std::string& name) override;
 public:
 	Camera camera;
-};
-
-class ScriptNode : public Node
-{
-public:
-	virtual void OnEnterTree() = 0;
-	virtual void Awake() = 0;
-	virtual void Update() = 0;
-	static ScriptNode* CreateLuaScriptNode(std::string className);
 };

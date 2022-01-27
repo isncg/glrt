@@ -7,14 +7,19 @@ namespace example
     class Scripting :public Empty3D
     {
         Scene scene;
+        Node node;
         virtual void OnCreate() override
         {
             Empty3D::OnCreate();
-            auto node = ScriptNode::CreateLuaScriptNode("LuaBehavior");
-            if (NULL == node)
-                return;
-            scene.AddChild(node);
+            IScriptContext::Alloc(&node)->BindScript("FrameCounter");
+            scene.AddChild(&node);
             scene.Awake();
+        }
+
+        virtual void Render() override
+        {
+            Empty3D::Render();
+            scene.Update();
         }
     };
 }

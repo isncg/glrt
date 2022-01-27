@@ -96,12 +96,18 @@ void Node::Update()
 void NodeEnterTree(Node* pNode, bool needAwake)
 {
 	pNode->OnEnterTree();
+	if (pNode->pScriptContext)
+		pNode->pScriptContext->Invoke("on_enter_tree");
 	for (auto c : pNode->children)
 	{
 		NodeEnterTree(c, needAwake);
 	}
 	if (needAwake)
+	{
 		pNode->Awake();
+		if (pNode->pScriptContext)
+			pNode->pScriptContext->Invoke("awake");
+	}
 }
 
 

@@ -94,6 +94,8 @@ void AwakeChildren(Node* pNode)
 	for (auto pchild : pNode->children)
 	{
 		pchild->Awake();
+		if (pchild->pScriptContext)
+			pchild->pScriptContext->Invoke("awake");
 		AwakeChildren(pchild);
 	}
 }
@@ -109,6 +111,8 @@ void UpdateChildren(Node* pNode)
 	for (auto pchild : pNode->children)
 	{
 		pchild->Update();
+		if (pchild->pScriptContext)
+			pchild->pScriptContext->Invoke("update");
 		UpdateChildren(pchild);
 	}
 }

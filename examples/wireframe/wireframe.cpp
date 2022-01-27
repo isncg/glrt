@@ -58,4 +58,4 @@ namespace example
         }
     };
 }
-RUN_WINDOW(example::Wireframe)
+//RUN_WINDOW(example::Wireframe)

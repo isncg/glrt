@@ -66,3 +66,16 @@ function class(classname, super)
 
     return cls
 end
+
+LuaBehavior = class("LuaBehavior")
+function LuaBehavior.onEnterTree()
+	print("lua behavior object onEnterTree")
+end
+
+function LuaBehavior.awake()
+	print("lua behavior object awake")
+end
+
+function LuaBehavior.update()
+	print("lua behavior object update")
+end

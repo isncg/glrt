@@ -198,6 +198,7 @@
     <ClCompile Include="examples\hellotriangle\hellotriangle.cpp" />
     <ClCompile Include="examples\hierarchy\hierarchy.cpp" />
     <ClCompile Include="examples\pbr\pbr.cpp" />
+    <ClCompile Include="examples\scripting\scripting.cpp" />
     <ClCompile Include="examples\teapot\teapot.cpp" />
     <ClCompile Include="examples\terrain\Terrain.cpp" />
     <ClCompile Include="examples\uicanvas\uicanvas.cpp" />

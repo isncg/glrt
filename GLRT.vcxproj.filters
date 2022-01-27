@@ -249,6 +249,9 @@
     <ClCompile Include="src\Script.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
+    <ClCompile Include="examples\scripting\scripting.cpp">
+      <Filter>examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils\buffer_builder.h">

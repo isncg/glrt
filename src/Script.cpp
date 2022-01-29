@@ -9,6 +9,9 @@ extern "C"
 
 #include "../include/scene/node.h"
 #include "../utils/utils.h"
+
+int GLRT_LUAAPI(lua_State* L);
+
 class LuaScript
 {
 public:
@@ -19,6 +22,7 @@ public:
 			lua_close(L);
 		L = luaL_newstate();
 		luaL_openlibs(L);
+		luaL_requiref(L, "GLRT", GLRT_LUAAPI, 1);
 		lua_writestring(LUA_COPYRIGHT, strlen(LUA_COPYRIGHT));
 		lua_writeline();
 		//luaL_dofile(L, "./script/script.lua");
@@ -124,18 +128,28 @@ public:
 		}
 	}
 
-	static LuaScriptContext* Get(lua_State* L, int idx = -1, bool autoPop = true)
+	static LuaScriptContext* Get(lua_State* L)
 	{
-		if (!lua_islightuserdata(L, idx))
+		if (!lua_istable(L, -1))
+		{
+			lua_pop(L, 1);
 			return NULL;
-		return (LuaScriptContext*)lua_touserdata(L, idx);
-		if (autoPop)
-			lua_pop(L, -idx);
+		}
+		lua_pushstring(L, "context");
+		lua_gettable(L, -2);
+		if (!lua_islightuserdata(L, -1))
+		{
+			lua_pop(L, 2);
+			return NULL;
+		}
+		auto result = (LuaScriptContext*)lua_touserdata(L, -1);
+		lua_pop(L, 2);
+		return result;
 	}
 };
 
 
-LUA_API int LuaScript_GetTransformPosition(lua_State* L)
+static int LuaScript_GetTransformPosition(lua_State* L)
 {
 	auto ctx = LuaScriptContext::Get(L);
 	if (NULL == ctx || NULL == ctx->pNode) return 0;
@@ -145,17 +159,33 @@ LUA_API int LuaScript_GetTransformPosition(lua_State* L)
 	return 3;
 }
 
-LUA_API int LuaScript_SetTransformPosition(lua_State* L)
+static int LuaScript_SetTransformPosition(lua_State* L)
 {
-	auto ctx = LuaScriptContext::Get(L, -4, false);
-	if (NULL == ctx || NULL == ctx->pNode) return 0;
 	if (!lua_isnumber(L, -1) || !lua_isnumber(L, -2) || !lua_isnumber(L, -3)) return 0;
-	ctx->pNode->transform.position.x = lua_tonumber(L, -1);
-	ctx->pNode->transform.position.y = lua_tonumber(L, -2);
-	ctx->pNode->transform.position.z = lua_tonumber(L, -3);
+	auto z = lua_tonumber(L, -1);
+	auto y = lua_tonumber(L, -2);
+	auto x = lua_tonumber(L, -3);
+	lua_pop(L, 3);
+	auto ctx = LuaScriptContext::Get(L);
+	if (NULL == ctx || NULL == ctx->pNode) return 0;
+	ctx->pNode->transform.position.x = x;
+	ctx->pNode->transform.position.y = y;
+	ctx->pNode->transform.position.z = z;
 	return 0;
 }
 
+static const luaL_Reg GLRT_LUAAPI_NODE_TRANSFORM[] =
+{
+	{"getTransformPosition", LuaScript_GetTransformPosition},
+	{"setTransformPosition", LuaScript_SetTransformPosition},
+	{NULL, NULL}
+};
+
+int GLRT_LUAAPI(lua_State* L)
+{
+	luaL_newlib(L, GLRT_LUAAPI_NODE_TRANSFORM);
+	return 1;
+}
 
 IScriptContext* IScriptContext::Alloc(Node* pNode)
 {

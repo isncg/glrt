@@ -1,5 +1,5 @@
 print("GLRT application script setup")
-
+GLRT = require("GLRT")
 -- cocos2dx-lua class
 -- https://github.com/chukong/quick-cocos2d-x/blob/master/framework/functions.lua
 --[[--

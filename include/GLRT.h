@@ -15,5 +15,6 @@
 #include "RenderTarget.h"
 #include "Texture.h"
 #include "Shader.h"
+#include "Script.h"
 
 

@@ -11,7 +11,7 @@ namespace example
         virtual void OnCreate() override
         {
             Empty3D::OnCreate();
-            IScriptContext::Alloc(&node)->BindScript("FrameCounter");
+            node.SetScript("FrameCounter");
             scene.AddChild(&node);
             scene.Awake();
         }

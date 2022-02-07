@@ -85,6 +85,18 @@ end
 function LuaBehavior.on_enter_tree(self)
 end
 
+Shader = class("Shader", ScriptableObject)
+
+ShaderLib = class("ShaderLib", ScriptableObject)
+function ShaderLib.load(self, filename)
+	GLRT.shaderlibLoad(self, filename)
+end
+
+function ShaderLib.get(self, filename)
+	GLRT.shaderlibGet(self, filename)
+end
+Material = class("Material", ScriptableObject)
+
 --[[
 Test case: frame counter
 c++:

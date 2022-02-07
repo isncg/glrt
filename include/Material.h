@@ -8,7 +8,7 @@
 #include "Texture.h"
 #include "Shader.h"
 #include <functional>
-
+#include "Script.h"
 class IMaterialParam;
 class MaterialParamCollection
 {
@@ -22,7 +22,7 @@ public:
 };
 
 
-class Material: public MaterialParamCollection
+class Material: public MaterialParamCollection, public IScriptable
 {
 	friend class MaterialLib;
 	friend class MeshNode;
@@ -157,7 +157,7 @@ inline void MaterialParamCollection::Set(std::string name, T& value)
 }
 
 
-class MaterialLib: public Singleton<MaterialLib>
+class MaterialLib: public Singleton<MaterialLib>, public IScriptable
 {
 	SINGLETON_CTOR(MaterialLib)
 	friend class MaterialLibInspector;

@@ -323,5 +323,8 @@
     <ClInclude Include="include\scene\scene.h">
       <Filter>src\scene</Filter>
     </ClInclude>
+    <ClInclude Include="include\Script.h">
+      <Filter>src\core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

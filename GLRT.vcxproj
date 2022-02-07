@@ -238,6 +238,7 @@
     <ClInclude Include="include\ResourceMonitor.h" />
     <ClInclude Include="include\scene\node.h" />
     <ClInclude Include="include\scene\scene.h" />
+    <ClInclude Include="include\Script.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\Texture.h" />
     <ClInclude Include="include\Window.h" />

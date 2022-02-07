@@ -2,8 +2,9 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include "ResourceMonitor.h"
+#include "Script.h"
 class Texture;
-class Shader: public IResourceUpdateNotify
+class Shader: public IResourceUpdateNotify, public IScriptable
 {
 	friend class Material;
 	friend class GlobalMaterial;
@@ -40,7 +41,7 @@ enum ShaderFileType
 	Geom = 4,
 };
 
-class ShaderLib : public Singleton<ShaderLib>
+class ShaderLib : public Singleton<ShaderLib>, public IScriptable
 {
 	friend class GlobalMaterial;
 	SINGLETON_CTOR(ShaderLib)

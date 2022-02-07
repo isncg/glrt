@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <list>
 #include "../GLRT.h"
+
 class Node;
 class Transform;
 
@@ -23,19 +24,10 @@ public:
 	virtual void OnInspector(Node* pNode);
 };
 
-class IScriptContext
-{
-public:
-	Node* pNode;
-	virtual void BindScript(const char* class_name) = 0;
-	virtual void Invoke(const char* method) = 0;
-
-	static IScriptContext* Alloc(Node* pNode);
-};
 
 
 class Scene;
-class Node
+class Node: public IScriptable
 {
 	std::string _name;
 	virtual void _getname(std::string& name);
@@ -55,7 +47,7 @@ public:
 	virtual void Awake();
 	virtual void Update();
 	void AddChild(Node* pNode);
-	IScriptContext* pScriptContext = NULL;
+	//IScriptContext* pScriptContext = NULL;
 };
 
 class GraphicsNode : public Node

@@ -16,7 +16,7 @@ namespace example
             LoadScriptFile(ASSETPATH("scripts/script.lua"));
             SetScript("ScriptingWindow");
             InvokeScript("onCreate");
-            node.SetScript("FrameCounter");
+            //node.SetScript("FrameCounter");
             scene.AddChild(&node);
             scene.Awake();
         }

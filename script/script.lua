@@ -90,11 +90,10 @@ end
 Shader = class("Shader", ScriptableObject)
 
 ShaderLib = class("ShaderLib", ScriptableObject)
-function ShaderLib.load(self, filename)
-	GLRT.shaderlibLoad(self, filename)
+function ShaderLib.__init__(self)
+	ScriptableObject.__init__(self)
+	self.load = function(filename) GLRT.shaderlibLoad(self, filename) end
+	self.get  = function(filename) GLRT.shaderlibGet(self, filename) end
 end
 
-function ShaderLib.get(self, filename)
-	GLRT.shaderlibGet(self, filename)
-end
 Material = class("Material", ScriptableObject)

@@ -140,7 +140,7 @@ public:
 			return false;
 		}
 
-		if (!lua_istable(L, -1))
+		if (!lua_istable(L, -param_count()))
 		{
 			luaL_typeerror(L, -param_count(), "script_context");
 			return false;
@@ -404,7 +404,7 @@ int GLRT_LUAAPI(lua_State* L)
 	luaL_newlib(L, GLRT_LUAAPI_NODE_TRANSFORM);
 	luaL_newlib(L, GLRT_LUAAPI_MATERIAL);
 	luaL_newlib(L, GLRT_LUAAPI_SHADERLIB);
-	return 3;
+	return 1;
 }
 
 IScriptContext* IScriptContext::Alloc(IScriptable* pData)

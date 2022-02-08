@@ -2,6 +2,8 @@ ScriptingWindow = class("ScriptingWindow", ScriptableObject)
 
 function ScriptingWindow.onCreate(self)
 	print("on scripting window create")
+	shaderLib = GLRT.shaderlibGetInstance()
+	meshshader = shaderLib.load("examples/scripting/assets/glsl/mesh")
 end
 
 

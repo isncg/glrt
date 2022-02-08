@@ -18,7 +18,7 @@ public:
 	~Shader();
 	//void Load(std::string vert, std::string frag);
 	void Load(std::string&& vert, std::string&& frag);
-	void Load(std::string&& vert, std::string&& frag, std::string&& geom);
+	bool Load(std::string&& vert, std::string&& frag, std::string&& geom);
 	void Use();
 	void Set(const char* name, Matrix4x4& value);
 	void Set(const char* name, Matrix4x4&& value);

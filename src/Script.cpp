@@ -57,71 +57,11 @@ void InitScript()
 	_luascript.Init();
 }
 
-class LuaCallParam
-{
-public:
-	IScriptContext* pContext;
-	virtual int param_count() { return 1; }
-	virtual bool fill_params(lua_State* L)
-	{
-		if (lua_gettop(L) != param_count())
-			return false;
-		if (!lua_islightuserdata(L, -param_count()))
-			return false;
-		pContext = (IScriptContext*)lua_touserdata(L, -param_count());
-		return true;
-	}
-};
-
-bool fill_lua_value(float* value, lua_State* L, int index)
-{
-	int result;
-	*value = lua_tonumberx(L, index, &result);
-	return result;
-}
-
-bool fill_lua_value(int* value, lua_State* L, int index)
-{
-	int result;
-	*value = lua_tointegerx(L, index, &result);
-	return result;
-}
-
-bool fill_lua_value(std::string* value, lua_State* L, int index)
-{
-	if (!lua_isstring(L, index))
-		return false;
-	*value = lua_tostring(L, index);
-	return true;
-}
-
-template<typename T1>
-class LuaCallParam1 : public LuaCallParam
-{
-public:	
-	T1 arg1;
-	virtual int param_count() override { return 2; }
-	virtual bool fill_params(lua_State* L) override
-	{
-		return LuaCallParam::fill_params(L) && fill_lua_value(&arg1, L, -param_count() + 1);
-	}
-};
-template<typename T1, typename T2>
-class LuaCallParam2 : public LuaCallParam1<T1>
-{
-public:
-	T2 arg2;
-	virtual int param_count() override { return 3; }
-	virtual bool fill_params(lua_State* L) override
-	{
-		return LuaCallParam<T1>::fill_params(L) && fill_lua_value(&arg2, L, -param_count() + 2);
-	}
-};
-
+const int MAGIC_LuaScriptContext = 365905;
 class LuaScriptContext : public IScriptContext
 {
 public:
-
+	int magic = MAGIC_LuaScriptContext;
 	void BindScript(const char* class_name)
 	{
 		auto L = _luascript.L;
@@ -144,7 +84,7 @@ public:
 			return;
 		}
 		instance_name = string_format("ctx_%p", this);
-		lua_newtable(L);		
+		lua_newtable(L);
 		lua_pushstring(L, "context");
 		lua_pushlightuserdata(L, this);
 		lua_settable(L, -3);
@@ -186,41 +126,172 @@ public:
 		}
 	}
 
-	static LuaScriptContext* Get(lua_State* L)
+	//static LuaScriptContext* Get(lua_State* L)
+	//{
+	//	if (!lua_istable(L, -1))
+	//	{
+	//		lua_pop(L, 1);
+	//		return NULL;
+	//	}
+	//	lua_pushstring(L, "context");
+	//	lua_gettable(L, -2);
+	//	if (!lua_islightuserdata(L, -1))
+	//	{
+	//		lua_pop(L, 2);
+	//		return NULL;
+	//	}
+	//	auto result = (LuaScriptContext*)lua_touserdata(L, -1);
+	//	lua_pop(L, 2);
+	//	return result;
+	//}
+};
+
+class LuaCallParam
+{
+public:
+	LuaScriptContext* pContext;
+	virtual int param_count() { return 1; }
+	virtual bool fill_params(lua_State* L)
 	{
+		if (lua_gettop(L) != param_count())
+		{
+			luaL_error(L, "expected %d params, got %d", param_count(), lua_gettop(L));
+			return false;
+		}
+
 		if (!lua_istable(L, -1))
 		{
+			luaL_typeerror(L, -param_count(), "script_context");
+			return false;
+		}
+		lua_pushstring(L, "context");
+		lua_gettable(L, -param_count() - 1);
+		if (!lua_islightuserdata(L, -1))
+		{
+			luaL_typeerror(L, -param_count(), "script_context with context field");
 			lua_pop(L, 1);
 			return NULL;
 		}
-		lua_pushstring(L, "context");
-		lua_gettable(L, -2);
-		if (!lua_islightuserdata(L, -1))
+		pContext = (LuaScriptContext*)lua_touserdata(L, -1);
+		lua_pop(L, 1);
+		if (NULL == pContext)
 		{
-			lua_pop(L, 2);
-			return NULL;
+			luaL_error(L, "invalid context");
+			return false;
 		}
-		auto result = (LuaScriptContext*)lua_touserdata(L, -1);
-		lua_pop(L, 2);
-		return result;
+		if (pContext->magic != MAGIC_LuaScriptContext)
+		{
+			luaL_error(L, "bad magic %d", pContext->magic);
+			return false;
+		}
+		return true;
 	}
 };
+
+bool fill_lua_value(float* value, lua_State* L, int index)
+{
+	int result;
+	*value = lua_tonumberx(L, index, &result);
+	if (!result)
+		luaL_typeerror(L, index, "float");
+	return result;
+}
+
+bool fill_lua_value(int* value, lua_State* L, int index)
+{
+	int result;
+	*value = lua_tointegerx(L, index, &result);
+	if (!result)
+		luaL_typeerror(L, index, "int");
+	return result;
+}
+
+bool fill_lua_value(std::string* value, lua_State* L, int index)
+{
+	if (!lua_isstring(L, index))
+	{
+		luaL_typeerror(L, index, "string");
+		return false;
+	}
+	*value = lua_tostring(L, index);
+	return true;
+}
+
+template<typename T1>
+class LuaCallParam1 : public LuaCallParam
+{
+public:
+	T1 arg1;
+	virtual int param_count() override { return 2; }
+	virtual bool fill_params(lua_State* L) override
+	{
+		return LuaCallParam::fill_params(L) && fill_lua_value(&arg1, L, -param_count() + 1);
+	}
+};
+
+template<typename T1, typename T2>
+class LuaCallParam2 : public LuaCallParam1<T1>
+{
+public:
+	T2 arg2;
+	virtual int param_count() override { return 3; }
+	virtual bool fill_params(lua_State* L) override
+	{
+		return LuaCallParam1<T1>::fill_params(L) && fill_lua_value(&arg2, L, -param_count() + 2);
+	}
+};
+
+template<typename T1, typename T2, typename T3>
+class LuaCallParam3 : public LuaCallParam2<T1, T2>
+{
+public:
+	T3 arg3;
+	virtual int param_count() override { return 4; }
+	virtual bool fill_params(lua_State* L) override
+	{
+		return LuaCallParam2<T1, T2>::fill_params(L) && fill_lua_value(&arg3, L, -param_count() + 3);
+	}
+};
+
+template<typename T1, typename T2, typename T3, typename T4>
+class LuaCallParam4 : public LuaCallParam3<T1, T2, T3>
+{
+public:
+	T3 arg4;
+	virtual int param_count() override { return 5; }
+	virtual bool fill_params(lua_State* L) override
+	{
+		return LuaCallParam3<T1, T2, T3>::fill_params(L) && fill_lua_value(&arg4, L, -param_count() + 4);
+	}
+};
+
+
 
 #include "../include/scene/node.h"
 
 static int LuaScript_GetTransformPosition(lua_State* L)
 {
-	auto ctx = LuaScriptContext::Get(L);
-	if (NULL == ctx || NULL == ctx->pData) return 0;
-	lua_pushnumber(L, ((Node*)(ctx->pData))->transform.position.x);
-	lua_pushnumber(L, ((Node*)(ctx->pData))->transform.position.y);
-	lua_pushnumber(L, ((Node*)(ctx->pData))->transform.position.z);
+	LuaCallParam param;
+	if (!param.fill_params(L))
+		return 0;
+	lua_pushnumber(L, param.pContext->pData->as<Node>()->transform.position.x);
+	lua_pushnumber(L, param.pContext->pData->as<Node>()->transform.position.y);
+	lua_pushnumber(L, param.pContext->pData->as<Node>()->transform.position.z);
 	return 3;
 }
 
 static int LuaScript_SetTransformPosition(lua_State* L)
 {
-	if (!lua_isnumber(L, -1) || !lua_isnumber(L, -2) || !lua_isnumber(L, -3)) return 0;
+	LuaCallParam3<float, float, float> params;
+	if (params.fill_params(L))
+	{
+		auto ctx = params.pContext->data<Node>();
+		ctx->transform.position.x = params.arg1;
+		ctx->transform.position.y = params.arg2;
+		ctx->transform.position.z = params.arg3;
+	}
+	return 0;
+	/*if (!lua_isnumber(L, -1) || !lua_isnumber(L, -2) || !lua_isnumber(L, -3)) return 0;
 	auto z = lua_tonumber(L, -1);
 	auto y = lua_tonumber(L, -2);
 	auto x = lua_tonumber(L, -3);
@@ -230,7 +301,7 @@ static int LuaScript_SetTransformPosition(lua_State* L)
 	((Node*)(ctx->pData))->transform.position.x = x;
 	((Node*)(ctx->pData))->transform.position.y = y;
 	((Node*)(ctx->pData))->transform.position.z = z;
-	return 0;
+	return 0;*/
 }
 
 static const luaL_Reg GLRT_LUAAPI_NODE_TRANSFORM[] =
@@ -243,7 +314,11 @@ static const luaL_Reg GLRT_LUAAPI_NODE_TRANSFORM[] =
 #include "../include/Material.h"
 static int LuaScript_SetMaterialColor(lua_State* L)
 {
-	if (!lua_isnumber(L, -1) || !lua_isnumber(L, -2) || !lua_isnumber(L, -3) || !lua_isstring(L, -4)) return 0;
+	LuaCallParam4<std::string, float, float, float> param;
+	if (!param.fill_params(L))
+		return 0;
+	param.pContext->pData->as<Material>()->Set(param.arg1, Color{ param.arg2, param.arg3, param.arg4 });
+	/*if (!lua_isnumber(L, -1) || !lua_isnumber(L, -2) || !lua_isnumber(L, -3) || !lua_isstring(L, -4)) return 0;
 	auto z = lua_tonumber(L, -1);
 	auto y = lua_tonumber(L, -2);
 	auto x = lua_tonumber(L, -3);
@@ -251,20 +326,15 @@ static int LuaScript_SetMaterialColor(lua_State* L)
 	lua_pop(L, 3);
 	auto ctx = LuaScriptContext::Get(L);
 	if (NULL == ctx || NULL == ctx->pData) return 0;
-	ctx->data<Material>()->Set(name, Color{ (float)x, (float)y, (float)z });
+	ctx->data<Material>()->Set(name, Color{ (float)x, (float)y, (float)z });*/
 }
 
 static int LuaScript_SetMaterialF3(lua_State* L)
 {
-	if (!lua_isnumber(L, -1) || !lua_isnumber(L, -2) || !lua_isnumber(L, -3) || !lua_isstring(L, -4)) return 0;
-	auto z = lua_tonumber(L, -1);
-	auto y = lua_tonumber(L, -2);
-	auto x = lua_tonumber(L, -3);
-	auto name = lua_tostring(L, -4);
-	lua_pop(L, 3);
-	auto ctx = LuaScriptContext::Get(L);
-	if (NULL == ctx || NULL == ctx->pData) return 0;
-	ctx->data<Material>()->Set(name, Vector3{ (float)x, (float)y, (float)z });
+	LuaCallParam4<std::string, float, float, float> param;
+	if (!param.fill_params(L))
+		return 0;
+	param.pContext->pData->as<Material>()->Set(param.arg1, Vector3{ param.arg2, param.arg3, param.arg4 });
 }
 
 static const luaL_Reg GLRT_LUAAPI_MATERIAL[] =
@@ -277,12 +347,15 @@ static const luaL_Reg GLRT_LUAAPI_MATERIAL[] =
 #include "../include/Shader.h"
 static int LuaScript_ShaderLibLoad(lua_State* L)
 {
-	if (!lua_isstring(L, -1)) return 0;
-	auto name = lua_tostring(L, -1);
-	lua_pop(L, 1);
-	auto ctx = LuaScriptContext::Get(L);
-	if (NULL == ctx || NULL == ctx->pData) return 0;
-	auto shader = ctx->data<ShaderLib>()->Load(name);
+	LuaCallParam1<std::string> param;
+	if (!param.fill_params(L))
+		return 0;
+	//if (!lua_isstring(L, -1)) return 0;
+	//auto name = lua_tostring(L, -1);
+	//lua_pop(L, 1);
+	//auto ctx = LuaScriptContext::Get(L);
+	//if (NULL == ctx || NULL == ctx->pData) return 0;
+	auto shader = param.pContext->data<ShaderLib>()->Load(std::move(param.arg1));
 	if (NULL == shader) return 0;
 	if (NULL == shader->pScriptContext)
 	{
@@ -295,12 +368,16 @@ static int LuaScript_ShaderLibLoad(lua_State* L)
 
 static int LuaScript_ShaderLibGet(lua_State* L)
 {
-	if (!lua_isstring(L, -1)) return 0;
-	std::string name = lua_tostring(L, -1);
-	lua_pop(L, 1);
-	auto ctx = LuaScriptContext::Get(L);
-	if (NULL == ctx || NULL == ctx->pData) return 0;
-	auto shader = ctx->data<ShaderLib>()->Get(name);
+	LuaCallParam1<std::string> param;
+	if (!param.fill_params(L))
+		return 0;
+
+	//if (!lua_isstring(L, -1)) return 0;
+	//std::string name = lua_tostring(L, -1);
+	//lua_pop(L, 1);
+	//auto ctx = LuaScriptContext::Get(L);
+	//if (NULL == ctx || NULL == ctx->pData) return 0;
+	auto shader = param.pContext->data<ShaderLib>()->Get(param.arg1);
 	if (NULL == shader) return 0;
 	if (NULL == shader->pScriptContext)
 	{

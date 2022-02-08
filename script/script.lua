@@ -69,6 +69,8 @@ end
 
 
 ScriptableObject = {}
+function ScriptableObject.__init__(self)
+end
 
 LuaBehavior = class("LuaBehavior", ScriptableObject)
 function LuaBehavior.__init__(self)
@@ -96,20 +98,3 @@ function ShaderLib.get(self, filename)
 	GLRT.shaderlibGet(self, filename)
 end
 Material = class("Material", ScriptableObject)
-
---[[
-Test case: frame counter
-c++:
-	Node* pNode = ...
-	IScriptContext::Alloc(pNode)->BindScript("FrameCounter");
-]]--
-FrameCounter = class("FrameCounter", LuaBehavior)
-function FrameCounter.awake(self)
-	self.frameCount = 0
-end
-
-function FrameCounter.update(self)
-	self.frameCount = self.frameCount + 1 
-	print("frame count", self.frameCount)
-end
-

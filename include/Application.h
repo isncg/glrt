@@ -2,7 +2,8 @@
 #include <framework.h>
 #include "Window.h"
 #include "../utils/singleton.h"
-class Application: public Singleton<Application>
+#include "../include/Script.h"
+class Application: public Singleton<Application>, public IScriptable
 {
     SINGLETON_CTOR(Application)
 public:

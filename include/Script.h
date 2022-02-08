@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+void LoadScriptFile(std::string&& fname);
 
 class IScriptable;
 class IScriptContext

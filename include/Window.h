@@ -3,6 +3,7 @@
 #include <vector>
 #include "../utils/stdhelpers.h"
 #include <chrono>
+#include "Script.h"
 enum KEYS
 {
 	KEY_SHIFT			=0x10,//	SHIFT key
@@ -97,7 +98,7 @@ public:
 	virtual void FrameUpdate() = 0;
 };
 
-class Window
+class Window: public IScriptable
 {
 	friend class Application;
 	friend LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

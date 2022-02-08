@@ -71,7 +71,7 @@ public:
 		auto ret = lua_getglobal(L, class_name);
 		if (!lua_istable(L, -1))
 		{
-			fprintf(stdout, "[LuaScriptContext:Create] can not get class %s", class_name);
+			fprintf(stdout, "[LuaScriptContext:Create] can not get class %s\n", class_name);
 			lua_pop(L, 1);
 			return;
 		}
@@ -79,7 +79,7 @@ public:
 		ret = lua_gettable(L, -2);
 		if (!lua_isfunction(L, -1))
 		{
-			fprintf(stdout, "[LuaScriptContext:Create] can not get function init of class %s", class_name);
+			fprintf(stdout, "[LuaScriptContext:Create] can not get function init of class %s\n", class_name);
 			lua_pop(L, 2);
 			return;
 		}
@@ -93,7 +93,7 @@ public:
 		ret = lua_pcall(L, 1, 0, 0);
 		if (ret != LUA_OK)
 		{
-			fprintf(stdout, "[LuaScriptContext:Create][%s.init] %s", class_name, lua_tostring(L, -1));
+			fprintf(stdout, "[LuaScriptContext:Create][%s.init] %s\n", class_name, lua_tostring(L, -1));
 			lua_pop(L, 1);
 		}
 		lua_pop(L, 1);
@@ -121,29 +121,10 @@ public:
 		auto ret = lua_pcall(L, 1, 0, 0);
 		if (ret != LUA_OK)
 		{
-			fprintf(stdout, "[LuaScriptContext:Invoke][%s.%s] %s", class_name.c_str(), method, lua_tostring(L, -1));
+			fprintf(stdout, "[LuaScriptContext:Invoke][%s.%s] %s\n", class_name.c_str(), method, lua_tostring(L, -1));
 			lua_pop(L, 1);
 		}
 	}
-
-	//static LuaScriptContext* Get(lua_State* L)
-	//{
-	//	if (!lua_istable(L, -1))
-	//	{
-	//		lua_pop(L, 1);
-	//		return NULL;
-	//	}
-	//	lua_pushstring(L, "context");
-	//	lua_gettable(L, -2);
-	//	if (!lua_islightuserdata(L, -1))
-	//	{
-	//		lua_pop(L, 2);
-	//		return NULL;
-	//	}
-	//	auto result = (LuaScriptContext*)lua_touserdata(L, -1);
-	//	lua_pop(L, 2);
-	//	return result;
-	//}
 };
 
 class LuaCallParam
@@ -446,4 +427,9 @@ void IScriptable::InvokeScript(const char* method)
 {
 	if (NULL != pScriptContext)
 		pScriptContext->Invoke(method);
+}
+
+void LoadScriptFile(std::string&& fname)
+{
+	luaL_dofile(_luascript.L, fname.c_str());
 }

@@ -23,6 +23,7 @@ public:
 	IScriptContext* pScriptContext = NULL;
 	void SetScript(const char* className);
 	void InvokeScript(const char* method);
+	IScriptContext* GetOrCreateScriptContext(const char* className = nullptr);
 	template<typename T>
 	T* as();
 };

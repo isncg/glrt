@@ -127,6 +127,32 @@ public:
 	}
 };
 
+int LuaGetScriptContext(lua_State* L, IScriptContext* pScriptContext)
+{
+	if (pScriptContext)
+	{
+		lua_getglobal(L, pScriptContext->instance_name.c_str());
+		return 1;
+	}
+	return 0;
+}
+
+int LuaGetScriptContext(lua_State* L, IScriptable* pScriptable, const char* className)
+{
+	if (pScriptable)
+	{
+		auto ctx = pScriptable->GetOrCreateScriptContext(className);
+		return LuaGetScriptContext(L, ctx);
+	}
+	return 0;
+}
+
+int LuaGetScriptContext(lua_State* L, IScriptable& pScriptable, const char* className)
+{
+	auto ctx = pScriptable.GetOrCreateScriptContext(className);
+	return LuaGetScriptContext(L, ctx);
+}
+
 class LuaCallParam
 {
 public:
@@ -272,17 +298,6 @@ static int LuaScript_SetTransformPosition(lua_State* L)
 		ctx->transform.position.z = params.arg3;
 	}
 	return 0;
-	/*if (!lua_isnumber(L, -1) || !lua_isnumber(L, -2) || !lua_isnumber(L, -3)) return 0;
-	auto z = lua_tonumber(L, -1);
-	auto y = lua_tonumber(L, -2);
-	auto x = lua_tonumber(L, -3);
-	lua_pop(L, 3);
-	auto ctx = LuaScriptContext::Get(L);
-	if (NULL == ctx || NULL == ctx->pData) return 0;
-	((Node*)(ctx->pData))->transform.position.x = x;
-	((Node*)(ctx->pData))->transform.position.y = y;
-	((Node*)(ctx->pData))->transform.position.z = z;
-	return 0;*/
 }
 
 static const luaL_Reg GLRT_LUAAPI_NODE_TRANSFORM[] =
@@ -299,15 +314,6 @@ static int LuaScript_SetMaterialColor(lua_State* L)
 	if (!param.fill_params(L))
 		return 0;
 	param.pContext->pData->as<Material>()->Set(param.arg1, Color{ param.arg2, param.arg3, param.arg4 });
-	/*if (!lua_isnumber(L, -1) || !lua_isnumber(L, -2) || !lua_isnumber(L, -3) || !lua_isstring(L, -4)) return 0;
-	auto z = lua_tonumber(L, -1);
-	auto y = lua_tonumber(L, -2);
-	auto x = lua_tonumber(L, -3);
-	auto name = lua_tostring(L, -4);
-	lua_pop(L, 3);
-	auto ctx = LuaScriptContext::Get(L);
-	if (NULL == ctx || NULL == ctx->pData) return 0;
-	ctx->data<Material>()->Set(name, Color{ (float)x, (float)y, (float)z });*/
 }
 
 static int LuaScript_SetMaterialF3(lua_State* L)
@@ -331,20 +337,7 @@ static int LuaScript_ShaderLibLoad(lua_State* L)
 	LuaCallParam1<std::string> param;
 	if (!param.fill_params(L))
 		return 0;
-	//if (!lua_isstring(L, -1)) return 0;
-	//auto name = lua_tostring(L, -1);
-	//lua_pop(L, 1);
-	//auto ctx = LuaScriptContext::Get(L);
-	//if (NULL == ctx || NULL == ctx->pData) return 0;
-	auto shader = param.pContext->data<ShaderLib>()->Load(std::move(param.arg1));
-	if (NULL == shader) return 0;
-	if (NULL == shader->pScriptContext)
-	{
-		IScriptContext::Alloc(shader);
-		shader->pScriptContext->BindScript("Shader");
-	}
-	lua_getglobal(L, shader->pScriptContext->instance_name.c_str());
-	return 1;
+	return LuaGetScriptContext(L, param.pContext->data<ShaderLib>()->Load(std::move(param.arg1)), "Shader");
 }
 
 static int LuaScript_ShaderLibGet(lua_State* L)
@@ -352,42 +345,12 @@ static int LuaScript_ShaderLibGet(lua_State* L)
 	LuaCallParam1<std::string> param;
 	if (!param.fill_params(L))
 		return 0;
-
-	//if (!lua_isstring(L, -1)) return 0;
-	//std::string name = lua_tostring(L, -1);
-	//lua_pop(L, 1);
-	//auto ctx = LuaScriptContext::Get(L);
-	//if (NULL == ctx || NULL == ctx->pData) return 0;
-	auto shader = param.pContext->data<ShaderLib>()->Get(param.arg1);
-	if (NULL == shader) return 0;
-	if (NULL == shader->pScriptContext)
-	{
-		IScriptContext::Alloc(shader);
-		shader->pScriptContext->BindScript("Shader");
-	}
-
-	if (shader->pScriptContext)
-	{
-		lua_getglobal(L, shader->pScriptContext->instance_name.c_str());
-		return 1;
-	}
-	return 0;
+	return LuaGetScriptContext(L, param.pContext->data<ShaderLib>()->Get(param.arg1), "Shader");
 }
 
 static int LuaScript_ShaderLibGetInstance(lua_State* L)
 {
-	auto& inst = ShaderLib::Instance();
-	if (!inst.pScriptContext)
-	{
-		IScriptContext::Alloc(&inst);
-		inst.pScriptContext->BindScript("ShaderLib");
-	}
-	if (inst.pScriptContext)
-	{
-		lua_getglobal(L, inst.pScriptContext->instance_name.c_str());
-		return 1;
-	}
-	return 0;
+	return LuaGetScriptContext(L, ShaderLib::Instance(), "ShaderLib");
 }
 
 static const luaL_Reg GLRT_LUAAPI_SHADERLIB[] =
@@ -427,6 +390,16 @@ void IScriptable::InvokeScript(const char* method)
 {
 	if (NULL != pScriptContext)
 		pScriptContext->Invoke(method);
+}
+
+IScriptContext* IScriptable::GetOrCreateScriptContext(const char* className)
+{
+	if (nullptr != pScriptContext)
+		return pScriptContext;
+	if (nullptr == className)
+		return nullptr;
+	SetScript(className);
+	return pScriptContext;
 }
 
 void LoadScriptFile(std::string&& fname)

@@ -1,5 +1,6 @@
 #pragma once
 #include <framework.h>
+#include <list>
 #include "Window.h"
 #include "../utils/singleton.h"
 #include "../include/Script.h"
@@ -13,19 +14,22 @@ public:
     LPWSTR    lpCmdLine =0 ;
     int       nCmdShow = 0;
 
+    std::list<Window*> window_list;
+    Window* pCurrentWindow;
+    int ShowWindow(Window* pWindow);
+    template<typename T>
+    int ShowWindow();
     //const char* assetDir = "";
     void Init(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow);
-    int Run(Window* pMainWindow, bool allocConsole = true);
-    template<class T>
-    int Run();
+    int Run(Window* pMainWindow = nullptr);
 };
 
 //std::string GetAssetPath(std::string && path);
 
-template<class T>
-inline int Application::Run()
+template<typename T>
+inline int Application::ShowWindow()
 {
-    return 0;
+    return ShowWindow(new T);
 }
 
 #define RUN_WINDOW(WNDCLASS) \

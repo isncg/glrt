@@ -101,6 +101,8 @@ public:
 class Window: public IScriptable
 {
 	friend class Application;
+#ifdef WIN32
+private:
 	friend LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	bool ready = false;
 	LONG mouseX,mouseY;
@@ -109,11 +111,19 @@ class Window: public IScriptable
 protected:
 	HDC hdc;
 	HGLRC hGLRC;
-	IFrameStatics* frameStatics;
 	virtual LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam);
+	virtual void OnPaint(HDC hdc);
+public:
+	HWND hWnd = NULL;
+	LPCWSTR szTitle = TEXT("GLRT");
+	virtual LPCWSTR GetWindowClassName();
+	virtual void PopulateClassInfo(WNDCLASSEXW* pwcex);
+#endif
+
+	IFrameStatics* frameStatics;
+protected:
 	virtual void GetInitSize(long* width, long* height);
 	virtual bool IsEnableVsync();
-	virtual void OnPaint(HDC hdc);
 	virtual void OnDestroy();
 	virtual void OnCreate();
 	virtual void OnResize(long width, long height);
@@ -131,9 +141,4 @@ protected:
 public:
 	Vector2 GetClientSize();
 	float GetClientAspect();
-	virtual LPCWSTR GetWindowClassName();
-	virtual void PopulateClassInfo(WNDCLASSEXW* pwcex);
-	HWND hWnd = NULL;
-	LPCWSTR szTitle = TEXT("GLRT");
-	//virtual IFrameStatics* GetFrameStatics();
 };

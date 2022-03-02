@@ -193,6 +193,9 @@ public:
 		}
 		return true;
 	}
+
+	template<typename T>
+	T* C();
 };
 
 bool fill_lua_value(float* value, lua_State* L, int index)
@@ -272,31 +275,29 @@ public:
 	}
 };
 
-
-
+#define CHECK_LUA_ARG(x, l) LuaCallParam x;if(!x.fill_params(l))return 0
+#define CHECK_LUA_ARG1(x, l, t1) LuaCallParam1<t1> params;if(!x.fill_params(l))return 0
+#define CHECK_LUA_ARG3(x, l, t1, t2, t3) LuaCallParam3<t1, t2, t3> params;if(!x.fill_params(l))return 0
+#define CHECK_LUA_ARG4(x, l, t1, t2, t3, t4) LuaCallParam4<t1, t2, t3, t4> params;if(!x.fill_params(l))return 0
 #include "../include/scene/node.h"
 
 static int LuaScript_GetTransformPosition(lua_State* L)
 {
-	LuaCallParam param;
-	if (!param.fill_params(L))
-		return 0;
-	lua_pushnumber(L, param.pContext->pData->as<Node>()->transform.position.x);
-	lua_pushnumber(L, param.pContext->pData->as<Node>()->transform.position.y);
-	lua_pushnumber(L, param.pContext->pData->as<Node>()->transform.position.z);
+	CHECK_LUA_ARG(params, L);
+	auto node = params.C<Node>();
+	lua_pushnumber(L, node->transform.position.x);
+	lua_pushnumber(L, node->transform.position.y);
+	lua_pushnumber(L, node->transform.position.z);
 	return 3;
 }
 
 static int LuaScript_SetTransformPosition(lua_State* L)
 {
-	LuaCallParam3<float, float, float> params;
-	if (params.fill_params(L))
-	{
-		auto ctx = params.pContext->data<Node>();
-		ctx->transform.position.x = params.arg1;
-		ctx->transform.position.y = params.arg2;
-		ctx->transform.position.z = params.arg3;
-	}
+	CHECK_LUA_ARG3(params, L, float, float, float);	
+	auto node = params.C<Node>();
+	node->transform.position.x = params.arg1;
+	node->transform.position.y = params.arg2;
+	node->transform.position.z = params.arg3;
 	return 0;
 }
 
@@ -310,18 +311,14 @@ static const luaL_Reg GLRT_LUAAPI_NODE_TRANSFORM[] =
 #include "../include/Material.h"
 static int LuaScript_SetMaterialColor(lua_State* L)
 {
-	LuaCallParam4<std::string, float, float, float> param;
-	if (!param.fill_params(L))
-		return 0;
-	param.pContext->pData->as<Material>()->Set(param.arg1, Color{ param.arg2, param.arg3, param.arg4 });
+	CHECK_LUA_ARG4(params, L, std::string, float, float, float);
+	params.C<Material>()->Set(params.arg1, Color{ params.arg2, params.arg3, params.arg4 });
 }
 
 static int LuaScript_SetMaterialF3(lua_State* L)
 {
-	LuaCallParam4<std::string, float, float, float> param;
-	if (!param.fill_params(L))
-		return 0;
-	param.pContext->pData->as<Material>()->Set(param.arg1, Vector3{ param.arg2, param.arg3, param.arg4 });
+	CHECK_LUA_ARG4(params, L, std::string, float, float, float);
+	params.C<Material>()->Set(params.arg1, Vector3{ params.arg2, params.arg3, params.arg4 });
 }
 
 static const luaL_Reg GLRT_LUAAPI_MATERIAL[] =
@@ -334,18 +331,14 @@ static const luaL_Reg GLRT_LUAAPI_MATERIAL[] =
 #include "../include/Shader.h"
 static int LuaScript_ShaderLibLoad(lua_State* L)
 {
-	LuaCallParam1<std::string> param;
-	if (!param.fill_params(L))
-		return 0;
-	return LuaGetScriptContext(L, param.pContext->data<ShaderLib>()->Load(std::move(param.arg1)), "Shader");
+	CHECK_LUA_ARG1(params, L, std::string);
+	return LuaGetScriptContext(L, params.pContext->data<ShaderLib>()->Load(std::move(params.arg1)), "Shader");
 }
 
 static int LuaScript_ShaderLibGet(lua_State* L)
 {
-	LuaCallParam1<std::string> param;
-	if (!param.fill_params(L))
-		return 0;
-	return LuaGetScriptContext(L, param.pContext->data<ShaderLib>()->Get(param.arg1), "Shader");
+	CHECK_LUA_ARG1(params, L, std::string);
+	return LuaGetScriptContext(L, params.pContext->data<ShaderLib>()->Get(params.arg1), "Shader");
 }
 
 static int LuaScript_ShaderLibGetInstance(lua_State* L)
@@ -405,4 +398,10 @@ IScriptContext* IScriptable::GetOrCreateScriptContext(const char* className)
 void LoadScriptFile(std::string&& fname)
 {
 	luaL_dofile(_luascript.L, fname.c_str());
+}
+
+template<typename T>
+T* LuaCallParam::C()
+{
+	return pContext->data<T>();
 }

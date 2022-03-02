@@ -1,5 +1,8 @@
 #pragma once
 #include "../../include/GLRT.h"
+
+struct ImGuiContext;
+
 namespace example
 {
 	struct CameraStartupParam
@@ -27,7 +30,7 @@ namespace example
 		//Model model;
 		//int frame = 0;
 		//Matrix4x4 mat = Matrix4x4(1);
-
+		ImGuiContext* imgui_ctx;
 		void InitHorizonGrid();
 		void InitAxis();
 		virtual LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam) override;

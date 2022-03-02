@@ -93,7 +93,8 @@ namespace example
 		GLASSERT(glEnable(GL_BLEND));
 		GLASSERT(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-		ImGui::CreateContext();
+		imgui_ctx = ImGui::CreateContext();
+		ImGui::SetCurrentContext(imgui_ctx);
 		ImGui_ImplWin32_Init(hWnd);
 		ImGui_ImplOpenGL3_Init("#version 330");
 	}
@@ -101,6 +102,7 @@ namespace example
 	void Empty3D::OnDestroy()
 	{
 		// Cleanup
+		ImGui::SetCurrentContext(imgui_ctx);
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
@@ -176,6 +178,7 @@ namespace example
 		GLASSERT(PostRender());
 		GLASSERT(DrawAxis());
 
+		ImGui::SetCurrentContext(imgui_ctx);
 		GLASSERT(ImGui_ImplOpenGL3_NewFrame());
 		GLASSERT(ImGui_ImplWin32_NewFrame());
 		GLASSERT(ImGui::NewFrame());

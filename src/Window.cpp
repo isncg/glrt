@@ -14,15 +14,6 @@ PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
 
 
 
-static HMODULE glInst;
-static void* cWGLGetProcAddr(const char* name)
-{
-	auto ret = wglGetProcAddress(name);
-	if (ret == NULL)
-		ret = GetProcAddress(glInst, name);
-	return ret;
-}
-
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -188,7 +179,6 @@ void Window::OnPaint(HDC hdc)
 void Window::OnDestroy()
 {
 	ReleaseDC(hWnd, hdc);
-	FreeLibrary(glInst);
 	wglDeleteContext(hGLRC);
 }
 
@@ -221,8 +211,8 @@ void Window::OnCreate()
 
 	hGLRC = wglCreateContext(hdc);
 	wglMakeCurrent(hdc, hGLRC);
-	glInst = LoadLibrary(TEXT("opengl32.dll"));
-	gladLoadGLLoader(cWGLGetProcAddr);
+	if (GLVersion.major == 0 && GLVersion.minor == 0)
+		gladLoadGL();
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress("wglSwapIntervalEXT");
 	if (wglSwapIntervalEXT)
 		wglSwapIntervalEXT(IsEnableVsync() ? 1 : 0);

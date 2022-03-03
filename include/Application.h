@@ -52,3 +52,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,\
 //    Application::Instance().assetDir = ASSETDIR;\
 //    return Application::Instance().Run(new (WNDCLASS)());\
 //}
+
+class GLApp_PlatformContext
+{
+public:
+    GLApp* pApp;
+};
+
+class GLApp: IScriptable
+{
+    GLApp_PlatformContext* platform_context;
+public:
+    GLApp(GLApp_PlatformContext* context = nullptr);
+    virtual void Start();
+    virtual void Update();
+
+    virtual void GetInitSize(long* width, long* height);
+    virtual void OnCreate();
+    virtual void OnDestroy();
+    virtual void OnResize(long width, long height);
+    virtual void OnMouseMove(long dx, long dy, long x, long y);
+    virtual void OnMouseWheel(int delta);
+    virtual void OnKeyboard(KEYS key, KEYACTION action);
+
+public:
+    Vector2 GetClientSize();
+    float GetClientAspect();
+    void Run();
+};

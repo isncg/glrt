@@ -206,11 +206,11 @@ LRESULT CALLBACK GLApp_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
     }
     break;
     case WM_CREATE:
-        pWin32PlatformContext->pApp->OnCreate();
+        //pWin32PlatformContext->pApp->OnCreate();
         break;
     case WM_SIZE:
-        if (GLVersion.major == 0 && GLVersion.minor == 0)
-            return DefWindowProc(hWnd, message, wParam, lParam);
+		if (!pWin32PlatformContext->ready)
+			return DefWindowProc(hWnd, message, wParam, lParam);
 		pWin32PlatformContext->pApp->OnResize(LOWORD(lParam), HIWORD(lParam));
 		pWin32PlatformContext->pApp->Update();
         break;
@@ -278,12 +278,16 @@ GLApp::GLApp(GLApp_PlatformContext* context)
 {
     if (nullptr != context)
     {
+        this->platform_context = context;
         context->pApp = this;
         return;
     }
-    pWin32PlatformContext = new GLApp_Win32PlatformContext;
-    platform_context = pWin32PlatformContext;
-    platform_context->pApp = this;
+    if (nullptr == pWin32PlatformContext)
+    {
+        pWin32PlatformContext = new GLApp_Win32PlatformContext;
+        platform_context = pWin32PlatformContext;
+        platform_context->pApp = this;
+    }
 }
 
 void GLApp::Start()
@@ -292,70 +296,16 @@ void GLApp::Start()
 
 void GLApp::Update()
 {
-	auto ctx = (GLApp_Win32PlatformContext*)platform_context;
-    LARGE_INTEGER current;
-    QueryPerformanceCounter(&current);
-    auto delta = current.QuadPart - ctx->count.QuadPart;
-    ctx->deltaTime = (double)(delta) / ctx->frequency.QuadPart;
-    ctx->fps = ctx->frequency.QuadPart / (double)(delta);
-    ctx->count = current;
-
-    ctx->fpsAvgAccCount++;
-    ctx->fpsAvgAcc += ctx->fps;
-    if (ctx->fpsAvgAccCount / ctx->fps >= 0.5)
-    {
-        ctx->fpsAveraged = ctx->fpsAvgAcc / ctx->fpsAvgAccCount;
-        ctx->fpsAvgAccCount = 0;
-        ctx->fpsAvgAcc = 0;
-        //if (UpdateFpsCallback != nullptr)
-        //UpdateFpsCallback();
-    }
 }
 
 void GLApp::GetInitSize(long* width, long* height)
 {
 }
 
-void GLApp::OnCreate()
-{
-    PIXELFORMATDESCRIPTOR pfd =
-    {
-        sizeof(PIXELFORMATDESCRIPTOR),
-        1,
-        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
-        PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
-        32,                   // Colordepth of the framebuffer.
-        0, 0, 0, 0, 0, 0,
-        0,
-        0,
-        0,
-        0, 0, 0, 0,
-        24,                   // Number of bits for the depthbuffer
-        8,                    // Number of bits for the stencilbuffer
-        0,                    // Number of Aux buffers in the framebuffer.
-        PFD_MAIN_PLANE,
-        0,
-        0, 0, 0
-    };
-
-    GLApp_Win32PlatformContext* ctx = (GLApp_Win32PlatformContext*)platform_context;
-    ctx->hdc = GetDC(ctx->hWnd);
-    int pixelFormat;
-    pixelFormat = ChoosePixelFormat(ctx->hdc, &pfd);
-    SetPixelFormat(ctx->hdc, pixelFormat, &pfd);
-
-    ctx->hGLRC = wglCreateContext(ctx->hdc);
-    wglMakeCurrent(ctx->hdc, ctx->hGLRC);
-    if (GLVersion.major == 0 && GLVersion.minor == 0)
-        gladLoadGL();
-    //wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress("wglSwapIntervalEXT");
-    //if (wglSwapIntervalEXT)
-    //    wglSwapIntervalEXT(IsEnableVsync() ? 1 : 0);
-
-    QueryPerformanceFrequency(&ctx->frequency);
-    QueryPerformanceCounter(&ctx->count);
-    ctx->fps = 0;
-}
+//void GLApp::OnCreate()
+//{
+//
+//}
 
 void GLApp::OnDestroy()
 {
@@ -377,6 +327,10 @@ void GLApp::OnKeyboard(KEYS key, KEYACTION action)
 {
 }
 
+void GLApp::OnImGUI()
+{
+}
+
 Vector2 GLApp::GetClientSize()
 {
     return Vector2();
@@ -389,6 +343,7 @@ float GLApp::GetClientAspect()
 
 void GLApp::Run()
 {
+    auto ctx = (GLApp_Win32PlatformContext*)platform_context;
     AllocConsole();
     FILE* fDummy;
     freopen_s(&fDummy, "CONOUT$", "w", stdout);
@@ -420,34 +375,75 @@ void GLApp::Run()
     wcex.lpfnWndProc = ::GLApp_WndProc;
     wcex.cbClsExtra = 0;
     wcex.cbWndExtra = 0;
-    wcex.hInstance = pWin32PlatformContext->hInstance;
-    wcex.hIcon = LoadIcon(pWin32PlatformContext->hInstance, MAKEINTRESOURCE(IDI_GLRT));
+    wcex.hInstance = ctx->hInstance;
+    wcex.hIcon = LoadIcon(ctx->hInstance, MAKEINTRESOURCE(IDI_GLRT));
     wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground = 0;
     wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_GLRT);
     wcex.lpszClassName = TEXT("GLRT");
-    wcex.hIconSm = LoadIcon(pWin32PlatformContext->hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.hIconSm = LoadIcon(ctx->hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     RECT rect{ 0 };
     GetInitSize(&rect.right, &rect.bottom);
     AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, TRUE);
     //HWND hWnd = InitInstance(hInstance, nCmdShow);
     HWND hWnd = CreateWindowW(wcex.lpszClassName, wcex.lpszClassName, WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, 0, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, pWin32PlatformContext->hInstance, nullptr);
+        CW_USEDEFAULT, 0, rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, ctx->hInstance, nullptr);
 
     if (!hWnd)
         return;
-    pWin32PlatformContext->hWnd = hWnd;
-    OnCreate();
-    ShowWindow(hWnd, pWin32PlatformContext->nCmdShow);
+    ctx->hWnd = hWnd;
+    //OnCreate();
+    ShowWindow(hWnd, ctx->nCmdShow);
     UpdateWindow(hWnd);
 
+    PIXELFORMATDESCRIPTOR pfd =
+    {
+        sizeof(PIXELFORMATDESCRIPTOR),
+        1,
+        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
+        PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
+        32,                   // Colordepth of the framebuffer.
+        0, 0, 0, 0, 0, 0,
+        0,
+        0,
+        0,
+        0, 0, 0, 0,
+        24,                   // Number of bits for the depthbuffer
+        8,                    // Number of bits for the stencilbuffer
+        0,                    // Number of Aux buffers in the framebuffer.
+        PFD_MAIN_PLANE,
+        0,
+        0, 0, 0
+    };
 
-    HACCEL hAccelTable = LoadAccelerators(pWin32PlatformContext->hInstance, MAKEINTRESOURCE(IDC_GLRT));
+    //GLApp_Win32PlatformContext* ctx = (GLApp_Win32PlatformContext*)platform_context;
+    ctx->hdc = GetDC(ctx->hWnd);
+    int pixelFormat;
+    pixelFormat = ChoosePixelFormat(ctx->hdc, &pfd);
+    SetPixelFormat(ctx->hdc, pixelFormat, &pfd);
+
+    ctx->hGLRC = wglCreateContext(ctx->hdc);
+    wglMakeCurrent(ctx->hdc, ctx->hGLRC);
+    if (GLVersion.major == 0 && GLVersion.minor == 0)
+        gladLoadGL();
+
+    ImGui::CreateContext();
+    ImGui_ImplWin32_Init(hWnd);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
+    QueryPerformanceFrequency(&ctx->frequency);
+    QueryPerformanceCounter(&ctx->count);
+    ctx->fps = 0;
+
+
+    HACCEL hAccelTable = LoadAccelerators(ctx->hInstance, MAKEINTRESOURCE(IDC_GLRT));
     MSG msg;
     ResourceMonitor::Instance().Start();
     InvokeScript("init");
 
+    Start();
+    ctx->ready = true;
     while (true)
     {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -462,7 +458,32 @@ void GLApp::Run()
         }
         else
         {
+            wglMakeCurrent(ctx->hdc, ctx->hGLRC);
             Update();
+            GLASSERT(ImGui_ImplOpenGL3_NewFrame());
+            GLASSERT(ImGui_ImplWin32_NewFrame());
+            GLASSERT(ImGui::NewFrame());
+            GLASSERT(OnImGUI());
+            GLASSERT(ImGui::Render());
+            GLASSERT(ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData()));
+            wglSwapLayerBuffers(ctx->hdc, WGL_SWAP_MAIN_PLANE);
+
+            LARGE_INTEGER current;
+            QueryPerformanceCounter(&current);
+            auto delta = current.QuadPart - ctx->count.QuadPart;
+            ctx->deltaTime = (double)(delta) / ctx->frequency.QuadPart;
+            ctx->fps = ctx->frequency.QuadPart / (double)(delta);
+            ctx->count = current;
+
+            ctx->fpsAvgAccCount++;
+            ctx->fpsAvgAcc += ctx->fps;
+            if (ctx->fpsAvgAccCount / ctx->fps >= 0.5)
+            {
+                ctx->fpsAveraged = ctx->fpsAvgAcc / ctx->fpsAvgAccCount;
+                ctx->fpsAvgAccCount = 0;
+                ctx->fpsAvgAcc = 0;
+            }
+
             GLASSERT(ResourceMonitor::Instance().NotifyAll());
             GLASSERT(GlobalMaterial::Instance().Use());
         }
@@ -475,9 +496,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
+    if (nullptr == win32_instance)
+        return -1;
     win32_instance->hInstance = hInstance;
     win32_instance->nCmdShow = nCmdShow;
 	win32_instance->pApp->Run();
 	return 0;
 }
 #endif
+
+#include <imgui/imgui_impl_win32.h>
+#include <imgui/imgui_impl_opengl3.h>
+struct Viewer3D::Context
+{
+    Shader* m_pGridShader;
+    Shader* m_pAxisShader;
+    GLuint gridVAO = 0;
+    GLuint axis = 0;
+    GLuint skybox = 0;
+    long w = 1280, h = 720;
+    ImGuiContext* imgui_ctx;
+};
+
+void Viewer3D::Start()
+{
+    this->pctx_viewer3d = new Context;
+}

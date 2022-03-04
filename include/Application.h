@@ -61,22 +61,37 @@ public:
 
 class GLApp: IScriptable
 {
-    GLApp_PlatformContext* platform_context;
+    GLApp_PlatformContext* platform_context = nullptr;
 public:
     GLApp(GLApp_PlatformContext* context = nullptr);
     virtual void Start();
     virtual void Update();
 
     virtual void GetInitSize(long* width, long* height);
-    virtual void OnCreate();
+    //virtual void OnCreate();
     virtual void OnDestroy();
     virtual void OnResize(long width, long height);
     virtual void OnMouseMove(long dx, long dy, long x, long y);
     virtual void OnMouseWheel(int delta);
     virtual void OnKeyboard(KEYS key, KEYACTION action);
+    virtual void OnImGUI();
 
 public:
     Vector2 GetClientSize();
     float GetClientAspect();
     void Run();
+};
+
+class Viewer3D : public GLApp
+{
+    struct Context;
+    Context* pctx_viewer3d;
+public:
+    virtual void Start() override;
+    virtual void Update() override;
+};
+
+class Game : public GLApp
+{
+
 };

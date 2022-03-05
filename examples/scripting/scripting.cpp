@@ -29,4 +29,4 @@ namespace example
         }
     };
 }
-RUN_WINDOW(example::Scripting)
+//RUN_WINDOW(example::Scripting)

@@ -4,6 +4,9 @@
 #include "Window.h"
 #include "../utils/singleton.h"
 #include "../include/Script.h"
+#include "../utils/stdhelpers.h"
+#include "../include/Camera.h"
+
 class Application: public Singleton<Application>, public IScriptable
 {
     SINGLETON_CTOR(Application)
@@ -52,7 +55,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,\
 //    Application::Instance().assetDir = ASSETDIR;\
 //    return Application::Instance().Run(new (WNDCLASS)());\
 //}
-
+class GLApp;
 class GLApp_PlatformContext
 {
 public:
@@ -61,12 +64,12 @@ public:
 
 class GLApp: IScriptable
 {
+protected:
     GLApp_PlatformContext* platform_context = nullptr;
 public:
     GLApp(GLApp_PlatformContext* context = nullptr);
     virtual void Start();
     virtual void Update();
-
     virtual void GetInitSize(long* width, long* height);
     //virtual void OnCreate();
     virtual void OnDestroy();
@@ -75,7 +78,9 @@ public:
     virtual void OnMouseWheel(int delta);
     virtual void OnKeyboard(KEYS key, KEYACTION action);
     virtual void OnImGUI();
-
+#ifdef WIN32
+    virtual LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam);
+#endif
 public:
     Vector2 GetClientSize();
     float GetClientAspect();
@@ -84,11 +89,31 @@ public:
 
 class Viewer3D : public GLApp
 {
+    ASSETDIR("viewer3d/assets/");
     struct Context;
     Context* pctx_viewer3d;
+    struct CameraStartupParam
+    {
+        CameraProjectionParam projection;
+        Vector3 position;
+        Vector3 direction;
+        float moveSpeed;
+    };
+    void InitHorizonGrid();
+    void InitAxis();
+protected:
+    virtual void SetCameraStartupParam(CameraStartupParam& param);
+    virtual void RenderScene();
 public:
     virtual void Start() override;
     virtual void Update() override;
+    virtual void OnMouseMove(long dx, long dy, long x, long y) override;
+    virtual void OnKeyboard(KEYS key, KEYACTION action) override;
+#ifdef WIN32
+    virtual LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+    void DrawHorizonGrid(float size);
+    void DrawAxis();
+#endif
 };
 
 class Game : public GLApp

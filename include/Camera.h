@@ -20,6 +20,7 @@ struct CameraProjectionParam
 class Camera
 {
 	friend class CameraController;
+	friend class CameraFirstPersonController;
 	friend class GlobalMaterial;
 	Matrix4x4 mat_view;
 	Matrix4x4 mat_proj;
@@ -67,8 +68,8 @@ public:
 	bool enabled = true;
 	float yall = 0;
 	float pitch = 0;
-	Vector3 position;
-	Vector3 velocity;
+	Vector3 position = Vector3{ 0,0,0 };
+	Vector3 velocity = Vector3{ 0,0,0 };;
 	const Vector3& GetForwardDirection();
 	float speed = 20.0f;
 	virtual void OnMouseMove(long dx, long dy, long x, long y) override;

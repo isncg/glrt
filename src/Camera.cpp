@@ -133,6 +133,7 @@ void CameraFirstPersonController::Setup(Vector3& pos, float yall, float pitch)
 	this->position = pos;
 	this->yall = yall;
 	this->pitch = pitch;
+	CalcViewMatrix(camera->mat_view);
 }
 
 
@@ -141,9 +142,6 @@ void CameraFirstPersonController::FrameUpdate(double dt)
 	if (!enabled)
 		return;
 	//Vector3 r{ cos(yall) * cos(pitch), sin(pitch), sin(yall) * cos(pitch) };
-	fw.x = sin(yall) * cos(pitch);
-	fw.y = sin(pitch);
-	fw.z = -cos(yall) * cos(pitch);
 	Vector3 rt{ cos(yall), 0, sin(yall) };
 	Vector3 velocity = ((float)(md - ma) * rt + (float)(mw - ms) * fw) * speed;
 	float w = pow(0.5, dt / 0.1);
@@ -153,6 +151,9 @@ void CameraFirstPersonController::FrameUpdate(double dt)
 
 void CameraFirstPersonController::CalcViewMatrix(Matrix4x4& mat_proj)
 {
+	fw.x = sin(yall) * cos(pitch);
+	fw.y = sin(pitch);
+	fw.z = -cos(yall) * cos(pitch);
 	mat_proj = Matrix4x4::LookAt(position, position + fw, Vector3{ 0,1,0 });
 }
 

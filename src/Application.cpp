@@ -635,6 +635,10 @@ void Viewer3D::Start()
 
     InitHorizonGrid();
     InitAxis();
+
+    GLASSERT(glEnable(GL_DEPTH_TEST));
+    GLASSERT(glEnable(GL_BLEND));
+    GLASSERT(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 }
 
 void Viewer3D::Update()

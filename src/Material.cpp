@@ -1,5 +1,5 @@
 #include "../include/Material.h"
-#include "../utils/utils.h"
+#include <utils/utils.h>
 #include "../include/Camera.h"
 #include <imgui/imgui.h>
 void IMaterialParam::SetUniform(GLuint program)

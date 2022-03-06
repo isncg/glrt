@@ -30,21 +30,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="utils\buffer_builder.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\glhelpers.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\log.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\stdhelpers.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\vertex_buffer_builder.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
     <ClCompile Include="3rdparty\bsp30\src\BSPLoader.cpp">
       <Filter>3rdparty</Filter>
     </ClCompile>
@@ -252,29 +237,23 @@
     <ClCompile Include="examples\scripting\scripting.cpp">
       <Filter>examples</Filter>
     </ClCompile>
+    <ClCompile Include="include\utils\buffer_builder.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="include\utils\glhelpers.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="include\utils\log.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="include\utils\stdhelpers.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="include\utils\vertex_buffer_builder.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="utils\buffer_builder.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\glhelpers.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\log.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\singleton.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\stdhelpers.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\utils.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\vertex_buffer_builder.h">
-      <Filter>utils</Filter>
-    </ClInclude>
     <ClInclude Include="examples\empty3d\empty3d.h">
       <Filter>examples</Filter>
     </ClInclude>

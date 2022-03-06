@@ -1,7 +1,7 @@
 #include "../include/Application.h"
 #include "../include/Shader.h"
 #include "../include/Material.h"
-#include "../utils/utils.h"
+#include <utils/utils.h>
 GLuint loadShader(std::string& filename, GLenum shaderType)
 {
 	auto glsl = string_readf(filename);

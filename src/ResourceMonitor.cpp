@@ -1,5 +1,5 @@
 #include "../include/ResourceMonitor.h"
-#include "../utils/utils.h"
+#include <utils/utils.h>
 #include <Windows.h>
 
 class ResourceListener

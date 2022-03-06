@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLRT", "GLRT.vcxproj", "{B18598E5-116E-4D82-8D74-14406F4B5BF2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Viewer3D", "templates\Viewer3D\Viewer3D.vcxproj", "{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{B18598E5-116E-4D82-8D74-14406F4B5BF2}.Release|x64.Build.0 = Release|x64
 		{B18598E5-116E-4D82-8D74-14406F4B5BF2}.Release|x86.ActiveCfg = Release|Win32
 		{B18598E5-116E-4D82-8D74-14406F4B5BF2}.Release|x86.Build.0 = Release|Win32
+		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Debug|x64.ActiveCfg = Debug|x64
+		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Debug|x64.Build.0 = Debug|x64
+		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Debug|x86.ActiveCfg = Debug|Win32
+		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Debug|x86.Build.0 = Debug|Win32
+		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Release|x64.ActiveCfg = Release|x64
+		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Release|x64.Build.0 = Release|x64
+		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Release|x86.ActiveCfg = Release|Win32
+		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,7 @@
 #include "../include/Application.h"
 #include "../include/Mesh.h"
 #include "../include/Renderer.h"
-#include "../utils/utils.h"
+#include <utils/utils.h>
 #include <algorithm>
 #include <set>
 

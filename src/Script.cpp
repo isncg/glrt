@@ -7,7 +7,7 @@ extern "C"
 #include <lua540/lualib.h>
 }
 
-#include "../utils/utils.h"
+#include <utils/utils.h>
 #include "../include/Script.h"
 int GLRT_LUAAPI(lua_State* L);
 

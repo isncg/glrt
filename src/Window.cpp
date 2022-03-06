@@ -7,8 +7,7 @@
 #include <framework.h>
 #include "../Resource.h"
 #include "../include/GLRT.h"
-#include "../utils/glhelpers.h"
-#include "../utils/log.h"
+#include <utils/utils.h>
 typedef BOOL(APIENTRY* PFNWGLSWAPINTERVALFARPROC)(int);
 PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
 
@@ -291,7 +290,7 @@ void Window::OnKeyboard(KEYS key, KEYACTION action)
 {
 }
 
-Vector2 Window::GetClientSize()
+Vector2 Window::GetViewportSize()
 {
 	RECT rect;
 	GetClientRect(hWnd, &rect);
@@ -300,7 +299,7 @@ Vector2 Window::GetClientSize()
 
 float Window::GetClientAspect()
 {
-	auto size = GetClientSize();
+	auto size = GetViewportSize();
 	return size.x / size.y;
 }
 

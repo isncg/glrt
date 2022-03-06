@@ -2,9 +2,9 @@
 #include <framework.h>
 #include <list>
 #include "Window.h"
-#include "../utils/singleton.h"
+#include <utils/singleton.h>
 #include "../include/Script.h"
-#include "../utils/stdhelpers.h"
+#include <utils/stdhelpers.h>
 #include "../include/Camera.h"
 
 class Application: public Singleton<Application>, public IScriptable
@@ -89,7 +89,7 @@ public:
 
 class Viewer3D : public GLApp
 {
-    ASSETDIR("viewer3d/assets/");
+    ASSETDIR("assets/");
     struct Context;
     Context* pctx_viewer3d;
     struct CameraStartupParam

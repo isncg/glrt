@@ -1,5 +1,5 @@
 #include "empty3d.h"
-#include "../../utils/utils.h"
+#include <utils/utils.h>
 #include <imgui/imgui_impl_win32.h>
 #include <imgui/imgui_impl_opengl3.h>
 

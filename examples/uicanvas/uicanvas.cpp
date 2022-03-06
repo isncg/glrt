@@ -1,5 +1,5 @@
 #include "../../include/GLRT.h"
-#include "../../utils/utils.h"
+#include <utils/utils.h>
 
 namespace example
 {
@@ -17,7 +17,7 @@ namespace example
 			shader.Load(ASSETPATH("glsl/canvas.vert"), ASSETPATH("glsl/canvas.frag"));
 			shader.Set("tex", texture);
 			shader.Use();
-			auto hsize = GetClientSize()*0.5f;
+			auto hsize = GetViewportSize()*0.5f;
 			canvasMesh.MergeBatch(CanvasRect({ -hsize.x + 5,   hsize.y - 5   }, { 512,512 }, { 0,1 }), hsize);
 			canvasMesh.MergeBatch(CanvasRect({ -hsize.x + 522, hsize.y - 5   }, { 512,512 }, { 0,1 }), hsize);
 			canvasMesh.MergeBatch(CanvasRect({ -hsize.x + 5,   hsize.y - 522 }, { 512,512 }, { 0,1 }), hsize);

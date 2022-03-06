@@ -1,5 +1,5 @@
 #include "../../include/GLRT.h"
-#include "../../utils/utils.h"
+#include <utils/utils.h>
 namespace example
 {
     class HelloTriangle :public Window

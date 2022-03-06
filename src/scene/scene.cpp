@@ -6,7 +6,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 using namespace ImGui;
-#include "../../utils/utils.h"
+#include <utils/utils.h>
 void Scene::_getname(std::string& name)
 {
 	name = "scene";

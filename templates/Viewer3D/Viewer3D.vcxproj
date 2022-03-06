@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b18598e5-116e-4d82-8d74-14406f4b5bf2}</ProjectGuid>
-    <RootNamespace>GLRT</RootNamespace>
+    <ProjectGuid>{6fb3583c-ab94-4470-a451-a33b0e2c4df5}</ProjectGuid>
+    <RootNamespace>Viewer3D</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,19 +72,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)3rdparty\assimp;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)3rdparty\assimp;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)3rdparty\imgui-glrt\include;$(ProjectDir)3rdparty\glad\include;$(ProjectDir)3rdparty\assimp\include;$(ProjectDir)3rdparty\glm;$(ProjectDir)3rdparty\FreeImage\include;$(ProjectDir)3rdparty\bsp30\include;$(ProjectDir)3rdparty\wad\include;$(ProjectDir);$(ProjectDir)3rdparty\lua;$(SolutionDir)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)3rdparty\assimp;$(ProjectDir)3rdparty\FreeImage;$(LibraryPath)</LibraryPath>
-    <ExecutablePath>$(ProjectDir)3rdparty\assimp;$(ProjectDir)3rdparty\FreeImage;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)3rdparty\imgui-glrt\include;$(SolutionDir)3rdparty\glm;$(SolutionDir)3rdparty\glad\include;$(SolutionDir);$(SolutionDir)3rdparty\assimp\include;$(SolutionDir)3rdparty\lua;$(SolutionDir)3rdparty\FreeImage\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)3rdparty\assimp;$(SolutionDir)3rdparty\FreeImage;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -146,102 +141,48 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ResourceCompile Include="GLRT.rc" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="Viewer3D.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="3rdparty\bsp30\src\BSPLoader.cpp" />
-    <ClCompile Include="3rdparty\glad\src\glad.c" />
-    <ClCompile Include="3rdparty\imgui-glrt\src\imgui.cpp" />
-    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_demo.cpp" />
-    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_draw.cpp" />
-    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_impl_win32.cpp" />
-    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_tables.cpp" />
-    <ClCompile Include="3rdparty\imgui-glrt\src\imgui_widgets.cpp" />
-    <ClCompile Include="3rdparty\lua\lua540\lapi.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lauxlib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lbaselib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lcode.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lcorolib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lctype.c" />
-    <ClCompile Include="3rdparty\lua\lua540\ldblib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\ldebug.c" />
-    <ClCompile Include="3rdparty\lua\lua540\ldo.c" />
-    <ClCompile Include="3rdparty\lua\lua540\ldump.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lfunc.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lgc.c" />
-    <ClCompile Include="3rdparty\lua\lua540\linit.c" />
-    <ClCompile Include="3rdparty\lua\lua540\liolib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\llex.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lmathlib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lmem.c" />
-    <ClCompile Include="3rdparty\lua\lua540\loadlib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lobject.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lopcodes.c" />
-    <ClCompile Include="3rdparty\lua\lua540\loslib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lparser.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lstate.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lstring.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lstrlib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\ltable.c" />
-    <ClCompile Include="3rdparty\lua\lua540\ltablib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\ltests.c" />
-    <ClCompile Include="3rdparty\lua\lua540\ltm.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lundump.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lutf8lib.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lvm.c" />
-    <ClCompile Include="3rdparty\lua\lua540\lzio.c" />
-    <ClCompile Include="3rdparty\wad\src\WADFile.cpp" />
-    <ClCompile Include="examples\empty3d\empty3d.cpp" />
-    <ClCompile Include="examples\flightsimulator\flightsimulator.cpp" />
-    <ClCompile Include="examples\halflife1\halflife1.cpp" />
-    <ClCompile Include="examples\hellotriangle\hellotriangle.cpp" />
-    <ClCompile Include="examples\hierarchy\hierarchy.cpp" />
-    <ClCompile Include="examples\pbr\pbr.cpp" />
-    <ClCompile Include="examples\scripting\scripting.cpp" />
-    <ClCompile Include="examples\teapot\teapot.cpp" />
-    <ClCompile Include="examples\terrain\Terrain.cpp" />
-    <ClCompile Include="examples\uicanvas\uicanvas.cpp" />
-    <ClCompile Include="examples\ui\ui.cpp" />
-    <ClCompile Include="examples\wireframe\wireframe.cpp" />
-    <ClCompile Include="include\utils\buffer_builder.cpp" />
-    <ClCompile Include="include\utils\glhelpers.cpp" />
-    <ClCompile Include="include\utils\log.cpp" />
-    <ClCompile Include="include\utils\stdhelpers.cpp" />
-    <ClCompile Include="include\utils\vertex_buffer_builder.cpp" />
-    <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\Light.cpp" />
-    <ClCompile Include="src\Material.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\RenderTarget.cpp" />
-    <ClCompile Include="src\ResourceMonitor.cpp" />
-    <ClCompile Include="src\scene\node.cpp" />
-    <ClCompile Include="src\scene\scene.cpp" />
-    <ClCompile Include="src\Script.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
-    <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="..\..\3rdparty\glad\src\glad.c" />
+    <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui.cpp" />
+    <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui_demo.cpp" />
+    <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui_draw.cpp" />
+    <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui_tables.cpp" />
+    <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\3rdparty\lua\lua540\onelua.c" />
+    <ClCompile Include="..\..\include\utils\buffer_builder.cpp" />
+    <ClCompile Include="..\..\include\utils\glhelpers.cpp" />
+    <ClCompile Include="..\..\include\utils\log.cpp" />
+    <ClCompile Include="..\..\include\utils\stdhelpers.cpp" />
+    <ClCompile Include="..\..\include\utils\vertex_buffer_builder.cpp" />
+    <ClCompile Include="..\..\src\Application.cpp" />
+    <ClCompile Include="..\..\src\Camera.cpp" />
+    <ClCompile Include="..\..\src\Light.cpp" />
+    <ClCompile Include="..\..\src\Material.cpp" />
+    <ClCompile Include="..\..\src\Mesh.cpp" />
+    <ClCompile Include="..\..\src\Renderer.cpp" />
+    <ClCompile Include="..\..\src\RenderTarget.cpp" />
+    <ClCompile Include="..\..\src\ResourceMonitor.cpp" />
+    <ClCompile Include="..\..\src\scene\node.cpp" />
+    <ClCompile Include="..\..\src\scene\scene.cpp" />
+    <ClCompile Include="..\..\src\Script.cpp" />
+    <ClCompile Include="..\..\src\Shader.cpp" />
+    <ClCompile Include="..\..\src\Texture.cpp" />
+    <ClCompile Include="..\..\src\Window.cpp" />
+    <ClCompile Include="Viewer3D.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="examples\empty3d\empty3d.h" />
-    <ClInclude Include="include\Application.h" />
-    <ClInclude Include="include\Camera.h" />
-    <ClInclude Include="include\framework.h" />
-    <ClInclude Include="include\GLRT.h" />
-    <ClInclude Include="include\Light.h" />
-    <ClInclude Include="include\Material.h" />
-    <ClInclude Include="include\Mesh.h" />
-    <ClInclude Include="include\Renderer.h" />
-    <ClInclude Include="include\RenderTarget.h" />
-    <ClInclude Include="include\ResourceMonitor.h" />
-    <ClInclude Include="include\scene\node.h" />
-    <ClInclude Include="include\scene\scene.h" />
-    <ClInclude Include="include\Script.h" />
-    <ClInclude Include="include\Shader.h" />
-    <ClInclude Include="include\Texture.h" />
-    <ClInclude Include="include\Window.h" />
+    <ResourceCompile Include="Viewer3D.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico" />
+    <Image Include="Viewer3D.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,5 @@
 #include "../../include/GLRT.h"
-#include "../../utils/utils.h"
+#include <utils/utils.h>
 #include "../empty3d/empty3d.h"
 #include "../../include/scene/scene.h"
 #include "../../include/Script.h"

@@ -4,7 +4,7 @@
 #include<vector>
 #include<stack>
 #include<string>
-#include"../utils/singleton.h"
+#include <utils/singleton.h>
 
 class IResourceUpdateNotify
 {

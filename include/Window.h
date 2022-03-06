@@ -1,7 +1,7 @@
 #pragma once
 #include "framework.h"
 #include <vector>
-#include "../utils/stdhelpers.h"
+#include <utils/stdhelpers.h>
 #include <chrono>
 #include "Script.h"
 enum KEYS
@@ -139,6 +139,6 @@ protected:
 	virtual void OnKeyboard(KEYS key, KEYACTION action);
 
 public:
-	Vector2 GetClientSize();
+	Vector2 GetViewportSize();
 	float GetClientAspect();
 };

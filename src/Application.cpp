@@ -1,6 +1,6 @@
-#include "../include/Application.h"
+#include <Application.h>
 #include "../resource.h"
-#include "../utils/utils.h"
+#include <utils/utils.h>
 #include "../include/ResourceMonitor.h"
 #include "../include/Material.h"
 #include <imgui/imgui_impl_win32.h>
@@ -529,7 +529,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 #include "../include/Camera.h"
-#include <examples/empty3d/empty3d.h>
+//#include <examples/empty3d/empty3d.h>
 struct Viewer3D::Context
 {
     Shader* m_pGridShader;
@@ -703,4 +703,4 @@ void Viewer3D::DrawAxis()
     GLASSERT(glEnable(GL_DEPTH_TEST));
 }
 
-Viewer3D _;
+//Viewer3D _;

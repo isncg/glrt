@@ -1,5 +1,5 @@
 #include "../../include/GLRT.h"
-#include "../../utils/utils.h"
+#include <utils/utils.h>
 #include <wad/WADFile.h>
 #include <bsp30/BSPLoader.h>
 #include <imgui/imgui.h>

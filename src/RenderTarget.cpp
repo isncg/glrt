@@ -1,5 +1,5 @@
 #include "../include/RenderTarget.h"
-#include "../utils/utils.h"
+#include <utils/utils.h>
 
 int RenderPass::width()
 {
@@ -82,7 +82,7 @@ void RenderPass::Bind()
 
 void RenderPass::BindDefault(Window* pWindow)
 {
-	auto size = pWindow->GetClientSize();
+	auto size = pWindow->GetViewportSize();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, size.x, size.y);
 }

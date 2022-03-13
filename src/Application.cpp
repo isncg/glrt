@@ -229,6 +229,17 @@ void GLApp::GetInitSize(long* width, long* height)
     *height = 720;
 }
 
+void GLApp::GetViewportSize(Vector2* pOutSize)
+{
+#ifdef WIN32
+    static RECT rect;
+    GetClientRect(((GLApp_Win32PlatformContext*)platform_context)->hWnd, &rect);
+    //return Vector2(rect.right - rect.left, rect.bottom - rect.top);
+    pOutSize->x = rect.right - rect.left;
+    pOutSize->y = rect.bottom - rect.top;
+#endif
+}
+
 void GLApp::OnDestroy()
 {
 }
@@ -538,9 +549,6 @@ struct Viewer3D::Context
     GLuint axis = 0;
     GLuint skybox = 0;
     long w = 1280, h = 720;
-
-    Camera						m_Camera;
-    CameraFirstPersonController m_CamController;
 };
 
 void Viewer3D::InitHorizonGrid()
@@ -622,16 +630,16 @@ void Viewer3D::Start()
 
     CameraStartupParam camparam;
     SetCameraStartupParam(camparam);
-    pctx_viewer3d->m_Camera.SetProjectionMatrix(camparam.projection.fovY, GetClientAspect(), camparam.projection.zNear, camparam.projection.zFar);
-    pctx_viewer3d->m_CamController.camera = &pctx_viewer3d->m_Camera;
-    pctx_viewer3d->m_CamController.speed = camparam.moveSpeed;
+    m_Camera.SetProjectionMatrix(camparam.projection.fovY, GetClientAspect(), camparam.projection.zNear, camparam.projection.zFar);
+    m_CamController.camera = &m_Camera;
+    m_CamController.speed = camparam.moveSpeed;
     Vector3 initCamPos = camparam.position;
     Vector2 initCamYallPitch = Camera::GetYallPitchFromDirection(camparam.direction);
     /*	Vector3 initCamDir = camparam.direction;
         initCamDir = glm::normalize(initCamDir);
         vector
         float yall = glm::atan(initCamDir.z, initCamDir.x);*/
-    pctx_viewer3d->m_CamController.Setup(initCamPos, initCamYallPitch.x, initCamYallPitch.y);
+    m_CamController.Setup(initCamPos, initCamYallPitch.x, initCamYallPitch.y);
 
     InitHorizonGrid();
     InitAxis();
@@ -650,21 +658,27 @@ void Viewer3D::Update()
     auto size = GetClientSize();
     GLASSERT(glViewport(0, 0, size.x, size.y));
 
-    DrawHorizonGrid(0.1f);
-    DrawHorizonGrid(1.0f);
-    DrawHorizonGrid(10.0f);
-    DrawHorizonGrid(100.0f);
+    if (EnableGrid)
+    {
+        DrawHorizonGrid(0.1f);
+        DrawHorizonGrid(1.0f);
+        DrawHorizonGrid(10.0f);
+        DrawHorizonGrid(100.0f);
+    }
 
     RenderScene();
 
-    GLASSERT(DrawAxis());
-    pctx_viewer3d->m_CamController.Update(((GLApp_Win32PlatformContext*)platform_context)->deltaTime);
-    GlobalMaterial::Instance().SetMainCamera(&pctx_viewer3d->m_Camera);
+    if (EnableAxis)
+    {
+        GLASSERT(DrawAxis());
+    }
+    m_CamController.Update(((GLApp_Win32PlatformContext*)platform_context)->deltaTime);
+    GlobalMaterial::Instance().SetMainCamera(&m_Camera);
 }
 
-void Viewer3D::OnMouseMove(long dx, long dy, long x, long y) { pctx_viewer3d->m_CamController.OnMouseMove(dx, dy, x, y); }
+void Viewer3D::OnMouseMove(long dx, long dy, long x, long y) { m_CamController.OnMouseMove(dx, dy, x, y); }
 
-void Viewer3D::OnKeyboard(KEYS key, KEYACTION action){ pctx_viewer3d->m_CamController.OnKeyboard(key, action);}
+void Viewer3D::OnKeyboard(KEYS key, KEYACTION action){ m_CamController.OnKeyboard(key, action);}
 
 #ifdef WIN32
 LRESULT Viewer3D::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -677,14 +691,14 @@ LRESULT Viewer3D::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 void Viewer3D::DrawHorizonGrid(float size)
 {
     GLASSERT(glDisable(GL_DEPTH_TEST));
-    auto pos = pctx_viewer3d->m_CamController.position;
+    auto pos = m_CamController.position;
     Vector2 offset;
     offset.x = (long)(pos.x / size) * size;
     offset.y = (long)(pos.z / size) * size;
     pctx_viewer3d->m_pGridShader->Use();
-    pctx_viewer3d->m_pGridShader->Set("cam", pctx_viewer3d->m_Camera.GetMatrix());
+    pctx_viewer3d->m_pGridShader->Set("cam", m_Camera.GetMatrix());
     pctx_viewer3d->m_pGridShader->Set("size", size);
-    pctx_viewer3d->m_pGridShader->Set("viewpos", pctx_viewer3d->m_CamController.position);
+    pctx_viewer3d->m_pGridShader->Set("viewpos", m_CamController.position);
     pctx_viewer3d->m_pGridShader->Set("gridcolor", Vector3{ 1,1,1 });
     pctx_viewer3d->m_pGridShader->Set("offset", offset);
     GLASSERT(glBindVertexArray(pctx_viewer3d->gridVAO));
@@ -696,8 +710,8 @@ void Viewer3D::DrawAxis()
     GLASSERT(glDisable(GL_DEPTH_TEST));
     pctx_viewer3d->m_pAxisShader->Use();
     pctx_viewer3d->m_pAxisShader->Set("_mvp",
-        pctx_viewer3d->m_Camera.GetProjectionMatrix() *
-        Matrix4x4::LookAt(-pctx_viewer3d->m_CamController.GetForwardDirection() * 5.0f * pctx_viewer3d->m_Camera.projectionParam.zNear, Vector3{ 0,0,0 }, Vector3{ 0,1,0 }));
+        m_Camera.GetProjectionMatrix() *
+        Matrix4x4::LookAt(-m_CamController.GetForwardDirection() * 5.0f * m_Camera.projectionParam.zNear, Vector3{ 0,0,0 }, Vector3{ 0,1,0 }));
     GLASSERT(glBindVertexArray(pctx_viewer3d->axis));
     GLASSERT(glDrawArrays(GL_LINES, 0, 12));
     GLASSERT(glEnable(GL_DEPTH_TEST));

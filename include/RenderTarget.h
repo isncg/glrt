@@ -2,6 +2,14 @@
 #include "framework.h"
 #include "Renderer.h"
 #include "Window.h"
+
+class IViewport
+{
+public:
+	virtual void GetViewportSize(Vector2* pOutSize) = 0;
+};
+
+
 class RenderPass
 {
 	GLuint fbo = 0;
@@ -18,41 +26,5 @@ public:
 	void Init(int width, int height, int nColors, bool depth);
 	void Bind();
 	static void BindDefault(Window* pWindow);
-	//void Draw(Renderer& renderer);
-	//void Draw(Renderer& renderer, Shader& shader);
-
-	//template<typename T> // where T: Renderer
-	//void Draw(std::vector<T>& renderers);
-
-	//template<typename T> // where T: Renderer
-	//void Draw(std::vector<T>& renderers, Material& mat);
-
-	//template<typename T> // where T: Renderer
-	//void Draw(std::vector<T>& renderers, Shader& shader);
+	static void BindDefault(IViewport* pViewport);
 };
-//
-//template<typename T>
-//inline void RenderPass::Draw(std::vector<T>& renderers)
-//{
-//	for (auto& r : renderers)
-//	{
-//		r.material->Use();
-//		r.Draw();
-//	}
-//}
-//
-//template<typename T>
-//inline void RenderPass::Draw(std::vector<T>& renderers, Material& mat)
-//{
-//	mat.Use();
-//	for (auto& r : renderers)
-//		r.Draw();
-//}
-//
-//template<typename T>
-//inline void RenderPass::Draw(std::vector<T>& renderers, Shader& shader)
-//{
-//	shader.Use();
-//	for (auto& r : renderers)
-//		r.Draw();
-//}

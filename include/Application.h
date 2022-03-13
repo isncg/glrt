@@ -6,6 +6,7 @@
 #include "../include/Script.h"
 #include <utils/stdhelpers.h>
 #include "../include/Camera.h"
+#include <RenderTarget.h>
 
 class Application: public Singleton<Application>, public IScriptable
 {
@@ -62,8 +63,9 @@ public:
     GLApp* pApp;
 };
 
-class GLApp: IScriptable
+class GLApp: public IViewport, public IScriptable
 {
+    virtual void GetViewportSize(Vector2* pOutSize) override;
 protected:
     GLApp_PlatformContext* platform_context = nullptr;
 public:
@@ -89,9 +91,8 @@ public:
 
 class Viewer3D : public GLApp
 {
-    ASSETDIR("assets/");
     struct Context;
-    Context* pctx_viewer3d;
+    ASSETDIR("assets/");
     struct CameraStartupParam
     {
         CameraProjectionParam projection;
@@ -101,7 +102,12 @@ class Viewer3D : public GLApp
     };
     void InitHorizonGrid();
     void InitAxis();
+
 protected:
+    Context* pctx_viewer3d;
+    Camera						m_Camera;
+    CameraFirstPersonController m_CamController;
+
     virtual void SetCameraStartupParam(CameraStartupParam& param);
     virtual void RenderScene();
 public:
@@ -109,6 +115,8 @@ public:
     virtual void Update() override;
     virtual void OnMouseMove(long dx, long dy, long x, long y) override;
     virtual void OnKeyboard(KEYS key, KEYACTION action) override;
+    bool EnableGrid = true;
+    bool EnableAxis = true;
 #ifdef WIN32
     virtual LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam) override;
     void DrawHorizonGrid(float size);

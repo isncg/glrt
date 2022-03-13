@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{6fb3583c-ab94-4470-a451-a33b0e2c4df5}</ProjectGuid>
+    <ProjectGuid>{24F36D8C-34E7-4B53-B313-FF5F35756384}</ProjectGuid>
     <RootNamespace>Viewer3D</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)include;$(SolutionDir)3rdparty\imgui-glrt\include;$(SolutionDir)3rdparty\glm;$(SolutionDir)3rdparty\glad\include;$(ProjectDir);$(SolutionDir)3rdparty\assimp\include;$(SolutionDir)3rdparty\lua;$(SolutionDir)3rdparty\FreeImage\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)3rdparty\imgui-glrt\include;$(SolutionDir)3rdparty\glm;$(SolutionDir)3rdparty\glad\include;$(ProjectDir);$(SolutionDir)3rdparty\assimp\include;$(SolutionDir)3rdparty\lua;$(SolutionDir)3rdparty\FreeImage\include;$(SolutionDir)3rdparty\bsp30\include;$(SolutionDir)3rdparty\wad\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)3rdparty\assimp;$(SolutionDir)3rdparty\FreeImage;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,9 +144,10 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Viewer3D.h" />
+    <ClInclude Include="CS16.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\3rdparty\bsp30\src\BSPLoader.cpp" />
     <ClCompile Include="..\..\3rdparty\glad\src\glad.c" />
     <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui.cpp" />
     <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui_demo.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui_tables.cpp" />
     <ClCompile Include="..\..\3rdparty\imgui-glrt\src\imgui_widgets.cpp" />
     <ClCompile Include="..\..\3rdparty\lua\lua540\onelua.c" />
+    <ClCompile Include="..\..\3rdparty\wad\src\WADFile.cpp" />
     <ClCompile Include="..\..\include\utils\buffer_builder.cpp" />
     <ClCompile Include="..\..\include\utils\glhelpers.cpp" />
     <ClCompile Include="..\..\include\utils\log.cpp" />
@@ -175,7 +177,7 @@
     <ClCompile Include="..\..\src\Shader.cpp" />
     <ClCompile Include="..\..\src\Texture.cpp" />
     <ClCompile Include="..\..\src\Window.cpp" />
-    <ClCompile Include="Viewer3D.cpp" />
+    <ClCompile Include="CS16.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Viewer3D.rc" />

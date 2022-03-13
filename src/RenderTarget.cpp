@@ -87,17 +87,10 @@ void RenderPass::BindDefault(Window* pWindow)
 	glViewport(0, 0, size.x, size.y);
 }
 
-//void RenderPass::Draw(Renderer& renderer)
-//{
-//
-//	renderer.Draw();
-//}
-//
-//void RenderPass::Draw(Renderer& renderer, Shader& shader)
-//{
-//	shader.Use();
-//	renderer.Draw();
-//}
-
-
-
+void RenderPass::BindDefault(IViewport* pViewport)
+{
+	static Vector2 size;
+	pViewport->GetViewportSize(&size);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, size.x, size.y);
+}

@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLRT", "GLRT.vcxproj", "{B1
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Viewer3D", "templates\Viewer3D\Viewer3D.vcxproj", "{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CS16", "examples\CS16\CS16.vcxproj", "{24F36D8C-34E7-4B53-B313-FF5F35756384}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Release|x64.Build.0 = Release|x64
 		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Release|x86.ActiveCfg = Release|Win32
 		{6FB3583C-AB94-4470-A451-A33B0E2C4DF5}.Release|x86.Build.0 = Release|Win32
+		{24F36D8C-34E7-4B53-B313-FF5F35756384}.Debug|x64.ActiveCfg = Debug|x64
+		{24F36D8C-34E7-4B53-B313-FF5F35756384}.Debug|x64.Build.0 = Debug|x64
+		{24F36D8C-34E7-4B53-B313-FF5F35756384}.Debug|x86.ActiveCfg = Debug|Win32
+		{24F36D8C-34E7-4B53-B313-FF5F35756384}.Debug|x86.Build.0 = Debug|Win32
+		{24F36D8C-34E7-4B53-B313-FF5F35756384}.Release|x64.ActiveCfg = Release|x64
+		{24F36D8C-34E7-4B53-B313-FF5F35756384}.Release|x64.Build.0 = Release|x64
+		{24F36D8C-34E7-4B53-B313-FF5F35756384}.Release|x86.ActiveCfg = Release|Win32
+		{24F36D8C-34E7-4B53-B313-FF5F35756384}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
